@@ -1,0 +1,83 @@
+File,Column,Reason
+Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv,Bwd PSH Flags,Constant value
+Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv,Fwd URG Flags,Constant value
+Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv,Bwd URG Flags,Constant value
+Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv,RST Flag Count,Constant value
+Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv,CWE Flag Count,Constant value
+Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv,ECE Flag Count,Constant value
+Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv,Fwd Avg Bytes/Bulk,Constant value
+Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv,Fwd Avg Packets/Bulk,Constant value
+Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv,Fwd Avg Bulk Rate,Constant value
+Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv,Bwd Avg Bytes/Bulk,Constant value
+Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv,Bwd Avg Packets/Bulk,Constant value
+Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv,Bwd Avg Bulk Rate,Constant value
+Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv,Bwd PSH Flags,Constant value
+Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv,Fwd URG Flags,Constant value
+Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv,Bwd URG Flags,Constant value
+Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv,CWE Flag Count,Constant value
+Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv,Fwd Avg Bytes/Bulk,Constant value
+Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv,Fwd Avg Packets/Bulk,Constant value
+Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv,Fwd Avg Bulk Rate,Constant value
+Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv,Bwd Avg Bytes/Bulk,Constant value
+Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv,Bwd Avg Packets/Bulk,Constant value
+Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv,Bwd Avg Bulk Rate,Constant value
+Friday-WorkingHours-Morning.pcap_ISCX.csv,Bwd PSH Flags,Constant value
+Friday-WorkingHours-Morning.pcap_ISCX.csv,Fwd URG Flags,Constant value
+Friday-WorkingHours-Morning.pcap_ISCX.csv,Bwd URG Flags,Constant value
+Friday-WorkingHours-Morning.pcap_ISCX.csv,CWE Flag Count,Constant value
+Friday-WorkingHours-Morning.pcap_ISCX.csv,Fwd Avg Bytes/Bulk,Constant value
+Friday-WorkingHours-Morning.pcap_ISCX.csv,Fwd Avg Packets/Bulk,Constant value
+Friday-WorkingHours-Morning.pcap_ISCX.csv,Fwd Avg Bulk Rate,Constant value
+Friday-WorkingHours-Morning.pcap_ISCX.csv,Bwd Avg Bytes/Bulk,Constant value
+Friday-WorkingHours-Morning.pcap_ISCX.csv,Bwd Avg Packets/Bulk,Constant value
+Friday-WorkingHours-Morning.pcap_ISCX.csv,Bwd Avg Bulk Rate,Constant value
+Monday-WorkingHours.pcap_ISCX.csv,Bwd PSH Flags,Constant value
+Monday-WorkingHours.pcap_ISCX.csv,Fwd URG Flags,Constant value
+Monday-WorkingHours.pcap_ISCX.csv,Bwd URG Flags,Constant value
+Monday-WorkingHours.pcap_ISCX.csv,CWE Flag Count,Constant value
+Monday-WorkingHours.pcap_ISCX.csv,Fwd Avg Bytes/Bulk,Constant value
+Monday-WorkingHours.pcap_ISCX.csv,Fwd Avg Packets/Bulk,Constant value
+Monday-WorkingHours.pcap_ISCX.csv,Fwd Avg Bulk Rate,Constant value
+Monday-WorkingHours.pcap_ISCX.csv,Bwd Avg Bytes/Bulk,Constant value
+Monday-WorkingHours.pcap_ISCX.csv,Bwd Avg Packets/Bulk,Constant value
+Monday-WorkingHours.pcap_ISCX.csv,Bwd Avg Bulk Rate,Constant value
+Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.csv,Bwd PSH Flags,Constant value
+Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.csv,Fwd URG Flags,Constant value
+Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.csv,Bwd URG Flags,Constant value
+Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.csv,CWE Flag Count,Constant value
+Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.csv,Fwd Avg Bytes/Bulk,Constant value
+Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.csv,Fwd Avg Packets/Bulk,Constant value
+Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.csv,Fwd Avg Bulk Rate,Constant value
+Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.csv,Bwd Avg Bytes/Bulk,Constant value
+Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.csv,Bwd Avg Packets/Bulk,Constant value
+Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.csv,Bwd Avg Bulk Rate,Constant value
+Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.csv,Bwd PSH Flags,Constant value
+Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.csv,Fwd URG Flags,Constant value
+Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.csv,Bwd URG Flags,Constant value
+Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.csv,CWE Flag Count,Constant value
+Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.csv,Fwd Avg Bytes/Bulk,Constant value
+Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.csv,Fwd Avg Packets/Bulk,Constant value
+Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.csv,Fwd Avg Bulk Rate,Constant value
+Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.csv,Bwd Avg Bytes/Bulk,Constant value
+Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.csv,Bwd Avg Packets/Bulk,Constant value
+Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.csv,Bwd Avg Bulk Rate,Constant value
+Tuesday-WorkingHours.pcap_ISCX.csv,Bwd PSH Flags,Constant value
+Tuesday-WorkingHours.pcap_ISCX.csv,Fwd URG Flags,Constant value
+Tuesday-WorkingHours.pcap_ISCX.csv,Bwd URG Flags,Constant value
+Tuesday-WorkingHours.pcap_ISCX.csv,CWE Flag Count,Constant value
+Tuesday-WorkingHours.pcap_ISCX.csv,Fwd Avg Bytes/Bulk,Constant value
+Tuesday-WorkingHours.pcap_ISCX.csv,Fwd Avg Packets/Bulk,Constant value
+Tuesday-WorkingHours.pcap_ISCX.csv,Fwd Avg Bulk Rate,Constant value
+Tuesday-WorkingHours.pcap_ISCX.csv,Bwd Avg Bytes/Bulk,Constant value
+Tuesday-WorkingHours.pcap_ISCX.csv,Bwd Avg Packets/Bulk,Constant value
+Tuesday-WorkingHours.pcap_ISCX.csv,Bwd Avg Bulk Rate,Constant value
+Wednesday-workingHours.pcap_ISCX.csv,Bwd PSH Flags,Constant value
+Wednesday-workingHours.pcap_ISCX.csv,Fwd URG Flags,Constant value
+Wednesday-workingHours.pcap_ISCX.csv,Bwd URG Flags,Constant value
+Wednesday-workingHours.pcap_ISCX.csv,CWE Flag Count,Constant value
+Wednesday-workingHours.pcap_ISCX.csv,Fwd Avg Bytes/Bulk,Constant value
+Wednesday-workingHours.pcap_ISCX.csv,Fwd Avg Packets/Bulk,Constant value
+Wednesday-workingHours.pcap_ISCX.csv,Fwd Avg Bulk Rate,Constant value
+Wednesday-workingHours.pcap_ISCX.csv,Bwd Avg Bytes/Bulk,Constant value
+Wednesday-workingHours.pcap_ISCX.csv,Bwd Avg Packets/Bulk,Constant value
+Wednesday-workingHours.pcap_ISCX.csv,Bwd Avg Bulk Rate,Constant value

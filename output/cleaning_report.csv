@@ -1,0 +1,9 @@
+File,Original Rows,Cleaned Rows,Missing Values Removed,Duplicate Rows Removed,Constant Columns Removed
+Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv,225745,224141,68,1570,10
+Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv,286467,241362,742,44734,10
+Friday-WorkingHours-Morning.pcap_ISCX.csv,191033,186455,244,4456,10
+Monday-WorkingHours.pcap_ISCX.csv,529918,515203,874,14278,11
+Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.csv,288602,265170,414,23225,11
+Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.csv,170366,166512,270,3719,10
+Tuesday-WorkingHours.pcap_ISCX.csv,445909,431786,528,13859,10
+Wednesday-workingHours.pcap_ISCX.csv,692703,624431,2594,66975,10
