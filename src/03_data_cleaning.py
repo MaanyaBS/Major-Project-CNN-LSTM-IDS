@@ -1,100 +1,101 @@
 """
 ==========================================================
 Project : CNN-LSTM Intrusion Detection System
-Module  : 03 - Data Cleaning (Chunk Processing)
+Module  : 05 - Label Encoding
 Author  : Maanya & Team
 ==========================================================
 """
 
 import os
-import numpy as np
 import pandas as pd
+from sklearn.preprocessing import LabelEncoder
 
-RAW_PATH = r"D:\Major_Project\dataset\raw"
-CLEANED_PATH = r"D:\Major_Project\dataset\cleaned"
-OUTPUT_PATH = r"D:\Major_Project\output"
+INPUT_FILE = r"D:\Major_Project\dataset\merged\cicids2017_cleaned.csv"
 
-os.makedirs(CLEANED_PATH, exist_ok=True)
-os.makedirs(OUTPUT_PATH, exist_ok=True)
+OUTPUT_FOLDER = r"D:\Major_Project\dataset\encoded"
+OUTPUT_FILE = os.path.join(OUTPUT_FOLDER, "cicids2017_encoded.csv")
 
-summary = []
+MAPPING_FILE = r"D:\Major_Project\output\label_mapping.csv"
 
-csv_files = sorted(
-    [f for f in os.listdir(RAW_PATH) if f.lower().endswith(".csv")]
-)
+os.makedirs(OUTPUT_FOLDER, exist_ok=True)
 
 print("=" * 80)
-print("DATA CLEANING")
+print("LABEL ENCODING")
 print("=" * 80)
 
-for file in csv_files:
+# --------------------------------------------------------
+# Step 1 : Find all unique labels
+# --------------------------------------------------------
 
-    print(f"\nProcessing: {file}")
+print("\nScanning Labels...")
 
-    file_path = os.path.join(RAW_PATH, file)
+labels = set()
 
-    cleaned_chunks = []
+for chunk in pd.read_csv(
+        INPUT_FILE,
+        chunksize=100000,
+        usecols=["Label"],
+        low_memory=False):
 
-    original_rows = 0
-    missing_removed = 0
-    duplicate_removed = 0
+    chunk["Label"] = (
+        chunk["Label"]
+        .astype(str)
+        .str.strip()
+    )
 
-    first_chunk = True
-    constant_columns = []
+    labels.update(chunk["Label"].unique())
 
-    for chunk in pd.read_csv(file_path, chunksize=50000):
+labels = sorted(labels)
 
-        original_rows += len(chunk)
+print("\nLabels Found:")
 
-        # Replace infinities
-        chunk.replace([np.inf, -np.inf], np.nan, inplace=True)
+for label in labels:
+    print(label)
 
-        # Count missing values
-        missing_removed += chunk.isnull().sum().sum()
+# --------------------------------------------------------
+# Step 2 : Encode Labels
+# --------------------------------------------------------
 
-        # Remove missing rows
-        chunk.dropna(inplace=True)
+encoder = LabelEncoder()
 
-        # Count duplicates
-        duplicate_removed += chunk.duplicated().sum()
+encoder.fit(labels)
 
-        # Remove duplicates
-        chunk.drop_duplicates(inplace=True)
+mapping = pd.DataFrame({
+    "Attack": encoder.classes_,
+    "Encoded": encoder.transform(encoder.classes_)
+})
 
-        # Find constant columns only once
-        if first_chunk:
-            constant_columns = [
-                col for col in chunk.columns
-                if chunk[col].nunique() == 1
-            ]
-            first_chunk = False
+mapping.to_csv(MAPPING_FILE, index=False)
 
-        chunk.drop(columns=constant_columns, inplace=True)
+print("\nEncoding Dataset...")
 
-        cleaned_chunks.append(chunk)
+first = True
 
-    cleaned_df = pd.concat(cleaned_chunks, ignore_index=True)
+for chunk in pd.read_csv(
+        INPUT_FILE,
+        chunksize=100000,
+        low_memory=False):
 
-    output_file = os.path.join(CLEANED_PATH, file)
-    cleaned_df.to_csv(output_file, index=False)
+    chunk["Label"] = (
+        chunk["Label"]
+        .astype(str)
+        .str.strip()
+    )
 
-    summary.append({
-        "File": file,
-        "Original Rows": original_rows,
-        "Cleaned Rows": len(cleaned_df),
-        "Missing Values Removed": int(missing_removed),
-        "Duplicate Rows Removed": int(duplicate_removed),
-        "Constant Columns Removed": len(constant_columns)
-    })
+    chunk["Label"] = encoder.transform(chunk["Label"])
 
-    print(f"Original Rows : {original_rows:,}")
-    print(f"Cleaned Rows  : {len(cleaned_df):,}")
+    chunk.to_csv(
+        OUTPUT_FILE,
+        mode="w" if first else "a",
+        header=first,
+        index=False
+    )
 
-summary_df = pd.DataFrame(summary)
+    first = False
 
-summary_df.to_csv(
-    os.path.join(OUTPUT_PATH, "cleaning_report.csv"),
-    index=False
-)
+print("\n" + "=" * 80)
+print("LABEL ENCODING COMPLETED")
+print("=" * 80)
 
-print("\nCleaning Completed Successfully!")
+print(f"\nEncoded Dataset : {OUTPUT_FILE}")
+print(f"Label Mapping   : {MAPPING_FILE}")
