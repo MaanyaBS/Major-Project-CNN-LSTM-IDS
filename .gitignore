@@ -13,7 +13,10 @@ __pycache__/
 dataset/raw/
 dataset/cleaned/
 dataset/merged/
+datasets/
 
 # OS files
 .DS_Store
 Thumbs.db
+
+desktop.ini

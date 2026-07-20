@@ -1,0 +1,3221 @@
+======================================================================
+BASELINE – RANDOM FOREST RESULTS
+=
+BASELINE – RANDOM FOREST RESULTS
+=
+BASELINE – RANDOM FOREST RESULTS
+=
+BASELINE – RANDOM FOREST RESULTS
+=
+BASELINE – RANDOM FOREST RESULTS
+=
+BASELINE – RANDOM FOREST RESULTS
+=
+BASELINE – RANDOM FOREST RESULTS
+=
+BASELINE – RANDOM FOREST RESULTS
+=
+BASELINE – RANDOM FOREST RESULTS
+=
+BASELINE – RANDOM FOREST RESULTS
+=
+BASELINE – RANDOM FOREST RESULTS
+=
+BASELINE – RANDOM FOREST RESULTS
+=
+BASELINE – RANDOM FOREST RESULTS
+=
+BASELINE – RANDOM FOREST RESULTS
+=
+BASELINE – RANDOM FOREST RESULTS
+=
+BASELINE – RANDOM FOREST RESULTS
+=
+BASELINE – RANDOM FOREST RESULTS
+=
+BASELINE – RANDOM FOREST RESULTS
+=
+BASELINE – RANDOM FOREST RESULTS
+=
+BASELINE – RANDOM FOREST RESULTS
+=
+BASELINE – RANDOM FOREST RESULTS
+=
+BASELINE – RANDOM FOREST RESULTS
+=
+BASELINE – RANDOM FOREST RESULTS
+=
+BASELINE – RANDOM FOREST RESULTS
+=
+BASELINE – RANDOM FOREST RESULTS
+=
+BASELINE – RANDOM FOREST RESULTS
+=
+BASELINE – RANDOM FOREST RESULTS
+=
+BASELINE – RANDOM FOREST RESULTS
+=
+BASELINE – RANDOM FOREST RESULTS
+=
+BASELINE – RANDOM FOREST RESULTS
+=
+BASELINE – RANDOM FOREST RESULTS
+=
+BASELINE – RANDOM FOREST RESULTS
+=
+BASELINE – RANDOM FOREST RESULTS
+=
+BASELINE – RANDOM FOREST RESULTS
+=
+BASELINE – RANDOM FOREST RESULTS
+=
+BASELINE – RANDOM FOREST RESULTS
+=
+BASELINE – RANDOM FOREST RESULTS
+=
+BASELINE – RANDOM FOREST RESULTS
+=
+BASELINE – RANDOM FOREST RESULTS
+=
+BASELINE – RANDOM FOREST RESULTS
+=
+BASELINE – RANDOM FOREST RESULTS
+=
+BASELINE – RANDOM FOREST RESULTS
+=
+BASELINE – RANDOM FOREST RESULTS
+=
+BASELINE – RANDOM FOREST RESULTS
+=
+BASELINE – RANDOM FOREST RESULTS
+=
+BASELINE – RANDOM FOREST RESULTS
+=
+BASELINE – RANDOM FOREST RESULTS
+=
+BASELINE – RANDOM FOREST RESULTS
+=
+BASELINE – RANDOM FOREST RESULTS
+=
+BASELINE – RANDOM FOREST RESULTS
+=
+BASELINE – RANDOM FOREST RESULTS
+=
+BASELINE – RANDOM FOREST RESULTS
+=
+BASELINE – RANDOM FOREST RESULTS
+=
+BASELINE – RANDOM FOREST RESULTS
+=
+BASELINE – RANDOM FOREST RESULTS
+=
+BASELINE – RANDOM FOREST RESULTS
+=
+BASELINE – RANDOM FOREST RESULTS
+=
+BASELINE – RANDOM FOREST RESULTS
+=
+BASELINE – RANDOM FOREST RESULTS
+=
+BASELINE – RANDOM FOREST RESULTS
+=
+BASELINE – RANDOM FOREST RESULTS
+=
+BASELINE – RANDOM FOREST RESULTS
+=
+BASELINE – RANDOM FOREST RESULTS
+=
+BASELINE – RANDOM FOREST RESULTS
+=
+BASELINE – RANDOM FOREST RESULTS
+=
+BASELINE – RANDOM FOREST RESULTS
+=
+BASELINE – RANDOM FOREST RESULTS
+=
+BASELINE – RANDOM FOREST RESULTS
+=
+BASELINE – RANDOM FOREST RESULTS
+=
+BASELINE – RANDOM FOREST RESULTS
+=
+
+Sample size      : 100,000
+Train / Test     : 80,000 / 20,000
+
+Accuracy         : 0.997950
+Precision (wt.)  : 0.997657
+Recall    (wt.)  : 0.997950
+F1-score  (wt.)  : 0.997709
+
+Classification Report:
+                          precision    recall  f1-score   support
+
+                  BENIGN       1.00      1.00      1.00     15110
+                     Bot       0.90      0.43      0.58        21
+                    DDoS       1.00      1.00      1.00      1373
+           DoS GoldenEye       0.99      0.99      0.99       108
+                DoS Hulk       1.00      1.00      1.00      1884
+        DoS Slowhttptest       0.96      1.00      0.98        50
+           DoS slowloris       1.00      0.98      0.99        58
+             FTP-Patator       1.00      1.00      1.00        70
+                PortScan       1.00      1.00      1.00      1265
+             SSH-Patator       1.00      0.98      0.99        42
+Web Attack - Brute Force       0.62      0.77      0.69        13
+        Web Attack - XSS       0.00      0.00      0.00         6
+
+                accuracy                           1.00     20000
+               macro avg       0.87      0.85      0.85     20000
+            weighted avg       1.00      1.00      1.00     20000
+
+
+Confusion Matrix:
+[[15104     1     1     1     2     1     0     0     0     0     0     0]
+ [   12     9     0     0     0     0     0     0     0     0     0     0]
+ [    1     0  1371     0     1     0     0     0     0     0     0     0]
+ [    0     0     0   107     1     0     0     0     0     0     0     0]
+ [    6     0     0     0  1878     0     0     0     0     0     0     0]
+ [    0     0     0     0     0    50     0     0     0     0     0     0]
+ [    0     0     0     0     0     1    57     0     0     0     0     0]
+ [    0     0     0     0     0     0     0    70     0     0     0     0]
+ [    3     0     0     0     0     0     0     0  1262     0     0     0]
+ [    1     0     0     0     0     0     0     0     0    41     0     0]
+ [    3     0     0     0     0     0     0     0     0     0    10     0]
+ [    0     0     0     0     0     0     0     0     0     0     6     0]]
+=
+
+Sample size      : 100,000
+Train / Test     : 80,000 / 20,000
+
+Accuracy         : 0.997950
+Precision (wt.)  : 0.997657
+Recall    (wt.)  : 0.997950
+F1-score  (wt.)  : 0.997709
+
+Classification Report:
+                          precision    recall  f1-score   support
+
+                  BENIGN       1.00      1.00      1.00     15110
+                     Bot       0.90      0.43      0.58        21
+                    DDoS       1.00      1.00      1.00      1373
+           DoS GoldenEye       0.99      0.99      0.99       108
+                DoS Hulk       1.00      1.00      1.00      1884
+        DoS Slowhttptest       0.96      1.00      0.98        50
+           DoS slowloris       1.00      0.98      0.99        58
+             FTP-Patator       1.00      1.00      1.00        70
+                PortScan       1.00      1.00      1.00      1265
+             SSH-Patator       1.00      0.98      0.99        42
+Web Attack - Brute Force       0.62      0.77      0.69        13
+        Web Attack - XSS       0.00      0.00      0.00         6
+
+                accuracy                           1.00     20000
+               macro avg       0.87      0.85      0.85     20000
+            weighted avg       1.00      1.00      1.00     20000
+
+
+Confusion Matrix:
+[[15104     1     1     1     2     1     0     0     0     0     0     0]
+ [   12     9     0     0     0     0     0     0     0     0     0     0]
+ [    1     0  1371     0     1     0     0     0     0     0     0     0]
+ [    0     0     0   107     1     0     0     0     0     0     0     0]
+ [    6     0     0     0  1878     0     0     0     0     0     0     0]
+ [    0     0     0     0     0    50     0     0     0     0     0     0]
+ [    0     0     0     0     0     1    57     0     0     0     0     0]
+ [    0     0     0     0     0     0     0    70     0     0     0     0]
+ [    3     0     0     0     0     0     0     0  1262     0     0     0]
+ [    1     0     0     0     0     0     0     0     0    41     0     0]
+ [    3     0     0     0     0     0     0     0     0     0    10     0]
+ [    0     0     0     0     0     0     0     0     0     0     6     0]]
+=
+
+Sample size      : 100,000
+Train / Test     : 80,000 / 20,000
+
+Accuracy         : 0.997950
+Precision (wt.)  : 0.997657
+Recall    (wt.)  : 0.997950
+F1-score  (wt.)  : 0.997709
+
+Classification Report:
+                          precision    recall  f1-score   support
+
+                  BENIGN       1.00      1.00      1.00     15110
+                     Bot       0.90      0.43      0.58        21
+                    DDoS       1.00      1.00      1.00      1373
+           DoS GoldenEye       0.99      0.99      0.99       108
+                DoS Hulk       1.00      1.00      1.00      1884
+        DoS Slowhttptest       0.96      1.00      0.98        50
+           DoS slowloris       1.00      0.98      0.99        58
+             FTP-Patator       1.00      1.00      1.00        70
+                PortScan       1.00      1.00      1.00      1265
+             SSH-Patator       1.00      0.98      0.99        42
+Web Attack - Brute Force       0.62      0.77      0.69        13
+        Web Attack - XSS       0.00      0.00      0.00         6
+
+                accuracy                           1.00     20000
+               macro avg       0.87      0.85      0.85     20000
+            weighted avg       1.00      1.00      1.00     20000
+
+
+Confusion Matrix:
+[[15104     1     1     1     2     1     0     0     0     0     0     0]
+ [   12     9     0     0     0     0     0     0     0     0     0     0]
+ [    1     0  1371     0     1     0     0     0     0     0     0     0]
+ [    0     0     0   107     1     0     0     0     0     0     0     0]
+ [    6     0     0     0  1878     0     0     0     0     0     0     0]
+ [    0     0     0     0     0    50     0     0     0     0     0     0]
+ [    0     0     0     0     0     1    57     0     0     0     0     0]
+ [    0     0     0     0     0     0     0    70     0     0     0     0]
+ [    3     0     0     0     0     0     0     0  1262     0     0     0]
+ [    1     0     0     0     0     0     0     0     0    41     0     0]
+ [    3     0     0     0     0     0     0     0     0     0    10     0]
+ [    0     0     0     0     0     0     0     0     0     0     6     0]]
+=
+
+Sample size      : 100,000
+Train / Test     : 80,000 / 20,000
+
+Accuracy         : 0.997950
+Precision (wt.)  : 0.997657
+Recall    (wt.)  : 0.997950
+F1-score  (wt.)  : 0.997709
+
+Classification Report:
+                          precision    recall  f1-score   support
+
+                  BENIGN       1.00      1.00      1.00     15110
+                     Bot       0.90      0.43      0.58        21
+                    DDoS       1.00      1.00      1.00      1373
+           DoS GoldenEye       0.99      0.99      0.99       108
+                DoS Hulk       1.00      1.00      1.00      1884
+        DoS Slowhttptest       0.96      1.00      0.98        50
+           DoS slowloris       1.00      0.98      0.99        58
+             FTP-Patator       1.00      1.00      1.00        70
+                PortScan       1.00      1.00      1.00      1265
+             SSH-Patator       1.00      0.98      0.99        42
+Web Attack - Brute Force       0.62      0.77      0.69        13
+        Web Attack - XSS       0.00      0.00      0.00         6
+
+                accuracy                           1.00     20000
+               macro avg       0.87      0.85      0.85     20000
+            weighted avg       1.00      1.00      1.00     20000
+
+
+Confusion Matrix:
+[[15104     1     1     1     2     1     0     0     0     0     0     0]
+ [   12     9     0     0     0     0     0     0     0     0     0     0]
+ [    1     0  1371     0     1     0     0     0     0     0     0     0]
+ [    0     0     0   107     1     0     0     0     0     0     0     0]
+ [    6     0     0     0  1878     0     0     0     0     0     0     0]
+ [    0     0     0     0     0    50     0     0     0     0     0     0]
+ [    0     0     0     0     0     1    57     0     0     0     0     0]
+ [    0     0     0     0     0     0     0    70     0     0     0     0]
+ [    3     0     0     0     0     0     0     0  1262     0     0     0]
+ [    1     0     0     0     0     0     0     0     0    41     0     0]
+ [    3     0     0     0     0     0     0     0     0     0    10     0]
+ [    0     0     0     0     0     0     0     0     0     0     6     0]]
+=
+
+Sample size      : 100,000
+Train / Test     : 80,000 / 20,000
+
+Accuracy         : 0.997950
+Precision (wt.)  : 0.997657
+Recall    (wt.)  : 0.997950
+F1-score  (wt.)  : 0.997709
+
+Classification Report:
+                          precision    recall  f1-score   support
+
+                  BENIGN       1.00      1.00      1.00     15110
+                     Bot       0.90      0.43      0.58        21
+                    DDoS       1.00      1.00      1.00      1373
+           DoS GoldenEye       0.99      0.99      0.99       108
+                DoS Hulk       1.00      1.00      1.00      1884
+        DoS Slowhttptest       0.96      1.00      0.98        50
+           DoS slowloris       1.00      0.98      0.99        58
+             FTP-Patator       1.00      1.00      1.00        70
+                PortScan       1.00      1.00      1.00      1265
+             SSH-Patator       1.00      0.98      0.99        42
+Web Attack - Brute Force       0.62      0.77      0.69        13
+        Web Attack - XSS       0.00      0.00      0.00         6
+
+                accuracy                           1.00     20000
+               macro avg       0.87      0.85      0.85     20000
+            weighted avg       1.00      1.00      1.00     20000
+
+
+Confusion Matrix:
+[[15104     1     1     1     2     1     0     0     0     0     0     0]
+ [   12     9     0     0     0     0     0     0     0     0     0     0]
+ [    1     0  1371     0     1     0     0     0     0     0     0     0]
+ [    0     0     0   107     1     0     0     0     0     0     0     0]
+ [    6     0     0     0  1878     0     0     0     0     0     0     0]
+ [    0     0     0     0     0    50     0     0     0     0     0     0]
+ [    0     0     0     0     0     1    57     0     0     0     0     0]
+ [    0     0     0     0     0     0     0    70     0     0     0     0]
+ [    3     0     0     0     0     0     0     0  1262     0     0     0]
+ [    1     0     0     0     0     0     0     0     0    41     0     0]
+ [    3     0     0     0     0     0     0     0     0     0    10     0]
+ [    0     0     0     0     0     0     0     0     0     0     6     0]]
+=
+
+Sample size      : 100,000
+Train / Test     : 80,000 / 20,000
+
+Accuracy         : 0.997950
+Precision (wt.)  : 0.997657
+Recall    (wt.)  : 0.997950
+F1-score  (wt.)  : 0.997709
+
+Classification Report:
+                          precision    recall  f1-score   support
+
+                  BENIGN       1.00      1.00      1.00     15110
+                     Bot       0.90      0.43      0.58        21
+                    DDoS       1.00      1.00      1.00      1373
+           DoS GoldenEye       0.99      0.99      0.99       108
+                DoS Hulk       1.00      1.00      1.00      1884
+        DoS Slowhttptest       0.96      1.00      0.98        50
+           DoS slowloris       1.00      0.98      0.99        58
+             FTP-Patator       1.00      1.00      1.00        70
+                PortScan       1.00      1.00      1.00      1265
+             SSH-Patator       1.00      0.98      0.99        42
+Web Attack - Brute Force       0.62      0.77      0.69        13
+        Web Attack - XSS       0.00      0.00      0.00         6
+
+                accuracy                           1.00     20000
+               macro avg       0.87      0.85      0.85     20000
+            weighted avg       1.00      1.00      1.00     20000
+
+
+Confusion Matrix:
+[[15104     1     1     1     2     1     0     0     0     0     0     0]
+ [   12     9     0     0     0     0     0     0     0     0     0     0]
+ [    1     0  1371     0     1     0     0     0     0     0     0     0]
+ [    0     0     0   107     1     0     0     0     0     0     0     0]
+ [    6     0     0     0  1878     0     0     0     0     0     0     0]
+ [    0     0     0     0     0    50     0     0     0     0     0     0]
+ [    0     0     0     0     0     1    57     0     0     0     0     0]
+ [    0     0     0     0     0     0     0    70     0     0     0     0]
+ [    3     0     0     0     0     0     0     0  1262     0     0     0]
+ [    1     0     0     0     0     0     0     0     0    41     0     0]
+ [    3     0     0     0     0     0     0     0     0     0    10     0]
+ [    0     0     0     0     0     0     0     0     0     0     6     0]]
+=
+
+Sample size      : 100,000
+Train / Test     : 80,000 / 20,000
+
+Accuracy         : 0.997950
+Precision (wt.)  : 0.997657
+Recall    (wt.)  : 0.997950
+F1-score  (wt.)  : 0.997709
+
+Classification Report:
+                          precision    recall  f1-score   support
+
+                  BENIGN       1.00      1.00      1.00     15110
+                     Bot       0.90      0.43      0.58        21
+                    DDoS       1.00      1.00      1.00      1373
+           DoS GoldenEye       0.99      0.99      0.99       108
+                DoS Hulk       1.00      1.00      1.00      1884
+        DoS Slowhttptest       0.96      1.00      0.98        50
+           DoS slowloris       1.00      0.98      0.99        58
+             FTP-Patator       1.00      1.00      1.00        70
+                PortScan       1.00      1.00      1.00      1265
+             SSH-Patator       1.00      0.98      0.99        42
+Web Attack - Brute Force       0.62      0.77      0.69        13
+        Web Attack - XSS       0.00      0.00      0.00         6
+
+                accuracy                           1.00     20000
+               macro avg       0.87      0.85      0.85     20000
+            weighted avg       1.00      1.00      1.00     20000
+
+
+Confusion Matrix:
+[[15104     1     1     1     2     1     0     0     0     0     0     0]
+ [   12     9     0     0     0     0     0     0     0     0     0     0]
+ [    1     0  1371     0     1     0     0     0     0     0     0     0]
+ [    0     0     0   107     1     0     0     0     0     0     0     0]
+ [    6     0     0     0  1878     0     0     0     0     0     0     0]
+ [    0     0     0     0     0    50     0     0     0     0     0     0]
+ [    0     0     0     0     0     1    57     0     0     0     0     0]
+ [    0     0     0     0     0     0     0    70     0     0     0     0]
+ [    3     0     0     0     0     0     0     0  1262     0     0     0]
+ [    1     0     0     0     0     0     0     0     0    41     0     0]
+ [    3     0     0     0     0     0     0     0     0     0    10     0]
+ [    0     0     0     0     0     0     0     0     0     0     6     0]]
+=
+
+Sample size      : 100,000
+Train / Test     : 80,000 / 20,000
+
+Accuracy         : 0.997950
+Precision (wt.)  : 0.997657
+Recall    (wt.)  : 0.997950
+F1-score  (wt.)  : 0.997709
+
+Classification Report:
+                          precision    recall  f1-score   support
+
+                  BENIGN       1.00      1.00      1.00     15110
+                     Bot       0.90      0.43      0.58        21
+                    DDoS       1.00      1.00      1.00      1373
+           DoS GoldenEye       0.99      0.99      0.99       108
+                DoS Hulk       1.00      1.00      1.00      1884
+        DoS Slowhttptest       0.96      1.00      0.98        50
+           DoS slowloris       1.00      0.98      0.99        58
+             FTP-Patator       1.00      1.00      1.00        70
+                PortScan       1.00      1.00      1.00      1265
+             SSH-Patator       1.00      0.98      0.99        42
+Web Attack - Brute Force       0.62      0.77      0.69        13
+        Web Attack - XSS       0.00      0.00      0.00         6
+
+                accuracy                           1.00     20000
+               macro avg       0.87      0.85      0.85     20000
+            weighted avg       1.00      1.00      1.00     20000
+
+
+Confusion Matrix:
+[[15104     1     1     1     2     1     0     0     0     0     0     0]
+ [   12     9     0     0     0     0     0     0     0     0     0     0]
+ [    1     0  1371     0     1     0     0     0     0     0     0     0]
+ [    0     0     0   107     1     0     0     0     0     0     0     0]
+ [    6     0     0     0  1878     0     0     0     0     0     0     0]
+ [    0     0     0     0     0    50     0     0     0     0     0     0]
+ [    0     0     0     0     0     1    57     0     0     0     0     0]
+ [    0     0     0     0     0     0     0    70     0     0     0     0]
+ [    3     0     0     0     0     0     0     0  1262     0     0     0]
+ [    1     0     0     0     0     0     0     0     0    41     0     0]
+ [    3     0     0     0     0     0     0     0     0     0    10     0]
+ [    0     0     0     0     0     0     0     0     0     0     6     0]]
+=
+
+Sample size      : 100,000
+Train / Test     : 80,000 / 20,000
+
+Accuracy         : 0.997950
+Precision (wt.)  : 0.997657
+Recall    (wt.)  : 0.997950
+F1-score  (wt.)  : 0.997709
+
+Classification Report:
+                          precision    recall  f1-score   support
+
+                  BENIGN       1.00      1.00      1.00     15110
+                     Bot       0.90      0.43      0.58        21
+                    DDoS       1.00      1.00      1.00      1373
+           DoS GoldenEye       0.99      0.99      0.99       108
+                DoS Hulk       1.00      1.00      1.00      1884
+        DoS Slowhttptest       0.96      1.00      0.98        50
+           DoS slowloris       1.00      0.98      0.99        58
+             FTP-Patator       1.00      1.00      1.00        70
+                PortScan       1.00      1.00      1.00      1265
+             SSH-Patator       1.00      0.98      0.99        42
+Web Attack - Brute Force       0.62      0.77      0.69        13
+        Web Attack - XSS       0.00      0.00      0.00         6
+
+                accuracy                           1.00     20000
+               macro avg       0.87      0.85      0.85     20000
+            weighted avg       1.00      1.00      1.00     20000
+
+
+Confusion Matrix:
+[[15104     1     1     1     2     1     0     0     0     0     0     0]
+ [   12     9     0     0     0     0     0     0     0     0     0     0]
+ [    1     0  1371     0     1     0     0     0     0     0     0     0]
+ [    0     0     0   107     1     0     0     0     0     0     0     0]
+ [    6     0     0     0  1878     0     0     0     0     0     0     0]
+ [    0     0     0     0     0    50     0     0     0     0     0     0]
+ [    0     0     0     0     0     1    57     0     0     0     0     0]
+ [    0     0     0     0     0     0     0    70     0     0     0     0]
+ [    3     0     0     0     0     0     0     0  1262     0     0     0]
+ [    1     0     0     0     0     0     0     0     0    41     0     0]
+ [    3     0     0     0     0     0     0     0     0     0    10     0]
+ [    0     0     0     0     0     0     0     0     0     0     6     0]]
+=
+
+Sample size      : 100,000
+Train / Test     : 80,000 / 20,000
+
+Accuracy         : 0.997950
+Precision (wt.)  : 0.997657
+Recall    (wt.)  : 0.997950
+F1-score  (wt.)  : 0.997709
+
+Classification Report:
+                          precision    recall  f1-score   support
+
+                  BENIGN       1.00      1.00      1.00     15110
+                     Bot       0.90      0.43      0.58        21
+                    DDoS       1.00      1.00      1.00      1373
+           DoS GoldenEye       0.99      0.99      0.99       108
+                DoS Hulk       1.00      1.00      1.00      1884
+        DoS Slowhttptest       0.96      1.00      0.98        50
+           DoS slowloris       1.00      0.98      0.99        58
+             FTP-Patator       1.00      1.00      1.00        70
+                PortScan       1.00      1.00      1.00      1265
+             SSH-Patator       1.00      0.98      0.99        42
+Web Attack - Brute Force       0.62      0.77      0.69        13
+        Web Attack - XSS       0.00      0.00      0.00         6
+
+                accuracy                           1.00     20000
+               macro avg       0.87      0.85      0.85     20000
+            weighted avg       1.00      1.00      1.00     20000
+
+
+Confusion Matrix:
+[[15104     1     1     1     2     1     0     0     0     0     0     0]
+ [   12     9     0     0     0     0     0     0     0     0     0     0]
+ [    1     0  1371     0     1     0     0     0     0     0     0     0]
+ [    0     0     0   107     1     0     0     0     0     0     0     0]
+ [    6     0     0     0  1878     0     0     0     0     0     0     0]
+ [    0     0     0     0     0    50     0     0     0     0     0     0]
+ [    0     0     0     0     0     1    57     0     0     0     0     0]
+ [    0     0     0     0     0     0     0    70     0     0     0     0]
+ [    3     0     0     0     0     0     0     0  1262     0     0     0]
+ [    1     0     0     0     0     0     0     0     0    41     0     0]
+ [    3     0     0     0     0     0     0     0     0     0    10     0]
+ [    0     0     0     0     0     0     0     0     0     0     6     0]]
+=
+
+Sample size      : 100,000
+Train / Test     : 80,000 / 20,000
+
+Accuracy         : 0.997950
+Precision (wt.)  : 0.997657
+Recall    (wt.)  : 0.997950
+F1-score  (wt.)  : 0.997709
+
+Classification Report:
+                          precision    recall  f1-score   support
+
+                  BENIGN       1.00      1.00      1.00     15110
+                     Bot       0.90      0.43      0.58        21
+                    DDoS       1.00      1.00      1.00      1373
+           DoS GoldenEye       0.99      0.99      0.99       108
+                DoS Hulk       1.00      1.00      1.00      1884
+        DoS Slowhttptest       0.96      1.00      0.98        50
+           DoS slowloris       1.00      0.98      0.99        58
+             FTP-Patator       1.00      1.00      1.00        70
+                PortScan       1.00      1.00      1.00      1265
+             SSH-Patator       1.00      0.98      0.99        42
+Web Attack - Brute Force       0.62      0.77      0.69        13
+        Web Attack - XSS       0.00      0.00      0.00         6
+
+                accuracy                           1.00     20000
+               macro avg       0.87      0.85      0.85     20000
+            weighted avg       1.00      1.00      1.00     20000
+
+
+Confusion Matrix:
+[[15104     1     1     1     2     1     0     0     0     0     0     0]
+ [   12     9     0     0     0     0     0     0     0     0     0     0]
+ [    1     0  1371     0     1     0     0     0     0     0     0     0]
+ [    0     0     0   107     1     0     0     0     0     0     0     0]
+ [    6     0     0     0  1878     0     0     0     0     0     0     0]
+ [    0     0     0     0     0    50     0     0     0     0     0     0]
+ [    0     0     0     0     0     1    57     0     0     0     0     0]
+ [    0     0     0     0     0     0     0    70     0     0     0     0]
+ [    3     0     0     0     0     0     0     0  1262     0     0     0]
+ [    1     0     0     0     0     0     0     0     0    41     0     0]
+ [    3     0     0     0     0     0     0     0     0     0    10     0]
+ [    0     0     0     0     0     0     0     0     0     0     6     0]]
+=
+
+Sample size      : 100,000
+Train / Test     : 80,000 / 20,000
+
+Accuracy         : 0.997950
+Precision (wt.)  : 0.997657
+Recall    (wt.)  : 0.997950
+F1-score  (wt.)  : 0.997709
+
+Classification Report:
+                          precision    recall  f1-score   support
+
+                  BENIGN       1.00      1.00      1.00     15110
+                     Bot       0.90      0.43      0.58        21
+                    DDoS       1.00      1.00      1.00      1373
+           DoS GoldenEye       0.99      0.99      0.99       108
+                DoS Hulk       1.00      1.00      1.00      1884
+        DoS Slowhttptest       0.96      1.00      0.98        50
+           DoS slowloris       1.00      0.98      0.99        58
+             FTP-Patator       1.00      1.00      1.00        70
+                PortScan       1.00      1.00      1.00      1265
+             SSH-Patator       1.00      0.98      0.99        42
+Web Attack - Brute Force       0.62      0.77      0.69        13
+        Web Attack - XSS       0.00      0.00      0.00         6
+
+                accuracy                           1.00     20000
+               macro avg       0.87      0.85      0.85     20000
+            weighted avg       1.00      1.00      1.00     20000
+
+
+Confusion Matrix:
+[[15104     1     1     1     2     1     0     0     0     0     0     0]
+ [   12     9     0     0     0     0     0     0     0     0     0     0]
+ [    1     0  1371     0     1     0     0     0     0     0     0     0]
+ [    0     0     0   107     1     0     0     0     0     0     0     0]
+ [    6     0     0     0  1878     0     0     0     0     0     0     0]
+ [    0     0     0     0     0    50     0     0     0     0     0     0]
+ [    0     0     0     0     0     1    57     0     0     0     0     0]
+ [    0     0     0     0     0     0     0    70     0     0     0     0]
+ [    3     0     0     0     0     0     0     0  1262     0     0     0]
+ [    1     0     0     0     0     0     0     0     0    41     0     0]
+ [    3     0     0     0     0     0     0     0     0     0    10     0]
+ [    0     0     0     0     0     0     0     0     0     0     6     0]]
+=
+
+Sample size      : 100,000
+Train / Test     : 80,000 / 20,000
+
+Accuracy         : 0.997950
+Precision (wt.)  : 0.997657
+Recall    (wt.)  : 0.997950
+F1-score  (wt.)  : 0.997709
+
+Classification Report:
+                          precision    recall  f1-score   support
+
+                  BENIGN       1.00      1.00      1.00     15110
+                     Bot       0.90      0.43      0.58        21
+                    DDoS       1.00      1.00      1.00      1373
+           DoS GoldenEye       0.99      0.99      0.99       108
+                DoS Hulk       1.00      1.00      1.00      1884
+        DoS Slowhttptest       0.96      1.00      0.98        50
+           DoS slowloris       1.00      0.98      0.99        58
+             FTP-Patator       1.00      1.00      1.00        70
+                PortScan       1.00      1.00      1.00      1265
+             SSH-Patator       1.00      0.98      0.99        42
+Web Attack - Brute Force       0.62      0.77      0.69        13
+        Web Attack - XSS       0.00      0.00      0.00         6
+
+                accuracy                           1.00     20000
+               macro avg       0.87      0.85      0.85     20000
+            weighted avg       1.00      1.00      1.00     20000
+
+
+Confusion Matrix:
+[[15104     1     1     1     2     1     0     0     0     0     0     0]
+ [   12     9     0     0     0     0     0     0     0     0     0     0]
+ [    1     0  1371     0     1     0     0     0     0     0     0     0]
+ [    0     0     0   107     1     0     0     0     0     0     0     0]
+ [    6     0     0     0  1878     0     0     0     0     0     0     0]
+ [    0     0     0     0     0    50     0     0     0     0     0     0]
+ [    0     0     0     0     0     1    57     0     0     0     0     0]
+ [    0     0     0     0     0     0     0    70     0     0     0     0]
+ [    3     0     0     0     0     0     0     0  1262     0     0     0]
+ [    1     0     0     0     0     0     0     0     0    41     0     0]
+ [    3     0     0     0     0     0     0     0     0     0    10     0]
+ [    0     0     0     0     0     0     0     0     0     0     6     0]]
+=
+
+Sample size      : 100,000
+Train / Test     : 80,000 / 20,000
+
+Accuracy         : 0.997950
+Precision (wt.)  : 0.997657
+Recall    (wt.)  : 0.997950
+F1-score  (wt.)  : 0.997709
+
+Classification Report:
+                          precision    recall  f1-score   support
+
+                  BENIGN       1.00      1.00      1.00     15110
+                     Bot       0.90      0.43      0.58        21
+                    DDoS       1.00      1.00      1.00      1373
+           DoS GoldenEye       0.99      0.99      0.99       108
+                DoS Hulk       1.00      1.00      1.00      1884
+        DoS Slowhttptest       0.96      1.00      0.98        50
+           DoS slowloris       1.00      0.98      0.99        58
+             FTP-Patator       1.00      1.00      1.00        70
+                PortScan       1.00      1.00      1.00      1265
+             SSH-Patator       1.00      0.98      0.99        42
+Web Attack - Brute Force       0.62      0.77      0.69        13
+        Web Attack - XSS       0.00      0.00      0.00         6
+
+                accuracy                           1.00     20000
+               macro avg       0.87      0.85      0.85     20000
+            weighted avg       1.00      1.00      1.00     20000
+
+
+Confusion Matrix:
+[[15104     1     1     1     2     1     0     0     0     0     0     0]
+ [   12     9     0     0     0     0     0     0     0     0     0     0]
+ [    1     0  1371     0     1     0     0     0     0     0     0     0]
+ [    0     0     0   107     1     0     0     0     0     0     0     0]
+ [    6     0     0     0  1878     0     0     0     0     0     0     0]
+ [    0     0     0     0     0    50     0     0     0     0     0     0]
+ [    0     0     0     0     0     1    57     0     0     0     0     0]
+ [    0     0     0     0     0     0     0    70     0     0     0     0]
+ [    3     0     0     0     0     0     0     0  1262     0     0     0]
+ [    1     0     0     0     0     0     0     0     0    41     0     0]
+ [    3     0     0     0     0     0     0     0     0     0    10     0]
+ [    0     0     0     0     0     0     0     0     0     0     6     0]]
+=
+
+Sample size      : 100,000
+Train / Test     : 80,000 / 20,000
+
+Accuracy         : 0.997950
+Precision (wt.)  : 0.997657
+Recall    (wt.)  : 0.997950
+F1-score  (wt.)  : 0.997709
+
+Classification Report:
+                          precision    recall  f1-score   support
+
+                  BENIGN       1.00      1.00      1.00     15110
+                     Bot       0.90      0.43      0.58        21
+                    DDoS       1.00      1.00      1.00      1373
+           DoS GoldenEye       0.99      0.99      0.99       108
+                DoS Hulk       1.00      1.00      1.00      1884
+        DoS Slowhttptest       0.96      1.00      0.98        50
+           DoS slowloris       1.00      0.98      0.99        58
+             FTP-Patator       1.00      1.00      1.00        70
+                PortScan       1.00      1.00      1.00      1265
+             SSH-Patator       1.00      0.98      0.99        42
+Web Attack - Brute Force       0.62      0.77      0.69        13
+        Web Attack - XSS       0.00      0.00      0.00         6
+
+                accuracy                           1.00     20000
+               macro avg       0.87      0.85      0.85     20000
+            weighted avg       1.00      1.00      1.00     20000
+
+
+Confusion Matrix:
+[[15104     1     1     1     2     1     0     0     0     0     0     0]
+ [   12     9     0     0     0     0     0     0     0     0     0     0]
+ [    1     0  1371     0     1     0     0     0     0     0     0     0]
+ [    0     0     0   107     1     0     0     0     0     0     0     0]
+ [    6     0     0     0  1878     0     0     0     0     0     0     0]
+ [    0     0     0     0     0    50     0     0     0     0     0     0]
+ [    0     0     0     0     0     1    57     0     0     0     0     0]
+ [    0     0     0     0     0     0     0    70     0     0     0     0]
+ [    3     0     0     0     0     0     0     0  1262     0     0     0]
+ [    1     0     0     0     0     0     0     0     0    41     0     0]
+ [    3     0     0     0     0     0     0     0     0     0    10     0]
+ [    0     0     0     0     0     0     0     0     0     0     6     0]]
+=
+
+Sample size      : 100,000
+Train / Test     : 80,000 / 20,000
+
+Accuracy         : 0.997950
+Precision (wt.)  : 0.997657
+Recall    (wt.)  : 0.997950
+F1-score  (wt.)  : 0.997709
+
+Classification Report:
+                          precision    recall  f1-score   support
+
+                  BENIGN       1.00      1.00      1.00     15110
+                     Bot       0.90      0.43      0.58        21
+                    DDoS       1.00      1.00      1.00      1373
+           DoS GoldenEye       0.99      0.99      0.99       108
+                DoS Hulk       1.00      1.00      1.00      1884
+        DoS Slowhttptest       0.96      1.00      0.98        50
+           DoS slowloris       1.00      0.98      0.99        58
+             FTP-Patator       1.00      1.00      1.00        70
+                PortScan       1.00      1.00      1.00      1265
+             SSH-Patator       1.00      0.98      0.99        42
+Web Attack - Brute Force       0.62      0.77      0.69        13
+        Web Attack - XSS       0.00      0.00      0.00         6
+
+                accuracy                           1.00     20000
+               macro avg       0.87      0.85      0.85     20000
+            weighted avg       1.00      1.00      1.00     20000
+
+
+Confusion Matrix:
+[[15104     1     1     1     2     1     0     0     0     0     0     0]
+ [   12     9     0     0     0     0     0     0     0     0     0     0]
+ [    1     0  1371     0     1     0     0     0     0     0     0     0]
+ [    0     0     0   107     1     0     0     0     0     0     0     0]
+ [    6     0     0     0  1878     0     0     0     0     0     0     0]
+ [    0     0     0     0     0    50     0     0     0     0     0     0]
+ [    0     0     0     0     0     1    57     0     0     0     0     0]
+ [    0     0     0     0     0     0     0    70     0     0     0     0]
+ [    3     0     0     0     0     0     0     0  1262     0     0     0]
+ [    1     0     0     0     0     0     0     0     0    41     0     0]
+ [    3     0     0     0     0     0     0     0     0     0    10     0]
+ [    0     0     0     0     0     0     0     0     0     0     6     0]]
+=
+
+Sample size      : 100,000
+Train / Test     : 80,000 / 20,000
+
+Accuracy         : 0.997950
+Precision (wt.)  : 0.997657
+Recall    (wt.)  : 0.997950
+F1-score  (wt.)  : 0.997709
+
+Classification Report:
+                          precision    recall  f1-score   support
+
+                  BENIGN       1.00      1.00      1.00     15110
+                     Bot       0.90      0.43      0.58        21
+                    DDoS       1.00      1.00      1.00      1373
+           DoS GoldenEye       0.99      0.99      0.99       108
+                DoS Hulk       1.00      1.00      1.00      1884
+        DoS Slowhttptest       0.96      1.00      0.98        50
+           DoS slowloris       1.00      0.98      0.99        58
+             FTP-Patator       1.00      1.00      1.00        70
+                PortScan       1.00      1.00      1.00      1265
+             SSH-Patator       1.00      0.98      0.99        42
+Web Attack - Brute Force       0.62      0.77      0.69        13
+        Web Attack - XSS       0.00      0.00      0.00         6
+
+                accuracy                           1.00     20000
+               macro avg       0.87      0.85      0.85     20000
+            weighted avg       1.00      1.00      1.00     20000
+
+
+Confusion Matrix:
+[[15104     1     1     1     2     1     0     0     0     0     0     0]
+ [   12     9     0     0     0     0     0     0     0     0     0     0]
+ [    1     0  1371     0     1     0     0     0     0     0     0     0]
+ [    0     0     0   107     1     0     0     0     0     0     0     0]
+ [    6     0     0     0  1878     0     0     0     0     0     0     0]
+ [    0     0     0     0     0    50     0     0     0     0     0     0]
+ [    0     0     0     0     0     1    57     0     0     0     0     0]
+ [    0     0     0     0     0     0     0    70     0     0     0     0]
+ [    3     0     0     0     0     0     0     0  1262     0     0     0]
+ [    1     0     0     0     0     0     0     0     0    41     0     0]
+ [    3     0     0     0     0     0     0     0     0     0    10     0]
+ [    0     0     0     0     0     0     0     0     0     0     6     0]]
+=
+
+Sample size      : 100,000
+Train / Test     : 80,000 / 20,000
+
+Accuracy         : 0.997950
+Precision (wt.)  : 0.997657
+Recall    (wt.)  : 0.997950
+F1-score  (wt.)  : 0.997709
+
+Classification Report:
+                          precision    recall  f1-score   support
+
+                  BENIGN       1.00      1.00      1.00     15110
+                     Bot       0.90      0.43      0.58        21
+                    DDoS       1.00      1.00      1.00      1373
+           DoS GoldenEye       0.99      0.99      0.99       108
+                DoS Hulk       1.00      1.00      1.00      1884
+        DoS Slowhttptest       0.96      1.00      0.98        50
+           DoS slowloris       1.00      0.98      0.99        58
+             FTP-Patator       1.00      1.00      1.00        70
+                PortScan       1.00      1.00      1.00      1265
+             SSH-Patator       1.00      0.98      0.99        42
+Web Attack - Brute Force       0.62      0.77      0.69        13
+        Web Attack - XSS       0.00      0.00      0.00         6
+
+                accuracy                           1.00     20000
+               macro avg       0.87      0.85      0.85     20000
+            weighted avg       1.00      1.00      1.00     20000
+
+
+Confusion Matrix:
+[[15104     1     1     1     2     1     0     0     0     0     0     0]
+ [   12     9     0     0     0     0     0     0     0     0     0     0]
+ [    1     0  1371     0     1     0     0     0     0     0     0     0]
+ [    0     0     0   107     1     0     0     0     0     0     0     0]
+ [    6     0     0     0  1878     0     0     0     0     0     0     0]
+ [    0     0     0     0     0    50     0     0     0     0     0     0]
+ [    0     0     0     0     0     1    57     0     0     0     0     0]
+ [    0     0     0     0     0     0     0    70     0     0     0     0]
+ [    3     0     0     0     0     0     0     0  1262     0     0     0]
+ [    1     0     0     0     0     0     0     0     0    41     0     0]
+ [    3     0     0     0     0     0     0     0     0     0    10     0]
+ [    0     0     0     0     0     0     0     0     0     0     6     0]]
+=
+
+Sample size      : 100,000
+Train / Test     : 80,000 / 20,000
+
+Accuracy         : 0.997950
+Precision (wt.)  : 0.997657
+Recall    (wt.)  : 0.997950
+F1-score  (wt.)  : 0.997709
+
+Classification Report:
+                          precision    recall  f1-score   support
+
+                  BENIGN       1.00      1.00      1.00     15110
+                     Bot       0.90      0.43      0.58        21
+                    DDoS       1.00      1.00      1.00      1373
+           DoS GoldenEye       0.99      0.99      0.99       108
+                DoS Hulk       1.00      1.00      1.00      1884
+        DoS Slowhttptest       0.96      1.00      0.98        50
+           DoS slowloris       1.00      0.98      0.99        58
+             FTP-Patator       1.00      1.00      1.00        70
+                PortScan       1.00      1.00      1.00      1265
+             SSH-Patator       1.00      0.98      0.99        42
+Web Attack - Brute Force       0.62      0.77      0.69        13
+        Web Attack - XSS       0.00      0.00      0.00         6
+
+                accuracy                           1.00     20000
+               macro avg       0.87      0.85      0.85     20000
+            weighted avg       1.00      1.00      1.00     20000
+
+
+Confusion Matrix:
+[[15104     1     1     1     2     1     0     0     0     0     0     0]
+ [   12     9     0     0     0     0     0     0     0     0     0     0]
+ [    1     0  1371     0     1     0     0     0     0     0     0     0]
+ [    0     0     0   107     1     0     0     0     0     0     0     0]
+ [    6     0     0     0  1878     0     0     0     0     0     0     0]
+ [    0     0     0     0     0    50     0     0     0     0     0     0]
+ [    0     0     0     0     0     1    57     0     0     0     0     0]
+ [    0     0     0     0     0     0     0    70     0     0     0     0]
+ [    3     0     0     0     0     0     0     0  1262     0     0     0]
+ [    1     0     0     0     0     0     0     0     0    41     0     0]
+ [    3     0     0     0     0     0     0     0     0     0    10     0]
+ [    0     0     0     0     0     0     0     0     0     0     6     0]]
+=
+
+Sample size      : 100,000
+Train / Test     : 80,000 / 20,000
+
+Accuracy         : 0.997950
+Precision (wt.)  : 0.997657
+Recall    (wt.)  : 0.997950
+F1-score  (wt.)  : 0.997709
+
+Classification Report:
+                          precision    recall  f1-score   support
+
+                  BENIGN       1.00      1.00      1.00     15110
+                     Bot       0.90      0.43      0.58        21
+                    DDoS       1.00      1.00      1.00      1373
+           DoS GoldenEye       0.99      0.99      0.99       108
+                DoS Hulk       1.00      1.00      1.00      1884
+        DoS Slowhttptest       0.96      1.00      0.98        50
+           DoS slowloris       1.00      0.98      0.99        58
+             FTP-Patator       1.00      1.00      1.00        70
+                PortScan       1.00      1.00      1.00      1265
+             SSH-Patator       1.00      0.98      0.99        42
+Web Attack - Brute Force       0.62      0.77      0.69        13
+        Web Attack - XSS       0.00      0.00      0.00         6
+
+                accuracy                           1.00     20000
+               macro avg       0.87      0.85      0.85     20000
+            weighted avg       1.00      1.00      1.00     20000
+
+
+Confusion Matrix:
+[[15104     1     1     1     2     1     0     0     0     0     0     0]
+ [   12     9     0     0     0     0     0     0     0     0     0     0]
+ [    1     0  1371     0     1     0     0     0     0     0     0     0]
+ [    0     0     0   107     1     0     0     0     0     0     0     0]
+ [    6     0     0     0  1878     0     0     0     0     0     0     0]
+ [    0     0     0     0     0    50     0     0     0     0     0     0]
+ [    0     0     0     0     0     1    57     0     0     0     0     0]
+ [    0     0     0     0     0     0     0    70     0     0     0     0]
+ [    3     0     0     0     0     0     0     0  1262     0     0     0]
+ [    1     0     0     0     0     0     0     0     0    41     0     0]
+ [    3     0     0     0     0     0     0     0     0     0    10     0]
+ [    0     0     0     0     0     0     0     0     0     0     6     0]]
+=
+
+Sample size      : 100,000
+Train / Test     : 80,000 / 20,000
+
+Accuracy         : 0.997950
+Precision (wt.)  : 0.997657
+Recall    (wt.)  : 0.997950
+F1-score  (wt.)  : 0.997709
+
+Classification Report:
+                          precision    recall  f1-score   support
+
+                  BENIGN       1.00      1.00      1.00     15110
+                     Bot       0.90      0.43      0.58        21
+                    DDoS       1.00      1.00      1.00      1373
+           DoS GoldenEye       0.99      0.99      0.99       108
+                DoS Hulk       1.00      1.00      1.00      1884
+        DoS Slowhttptest       0.96      1.00      0.98        50
+           DoS slowloris       1.00      0.98      0.99        58
+             FTP-Patator       1.00      1.00      1.00        70
+                PortScan       1.00      1.00      1.00      1265
+             SSH-Patator       1.00      0.98      0.99        42
+Web Attack - Brute Force       0.62      0.77      0.69        13
+        Web Attack - XSS       0.00      0.00      0.00         6
+
+                accuracy                           1.00     20000
+               macro avg       0.87      0.85      0.85     20000
+            weighted avg       1.00      1.00      1.00     20000
+
+
+Confusion Matrix:
+[[15104     1     1     1     2     1     0     0     0     0     0     0]
+ [   12     9     0     0     0     0     0     0     0     0     0     0]
+ [    1     0  1371     0     1     0     0     0     0     0     0     0]
+ [    0     0     0   107     1     0     0     0     0     0     0     0]
+ [    6     0     0     0  1878     0     0     0     0     0     0     0]
+ [    0     0     0     0     0    50     0     0     0     0     0     0]
+ [    0     0     0     0     0     1    57     0     0     0     0     0]
+ [    0     0     0     0     0     0     0    70     0     0     0     0]
+ [    3     0     0     0     0     0     0     0  1262     0     0     0]
+ [    1     0     0     0     0     0     0     0     0    41     0     0]
+ [    3     0     0     0     0     0     0     0     0     0    10     0]
+ [    0     0     0     0     0     0     0     0     0     0     6     0]]
+=
+
+Sample size      : 100,000
+Train / Test     : 80,000 / 20,000
+
+Accuracy         : 0.997950
+Precision (wt.)  : 0.997657
+Recall    (wt.)  : 0.997950
+F1-score  (wt.)  : 0.997709
+
+Classification Report:
+                          precision    recall  f1-score   support
+
+                  BENIGN       1.00      1.00      1.00     15110
+                     Bot       0.90      0.43      0.58        21
+                    DDoS       1.00      1.00      1.00      1373
+           DoS GoldenEye       0.99      0.99      0.99       108
+                DoS Hulk       1.00      1.00      1.00      1884
+        DoS Slowhttptest       0.96      1.00      0.98        50
+           DoS slowloris       1.00      0.98      0.99        58
+             FTP-Patator       1.00      1.00      1.00        70
+                PortScan       1.00      1.00      1.00      1265
+             SSH-Patator       1.00      0.98      0.99        42
+Web Attack - Brute Force       0.62      0.77      0.69        13
+        Web Attack - XSS       0.00      0.00      0.00         6
+
+                accuracy                           1.00     20000
+               macro avg       0.87      0.85      0.85     20000
+            weighted avg       1.00      1.00      1.00     20000
+
+
+Confusion Matrix:
+[[15104     1     1     1     2     1     0     0     0     0     0     0]
+ [   12     9     0     0     0     0     0     0     0     0     0     0]
+ [    1     0  1371     0     1     0     0     0     0     0     0     0]
+ [    0     0     0   107     1     0     0     0     0     0     0     0]
+ [    6     0     0     0  1878     0     0     0     0     0     0     0]
+ [    0     0     0     0     0    50     0     0     0     0     0     0]
+ [    0     0     0     0     0     1    57     0     0     0     0     0]
+ [    0     0     0     0     0     0     0    70     0     0     0     0]
+ [    3     0     0     0     0     0     0     0  1262     0     0     0]
+ [    1     0     0     0     0     0     0     0     0    41     0     0]
+ [    3     0     0     0     0     0     0     0     0     0    10     0]
+ [    0     0     0     0     0     0     0     0     0     0     6     0]]
+=
+
+Sample size      : 100,000
+Train / Test     : 80,000 / 20,000
+
+Accuracy         : 0.997950
+Precision (wt.)  : 0.997657
+Recall    (wt.)  : 0.997950
+F1-score  (wt.)  : 0.997709
+
+Classification Report:
+                          precision    recall  f1-score   support
+
+                  BENIGN       1.00      1.00      1.00     15110
+                     Bot       0.90      0.43      0.58        21
+                    DDoS       1.00      1.00      1.00      1373
+           DoS GoldenEye       0.99      0.99      0.99       108
+                DoS Hulk       1.00      1.00      1.00      1884
+        DoS Slowhttptest       0.96      1.00      0.98        50
+           DoS slowloris       1.00      0.98      0.99        58
+             FTP-Patator       1.00      1.00      1.00        70
+                PortScan       1.00      1.00      1.00      1265
+             SSH-Patator       1.00      0.98      0.99        42
+Web Attack - Brute Force       0.62      0.77      0.69        13
+        Web Attack - XSS       0.00      0.00      0.00         6
+
+                accuracy                           1.00     20000
+               macro avg       0.87      0.85      0.85     20000
+            weighted avg       1.00      1.00      1.00     20000
+
+
+Confusion Matrix:
+[[15104     1     1     1     2     1     0     0     0     0     0     0]
+ [   12     9     0     0     0     0     0     0     0     0     0     0]
+ [    1     0  1371     0     1     0     0     0     0     0     0     0]
+ [    0     0     0   107     1     0     0     0     0     0     0     0]
+ [    6     0     0     0  1878     0     0     0     0     0     0     0]
+ [    0     0     0     0     0    50     0     0     0     0     0     0]
+ [    0     0     0     0     0     1    57     0     0     0     0     0]
+ [    0     0     0     0     0     0     0    70     0     0     0     0]
+ [    3     0     0     0     0     0     0     0  1262     0     0     0]
+ [    1     0     0     0     0     0     0     0     0    41     0     0]
+ [    3     0     0     0     0     0     0     0     0     0    10     0]
+ [    0     0     0     0     0     0     0     0     0     0     6     0]]
+=
+
+Sample size      : 100,000
+Train / Test     : 80,000 / 20,000
+
+Accuracy         : 0.997950
+Precision (wt.)  : 0.997657
+Recall    (wt.)  : 0.997950
+F1-score  (wt.)  : 0.997709
+
+Classification Report:
+                          precision    recall  f1-score   support
+
+                  BENIGN       1.00      1.00      1.00     15110
+                     Bot       0.90      0.43      0.58        21
+                    DDoS       1.00      1.00      1.00      1373
+           DoS GoldenEye       0.99      0.99      0.99       108
+                DoS Hulk       1.00      1.00      1.00      1884
+        DoS Slowhttptest       0.96      1.00      0.98        50
+           DoS slowloris       1.00      0.98      0.99        58
+             FTP-Patator       1.00      1.00      1.00        70
+                PortScan       1.00      1.00      1.00      1265
+             SSH-Patator       1.00      0.98      0.99        42
+Web Attack - Brute Force       0.62      0.77      0.69        13
+        Web Attack - XSS       0.00      0.00      0.00         6
+
+                accuracy                           1.00     20000
+               macro avg       0.87      0.85      0.85     20000
+            weighted avg       1.00      1.00      1.00     20000
+
+
+Confusion Matrix:
+[[15104     1     1     1     2     1     0     0     0     0     0     0]
+ [   12     9     0     0     0     0     0     0     0     0     0     0]
+ [    1     0  1371     0     1     0     0     0     0     0     0     0]
+ [    0     0     0   107     1     0     0     0     0     0     0     0]
+ [    6     0     0     0  1878     0     0     0     0     0     0     0]
+ [    0     0     0     0     0    50     0     0     0     0     0     0]
+ [    0     0     0     0     0     1    57     0     0     0     0     0]
+ [    0     0     0     0     0     0     0    70     0     0     0     0]
+ [    3     0     0     0     0     0     0     0  1262     0     0     0]
+ [    1     0     0     0     0     0     0     0     0    41     0     0]
+ [    3     0     0     0     0     0     0     0     0     0    10     0]
+ [    0     0     0     0     0     0     0     0     0     0     6     0]]
+=
+
+Sample size      : 100,000
+Train / Test     : 80,000 / 20,000
+
+Accuracy         : 0.997950
+Precision (wt.)  : 0.997657
+Recall    (wt.)  : 0.997950
+F1-score  (wt.)  : 0.997709
+
+Classification Report:
+                          precision    recall  f1-score   support
+
+                  BENIGN       1.00      1.00      1.00     15110
+                     Bot       0.90      0.43      0.58        21
+                    DDoS       1.00      1.00      1.00      1373
+           DoS GoldenEye       0.99      0.99      0.99       108
+                DoS Hulk       1.00      1.00      1.00      1884
+        DoS Slowhttptest       0.96      1.00      0.98        50
+           DoS slowloris       1.00      0.98      0.99        58
+             FTP-Patator       1.00      1.00      1.00        70
+                PortScan       1.00      1.00      1.00      1265
+             SSH-Patator       1.00      0.98      0.99        42
+Web Attack - Brute Force       0.62      0.77      0.69        13
+        Web Attack - XSS       0.00      0.00      0.00         6
+
+                accuracy                           1.00     20000
+               macro avg       0.87      0.85      0.85     20000
+            weighted avg       1.00      1.00      1.00     20000
+
+
+Confusion Matrix:
+[[15104     1     1     1     2     1     0     0     0     0     0     0]
+ [   12     9     0     0     0     0     0     0     0     0     0     0]
+ [    1     0  1371     0     1     0     0     0     0     0     0     0]
+ [    0     0     0   107     1     0     0     0     0     0     0     0]
+ [    6     0     0     0  1878     0     0     0     0     0     0     0]
+ [    0     0     0     0     0    50     0     0     0     0     0     0]
+ [    0     0     0     0     0     1    57     0     0     0     0     0]
+ [    0     0     0     0     0     0     0    70     0     0     0     0]
+ [    3     0     0     0     0     0     0     0  1262     0     0     0]
+ [    1     0     0     0     0     0     0     0     0    41     0     0]
+ [    3     0     0     0     0     0     0     0     0     0    10     0]
+ [    0     0     0     0     0     0     0     0     0     0     6     0]]
+=
+
+Sample size      : 100,000
+Train / Test     : 80,000 / 20,000
+
+Accuracy         : 0.997950
+Precision (wt.)  : 0.997657
+Recall    (wt.)  : 0.997950
+F1-score  (wt.)  : 0.997709
+
+Classification Report:
+                          precision    recall  f1-score   support
+
+                  BENIGN       1.00      1.00      1.00     15110
+                     Bot       0.90      0.43      0.58        21
+                    DDoS       1.00      1.00      1.00      1373
+           DoS GoldenEye       0.99      0.99      0.99       108
+                DoS Hulk       1.00      1.00      1.00      1884
+        DoS Slowhttptest       0.96      1.00      0.98        50
+           DoS slowloris       1.00      0.98      0.99        58
+             FTP-Patator       1.00      1.00      1.00        70
+                PortScan       1.00      1.00      1.00      1265
+             SSH-Patator       1.00      0.98      0.99        42
+Web Attack - Brute Force       0.62      0.77      0.69        13
+        Web Attack - XSS       0.00      0.00      0.00         6
+
+                accuracy                           1.00     20000
+               macro avg       0.87      0.85      0.85     20000
+            weighted avg       1.00      1.00      1.00     20000
+
+
+Confusion Matrix:
+[[15104     1     1     1     2     1     0     0     0     0     0     0]
+ [   12     9     0     0     0     0     0     0     0     0     0     0]
+ [    1     0  1371     0     1     0     0     0     0     0     0     0]
+ [    0     0     0   107     1     0     0     0     0     0     0     0]
+ [    6     0     0     0  1878     0     0     0     0     0     0     0]
+ [    0     0     0     0     0    50     0     0     0     0     0     0]
+ [    0     0     0     0     0     1    57     0     0     0     0     0]
+ [    0     0     0     0     0     0     0    70     0     0     0     0]
+ [    3     0     0     0     0     0     0     0  1262     0     0     0]
+ [    1     0     0     0     0     0     0     0     0    41     0     0]
+ [    3     0     0     0     0     0     0     0     0     0    10     0]
+ [    0     0     0     0     0     0     0     0     0     0     6     0]]
+=
+
+Sample size      : 100,000
+Train / Test     : 80,000 / 20,000
+
+Accuracy         : 0.997950
+Precision (wt.)  : 0.997657
+Recall    (wt.)  : 0.997950
+F1-score  (wt.)  : 0.997709
+
+Classification Report:
+                          precision    recall  f1-score   support
+
+                  BENIGN       1.00      1.00      1.00     15110
+                     Bot       0.90      0.43      0.58        21
+                    DDoS       1.00      1.00      1.00      1373
+           DoS GoldenEye       0.99      0.99      0.99       108
+                DoS Hulk       1.00      1.00      1.00      1884
+        DoS Slowhttptest       0.96      1.00      0.98        50
+           DoS slowloris       1.00      0.98      0.99        58
+             FTP-Patator       1.00      1.00      1.00        70
+                PortScan       1.00      1.00      1.00      1265
+             SSH-Patator       1.00      0.98      0.99        42
+Web Attack - Brute Force       0.62      0.77      0.69        13
+        Web Attack - XSS       0.00      0.00      0.00         6
+
+                accuracy                           1.00     20000
+               macro avg       0.87      0.85      0.85     20000
+            weighted avg       1.00      1.00      1.00     20000
+
+
+Confusion Matrix:
+[[15104     1     1     1     2     1     0     0     0     0     0     0]
+ [   12     9     0     0     0     0     0     0     0     0     0     0]
+ [    1     0  1371     0     1     0     0     0     0     0     0     0]
+ [    0     0     0   107     1     0     0     0     0     0     0     0]
+ [    6     0     0     0  1878     0     0     0     0     0     0     0]
+ [    0     0     0     0     0    50     0     0     0     0     0     0]
+ [    0     0     0     0     0     1    57     0     0     0     0     0]
+ [    0     0     0     0     0     0     0    70     0     0     0     0]
+ [    3     0     0     0     0     0     0     0  1262     0     0     0]
+ [    1     0     0     0     0     0     0     0     0    41     0     0]
+ [    3     0     0     0     0     0     0     0     0     0    10     0]
+ [    0     0     0     0     0     0     0     0     0     0     6     0]]
+=
+
+Sample size      : 100,000
+Train / Test     : 80,000 / 20,000
+
+Accuracy         : 0.997950
+Precision (wt.)  : 0.997657
+Recall    (wt.)  : 0.997950
+F1-score  (wt.)  : 0.997709
+
+Classification Report:
+                          precision    recall  f1-score   support
+
+                  BENIGN       1.00      1.00      1.00     15110
+                     Bot       0.90      0.43      0.58        21
+                    DDoS       1.00      1.00      1.00      1373
+           DoS GoldenEye       0.99      0.99      0.99       108
+                DoS Hulk       1.00      1.00      1.00      1884
+        DoS Slowhttptest       0.96      1.00      0.98        50
+           DoS slowloris       1.00      0.98      0.99        58
+             FTP-Patator       1.00      1.00      1.00        70
+                PortScan       1.00      1.00      1.00      1265
+             SSH-Patator       1.00      0.98      0.99        42
+Web Attack - Brute Force       0.62      0.77      0.69        13
+        Web Attack - XSS       0.00      0.00      0.00         6
+
+                accuracy                           1.00     20000
+               macro avg       0.87      0.85      0.85     20000
+            weighted avg       1.00      1.00      1.00     20000
+
+
+Confusion Matrix:
+[[15104     1     1     1     2     1     0     0     0     0     0     0]
+ [   12     9     0     0     0     0     0     0     0     0     0     0]
+ [    1     0  1371     0     1     0     0     0     0     0     0     0]
+ [    0     0     0   107     1     0     0     0     0     0     0     0]
+ [    6     0     0     0  1878     0     0     0     0     0     0     0]
+ [    0     0     0     0     0    50     0     0     0     0     0     0]
+ [    0     0     0     0     0     1    57     0     0     0     0     0]
+ [    0     0     0     0     0     0     0    70     0     0     0     0]
+ [    3     0     0     0     0     0     0     0  1262     0     0     0]
+ [    1     0     0     0     0     0     0     0     0    41     0     0]
+ [    3     0     0     0     0     0     0     0     0     0    10     0]
+ [    0     0     0     0     0     0     0     0     0     0     6     0]]
+=
+
+Sample size      : 100,000
+Train / Test     : 80,000 / 20,000
+
+Accuracy         : 0.997950
+Precision (wt.)  : 0.997657
+Recall    (wt.)  : 0.997950
+F1-score  (wt.)  : 0.997709
+
+Classification Report:
+                          precision    recall  f1-score   support
+
+                  BENIGN       1.00      1.00      1.00     15110
+                     Bot       0.90      0.43      0.58        21
+                    DDoS       1.00      1.00      1.00      1373
+           DoS GoldenEye       0.99      0.99      0.99       108
+                DoS Hulk       1.00      1.00      1.00      1884
+        DoS Slowhttptest       0.96      1.00      0.98        50
+           DoS slowloris       1.00      0.98      0.99        58
+             FTP-Patator       1.00      1.00      1.00        70
+                PortScan       1.00      1.00      1.00      1265
+             SSH-Patator       1.00      0.98      0.99        42
+Web Attack - Brute Force       0.62      0.77      0.69        13
+        Web Attack - XSS       0.00      0.00      0.00         6
+
+                accuracy                           1.00     20000
+               macro avg       0.87      0.85      0.85     20000
+            weighted avg       1.00      1.00      1.00     20000
+
+
+Confusion Matrix:
+[[15104     1     1     1     2     1     0     0     0     0     0     0]
+ [   12     9     0     0     0     0     0     0     0     0     0     0]
+ [    1     0  1371     0     1     0     0     0     0     0     0     0]
+ [    0     0     0   107     1     0     0     0     0     0     0     0]
+ [    6     0     0     0  1878     0     0     0     0     0     0     0]
+ [    0     0     0     0     0    50     0     0     0     0     0     0]
+ [    0     0     0     0     0     1    57     0     0     0     0     0]
+ [    0     0     0     0     0     0     0    70     0     0     0     0]
+ [    3     0     0     0     0     0     0     0  1262     0     0     0]
+ [    1     0     0     0     0     0     0     0     0    41     0     0]
+ [    3     0     0     0     0     0     0     0     0     0    10     0]
+ [    0     0     0     0     0     0     0     0     0     0     6     0]]
+=
+
+Sample size      : 100,000
+Train / Test     : 80,000 / 20,000
+
+Accuracy         : 0.997950
+Precision (wt.)  : 0.997657
+Recall    (wt.)  : 0.997950
+F1-score  (wt.)  : 0.997709
+
+Classification Report:
+                          precision    recall  f1-score   support
+
+                  BENIGN       1.00      1.00      1.00     15110
+                     Bot       0.90      0.43      0.58        21
+                    DDoS       1.00      1.00      1.00      1373
+           DoS GoldenEye       0.99      0.99      0.99       108
+                DoS Hulk       1.00      1.00      1.00      1884
+        DoS Slowhttptest       0.96      1.00      0.98        50
+           DoS slowloris       1.00      0.98      0.99        58
+             FTP-Patator       1.00      1.00      1.00        70
+                PortScan       1.00      1.00      1.00      1265
+             SSH-Patator       1.00      0.98      0.99        42
+Web Attack - Brute Force       0.62      0.77      0.69        13
+        Web Attack - XSS       0.00      0.00      0.00         6
+
+                accuracy                           1.00     20000
+               macro avg       0.87      0.85      0.85     20000
+            weighted avg       1.00      1.00      1.00     20000
+
+
+Confusion Matrix:
+[[15104     1     1     1     2     1     0     0     0     0     0     0]
+ [   12     9     0     0     0     0     0     0     0     0     0     0]
+ [    1     0  1371     0     1     0     0     0     0     0     0     0]
+ [    0     0     0   107     1     0     0     0     0     0     0     0]
+ [    6     0     0     0  1878     0     0     0     0     0     0     0]
+ [    0     0     0     0     0    50     0     0     0     0     0     0]
+ [    0     0     0     0     0     1    57     0     0     0     0     0]
+ [    0     0     0     0     0     0     0    70     0     0     0     0]
+ [    3     0     0     0     0     0     0     0  1262     0     0     0]
+ [    1     0     0     0     0     0     0     0     0    41     0     0]
+ [    3     0     0     0     0     0     0     0     0     0    10     0]
+ [    0     0     0     0     0     0     0     0     0     0     6     0]]
+=
+
+Sample size      : 100,000
+Train / Test     : 80,000 / 20,000
+
+Accuracy         : 0.997950
+Precision (wt.)  : 0.997657
+Recall    (wt.)  : 0.997950
+F1-score  (wt.)  : 0.997709
+
+Classification Report:
+                          precision    recall  f1-score   support
+
+                  BENIGN       1.00      1.00      1.00     15110
+                     Bot       0.90      0.43      0.58        21
+                    DDoS       1.00      1.00      1.00      1373
+           DoS GoldenEye       0.99      0.99      0.99       108
+                DoS Hulk       1.00      1.00      1.00      1884
+        DoS Slowhttptest       0.96      1.00      0.98        50
+           DoS slowloris       1.00      0.98      0.99        58
+             FTP-Patator       1.00      1.00      1.00        70
+                PortScan       1.00      1.00      1.00      1265
+             SSH-Patator       1.00      0.98      0.99        42
+Web Attack - Brute Force       0.62      0.77      0.69        13
+        Web Attack - XSS       0.00      0.00      0.00         6
+
+                accuracy                           1.00     20000
+               macro avg       0.87      0.85      0.85     20000
+            weighted avg       1.00      1.00      1.00     20000
+
+
+Confusion Matrix:
+[[15104     1     1     1     2     1     0     0     0     0     0     0]
+ [   12     9     0     0     0     0     0     0     0     0     0     0]
+ [    1     0  1371     0     1     0     0     0     0     0     0     0]
+ [    0     0     0   107     1     0     0     0     0     0     0     0]
+ [    6     0     0     0  1878     0     0     0     0     0     0     0]
+ [    0     0     0     0     0    50     0     0     0     0     0     0]
+ [    0     0     0     0     0     1    57     0     0     0     0     0]
+ [    0     0     0     0     0     0     0    70     0     0     0     0]
+ [    3     0     0     0     0     0     0     0  1262     0     0     0]
+ [    1     0     0     0     0     0     0     0     0    41     0     0]
+ [    3     0     0     0     0     0     0     0     0     0    10     0]
+ [    0     0     0     0     0     0     0     0     0     0     6     0]]
+=
+
+Sample size      : 100,000
+Train / Test     : 80,000 / 20,000
+
+Accuracy         : 0.997950
+Precision (wt.)  : 0.997657
+Recall    (wt.)  : 0.997950
+F1-score  (wt.)  : 0.997709
+
+Classification Report:
+                          precision    recall  f1-score   support
+
+                  BENIGN       1.00      1.00      1.00     15110
+                     Bot       0.90      0.43      0.58        21
+                    DDoS       1.00      1.00      1.00      1373
+           DoS GoldenEye       0.99      0.99      0.99       108
+                DoS Hulk       1.00      1.00      1.00      1884
+        DoS Slowhttptest       0.96      1.00      0.98        50
+           DoS slowloris       1.00      0.98      0.99        58
+             FTP-Patator       1.00      1.00      1.00        70
+                PortScan       1.00      1.00      1.00      1265
+             SSH-Patator       1.00      0.98      0.99        42
+Web Attack - Brute Force       0.62      0.77      0.69        13
+        Web Attack - XSS       0.00      0.00      0.00         6
+
+                accuracy                           1.00     20000
+               macro avg       0.87      0.85      0.85     20000
+            weighted avg       1.00      1.00      1.00     20000
+
+
+Confusion Matrix:
+[[15104     1     1     1     2     1     0     0     0     0     0     0]
+ [   12     9     0     0     0     0     0     0     0     0     0     0]
+ [    1     0  1371     0     1     0     0     0     0     0     0     0]
+ [    0     0     0   107     1     0     0     0     0     0     0     0]
+ [    6     0     0     0  1878     0     0     0     0     0     0     0]
+ [    0     0     0     0     0    50     0     0     0     0     0     0]
+ [    0     0     0     0     0     1    57     0     0     0     0     0]
+ [    0     0     0     0     0     0     0    70     0     0     0     0]
+ [    3     0     0     0     0     0     0     0  1262     0     0     0]
+ [    1     0     0     0     0     0     0     0     0    41     0     0]
+ [    3     0     0     0     0     0     0     0     0     0    10     0]
+ [    0     0     0     0     0     0     0     0     0     0     6     0]]
+=
+
+Sample size      : 100,000
+Train / Test     : 80,000 / 20,000
+
+Accuracy         : 0.997950
+Precision (wt.)  : 0.997657
+Recall    (wt.)  : 0.997950
+F1-score  (wt.)  : 0.997709
+
+Classification Report:
+                          precision    recall  f1-score   support
+
+                  BENIGN       1.00      1.00      1.00     15110
+                     Bot       0.90      0.43      0.58        21
+                    DDoS       1.00      1.00      1.00      1373
+           DoS GoldenEye       0.99      0.99      0.99       108
+                DoS Hulk       1.00      1.00      1.00      1884
+        DoS Slowhttptest       0.96      1.00      0.98        50
+           DoS slowloris       1.00      0.98      0.99        58
+             FTP-Patator       1.00      1.00      1.00        70
+                PortScan       1.00      1.00      1.00      1265
+             SSH-Patator       1.00      0.98      0.99        42
+Web Attack - Brute Force       0.62      0.77      0.69        13
+        Web Attack - XSS       0.00      0.00      0.00         6
+
+                accuracy                           1.00     20000
+               macro avg       0.87      0.85      0.85     20000
+            weighted avg       1.00      1.00      1.00     20000
+
+
+Confusion Matrix:
+[[15104     1     1     1     2     1     0     0     0     0     0     0]
+ [   12     9     0     0     0     0     0     0     0     0     0     0]
+ [    1     0  1371     0     1     0     0     0     0     0     0     0]
+ [    0     0     0   107     1     0     0     0     0     0     0     0]
+ [    6     0     0     0  1878     0     0     0     0     0     0     0]
+ [    0     0     0     0     0    50     0     0     0     0     0     0]
+ [    0     0     0     0     0     1    57     0     0     0     0     0]
+ [    0     0     0     0     0     0     0    70     0     0     0     0]
+ [    3     0     0     0     0     0     0     0  1262     0     0     0]
+ [    1     0     0     0     0     0     0     0     0    41     0     0]
+ [    3     0     0     0     0     0     0     0     0     0    10     0]
+ [    0     0     0     0     0     0     0     0     0     0     6     0]]
+=
+
+Sample size      : 100,000
+Train / Test     : 80,000 / 20,000
+
+Accuracy         : 0.997950
+Precision (wt.)  : 0.997657
+Recall    (wt.)  : 0.997950
+F1-score  (wt.)  : 0.997709
+
+Classification Report:
+                          precision    recall  f1-score   support
+
+                  BENIGN       1.00      1.00      1.00     15110
+                     Bot       0.90      0.43      0.58        21
+                    DDoS       1.00      1.00      1.00      1373
+           DoS GoldenEye       0.99      0.99      0.99       108
+                DoS Hulk       1.00      1.00      1.00      1884
+        DoS Slowhttptest       0.96      1.00      0.98        50
+           DoS slowloris       1.00      0.98      0.99        58
+             FTP-Patator       1.00      1.00      1.00        70
+                PortScan       1.00      1.00      1.00      1265
+             SSH-Patator       1.00      0.98      0.99        42
+Web Attack - Brute Force       0.62      0.77      0.69        13
+        Web Attack - XSS       0.00      0.00      0.00         6
+
+                accuracy                           1.00     20000
+               macro avg       0.87      0.85      0.85     20000
+            weighted avg       1.00      1.00      1.00     20000
+
+
+Confusion Matrix:
+[[15104     1     1     1     2     1     0     0     0     0     0     0]
+ [   12     9     0     0     0     0     0     0     0     0     0     0]
+ [    1     0  1371     0     1     0     0     0     0     0     0     0]
+ [    0     0     0   107     1     0     0     0     0     0     0     0]
+ [    6     0     0     0  1878     0     0     0     0     0     0     0]
+ [    0     0     0     0     0    50     0     0     0     0     0     0]
+ [    0     0     0     0     0     1    57     0     0     0     0     0]
+ [    0     0     0     0     0     0     0    70     0     0     0     0]
+ [    3     0     0     0     0     0     0     0  1262     0     0     0]
+ [    1     0     0     0     0     0     0     0     0    41     0     0]
+ [    3     0     0     0     0     0     0     0     0     0    10     0]
+ [    0     0     0     0     0     0     0     0     0     0     6     0]]
+=
+
+Sample size      : 100,000
+Train / Test     : 80,000 / 20,000
+
+Accuracy         : 0.997950
+Precision (wt.)  : 0.997657
+Recall    (wt.)  : 0.997950
+F1-score  (wt.)  : 0.997709
+
+Classification Report:
+                          precision    recall  f1-score   support
+
+                  BENIGN       1.00      1.00      1.00     15110
+                     Bot       0.90      0.43      0.58        21
+                    DDoS       1.00      1.00      1.00      1373
+           DoS GoldenEye       0.99      0.99      0.99       108
+                DoS Hulk       1.00      1.00      1.00      1884
+        DoS Slowhttptest       0.96      1.00      0.98        50
+           DoS slowloris       1.00      0.98      0.99        58
+             FTP-Patator       1.00      1.00      1.00        70
+                PortScan       1.00      1.00      1.00      1265
+             SSH-Patator       1.00      0.98      0.99        42
+Web Attack - Brute Force       0.62      0.77      0.69        13
+        Web Attack - XSS       0.00      0.00      0.00         6
+
+                accuracy                           1.00     20000
+               macro avg       0.87      0.85      0.85     20000
+            weighted avg       1.00      1.00      1.00     20000
+
+
+Confusion Matrix:
+[[15104     1     1     1     2     1     0     0     0     0     0     0]
+ [   12     9     0     0     0     0     0     0     0     0     0     0]
+ [    1     0  1371     0     1     0     0     0     0     0     0     0]
+ [    0     0     0   107     1     0     0     0     0     0     0     0]
+ [    6     0     0     0  1878     0     0     0     0     0     0     0]
+ [    0     0     0     0     0    50     0     0     0     0     0     0]
+ [    0     0     0     0     0     1    57     0     0     0     0     0]
+ [    0     0     0     0     0     0     0    70     0     0     0     0]
+ [    3     0     0     0     0     0     0     0  1262     0     0     0]
+ [    1     0     0     0     0     0     0     0     0    41     0     0]
+ [    3     0     0     0     0     0     0     0     0     0    10     0]
+ [    0     0     0     0     0     0     0     0     0     0     6     0]]
+=
+
+Sample size      : 100,000
+Train / Test     : 80,000 / 20,000
+
+Accuracy         : 0.997950
+Precision (wt.)  : 0.997657
+Recall    (wt.)  : 0.997950
+F1-score  (wt.)  : 0.997709
+
+Classification Report:
+                          precision    recall  f1-score   support
+
+                  BENIGN       1.00      1.00      1.00     15110
+                     Bot       0.90      0.43      0.58        21
+                    DDoS       1.00      1.00      1.00      1373
+           DoS GoldenEye       0.99      0.99      0.99       108
+                DoS Hulk       1.00      1.00      1.00      1884
+        DoS Slowhttptest       0.96      1.00      0.98        50
+           DoS slowloris       1.00      0.98      0.99        58
+             FTP-Patator       1.00      1.00      1.00        70
+                PortScan       1.00      1.00      1.00      1265
+             SSH-Patator       1.00      0.98      0.99        42
+Web Attack - Brute Force       0.62      0.77      0.69        13
+        Web Attack - XSS       0.00      0.00      0.00         6
+
+                accuracy                           1.00     20000
+               macro avg       0.87      0.85      0.85     20000
+            weighted avg       1.00      1.00      1.00     20000
+
+
+Confusion Matrix:
+[[15104     1     1     1     2     1     0     0     0     0     0     0]
+ [   12     9     0     0     0     0     0     0     0     0     0     0]
+ [    1     0  1371     0     1     0     0     0     0     0     0     0]
+ [    0     0     0   107     1     0     0     0     0     0     0     0]
+ [    6     0     0     0  1878     0     0     0     0     0     0     0]
+ [    0     0     0     0     0    50     0     0     0     0     0     0]
+ [    0     0     0     0     0     1    57     0     0     0     0     0]
+ [    0     0     0     0     0     0     0    70     0     0     0     0]
+ [    3     0     0     0     0     0     0     0  1262     0     0     0]
+ [    1     0     0     0     0     0     0     0     0    41     0     0]
+ [    3     0     0     0     0     0     0     0     0     0    10     0]
+ [    0     0     0     0     0     0     0     0     0     0     6     0]]
+=
+
+Sample size      : 100,000
+Train / Test     : 80,000 / 20,000
+
+Accuracy         : 0.997950
+Precision (wt.)  : 0.997657
+Recall    (wt.)  : 0.997950
+F1-score  (wt.)  : 0.997709
+
+Classification Report:
+                          precision    recall  f1-score   support
+
+                  BENIGN       1.00      1.00      1.00     15110
+                     Bot       0.90      0.43      0.58        21
+                    DDoS       1.00      1.00      1.00      1373
+           DoS GoldenEye       0.99      0.99      0.99       108
+                DoS Hulk       1.00      1.00      1.00      1884
+        DoS Slowhttptest       0.96      1.00      0.98        50
+           DoS slowloris       1.00      0.98      0.99        58
+             FTP-Patator       1.00      1.00      1.00        70
+                PortScan       1.00      1.00      1.00      1265
+             SSH-Patator       1.00      0.98      0.99        42
+Web Attack - Brute Force       0.62      0.77      0.69        13
+        Web Attack - XSS       0.00      0.00      0.00         6
+
+                accuracy                           1.00     20000
+               macro avg       0.87      0.85      0.85     20000
+            weighted avg       1.00      1.00      1.00     20000
+
+
+Confusion Matrix:
+[[15104     1     1     1     2     1     0     0     0     0     0     0]
+ [   12     9     0     0     0     0     0     0     0     0     0     0]
+ [    1     0  1371     0     1     0     0     0     0     0     0     0]
+ [    0     0     0   107     1     0     0     0     0     0     0     0]
+ [    6     0     0     0  1878     0     0     0     0     0     0     0]
+ [    0     0     0     0     0    50     0     0     0     0     0     0]
+ [    0     0     0     0     0     1    57     0     0     0     0     0]
+ [    0     0     0     0     0     0     0    70     0     0     0     0]
+ [    3     0     0     0     0     0     0     0  1262     0     0     0]
+ [    1     0     0     0     0     0     0     0     0    41     0     0]
+ [    3     0     0     0     0     0     0     0     0     0    10     0]
+ [    0     0     0     0     0     0     0     0     0     0     6     0]]
+=
+
+Sample size      : 100,000
+Train / Test     : 80,000 / 20,000
+
+Accuracy         : 0.997950
+Precision (wt.)  : 0.997657
+Recall    (wt.)  : 0.997950
+F1-score  (wt.)  : 0.997709
+
+Classification Report:
+                          precision    recall  f1-score   support
+
+                  BENIGN       1.00      1.00      1.00     15110
+                     Bot       0.90      0.43      0.58        21
+                    DDoS       1.00      1.00      1.00      1373
+           DoS GoldenEye       0.99      0.99      0.99       108
+                DoS Hulk       1.00      1.00      1.00      1884
+        DoS Slowhttptest       0.96      1.00      0.98        50
+           DoS slowloris       1.00      0.98      0.99        58
+             FTP-Patator       1.00      1.00      1.00        70
+                PortScan       1.00      1.00      1.00      1265
+             SSH-Patator       1.00      0.98      0.99        42
+Web Attack - Brute Force       0.62      0.77      0.69        13
+        Web Attack - XSS       0.00      0.00      0.00         6
+
+                accuracy                           1.00     20000
+               macro avg       0.87      0.85      0.85     20000
+            weighted avg       1.00      1.00      1.00     20000
+
+
+Confusion Matrix:
+[[15104     1     1     1     2     1     0     0     0     0     0     0]
+ [   12     9     0     0     0     0     0     0     0     0     0     0]
+ [    1     0  1371     0     1     0     0     0     0     0     0     0]
+ [    0     0     0   107     1     0     0     0     0     0     0     0]
+ [    6     0     0     0  1878     0     0     0     0     0     0     0]
+ [    0     0     0     0     0    50     0     0     0     0     0     0]
+ [    0     0     0     0     0     1    57     0     0     0     0     0]
+ [    0     0     0     0     0     0     0    70     0     0     0     0]
+ [    3     0     0     0     0     0     0     0  1262     0     0     0]
+ [    1     0     0     0     0     0     0     0     0    41     0     0]
+ [    3     0     0     0     0     0     0     0     0     0    10     0]
+ [    0     0     0     0     0     0     0     0     0     0     6     0]]
+=
+
+Sample size      : 100,000
+Train / Test     : 80,000 / 20,000
+
+Accuracy         : 0.997950
+Precision (wt.)  : 0.997657
+Recall    (wt.)  : 0.997950
+F1-score  (wt.)  : 0.997709
+
+Classification Report:
+                          precision    recall  f1-score   support
+
+                  BENIGN       1.00      1.00      1.00     15110
+                     Bot       0.90      0.43      0.58        21
+                    DDoS       1.00      1.00      1.00      1373
+           DoS GoldenEye       0.99      0.99      0.99       108
+                DoS Hulk       1.00      1.00      1.00      1884
+        DoS Slowhttptest       0.96      1.00      0.98        50
+           DoS slowloris       1.00      0.98      0.99        58
+             FTP-Patator       1.00      1.00      1.00        70
+                PortScan       1.00      1.00      1.00      1265
+             SSH-Patator       1.00      0.98      0.99        42
+Web Attack - Brute Force       0.62      0.77      0.69        13
+        Web Attack - XSS       0.00      0.00      0.00         6
+
+                accuracy                           1.00     20000
+               macro avg       0.87      0.85      0.85     20000
+            weighted avg       1.00      1.00      1.00     20000
+
+
+Confusion Matrix:
+[[15104     1     1     1     2     1     0     0     0     0     0     0]
+ [   12     9     0     0     0     0     0     0     0     0     0     0]
+ [    1     0  1371     0     1     0     0     0     0     0     0     0]
+ [    0     0     0   107     1     0     0     0     0     0     0     0]
+ [    6     0     0     0  1878     0     0     0     0     0     0     0]
+ [    0     0     0     0     0    50     0     0     0     0     0     0]
+ [    0     0     0     0     0     1    57     0     0     0     0     0]
+ [    0     0     0     0     0     0     0    70     0     0     0     0]
+ [    3     0     0     0     0     0     0     0  1262     0     0     0]
+ [    1     0     0     0     0     0     0     0     0    41     0     0]
+ [    3     0     0     0     0     0     0     0     0     0    10     0]
+ [    0     0     0     0     0     0     0     0     0     0     6     0]]
+=
+
+Sample size      : 100,000
+Train / Test     : 80,000 / 20,000
+
+Accuracy         : 0.997950
+Precision (wt.)  : 0.997657
+Recall    (wt.)  : 0.997950
+F1-score  (wt.)  : 0.997709
+
+Classification Report:
+                          precision    recall  f1-score   support
+
+                  BENIGN       1.00      1.00      1.00     15110
+                     Bot       0.90      0.43      0.58        21
+                    DDoS       1.00      1.00      1.00      1373
+           DoS GoldenEye       0.99      0.99      0.99       108
+                DoS Hulk       1.00      1.00      1.00      1884
+        DoS Slowhttptest       0.96      1.00      0.98        50
+           DoS slowloris       1.00      0.98      0.99        58
+             FTP-Patator       1.00      1.00      1.00        70
+                PortScan       1.00      1.00      1.00      1265
+             SSH-Patator       1.00      0.98      0.99        42
+Web Attack - Brute Force       0.62      0.77      0.69        13
+        Web Attack - XSS       0.00      0.00      0.00         6
+
+                accuracy                           1.00     20000
+               macro avg       0.87      0.85      0.85     20000
+            weighted avg       1.00      1.00      1.00     20000
+
+
+Confusion Matrix:
+[[15104     1     1     1     2     1     0     0     0     0     0     0]
+ [   12     9     0     0     0     0     0     0     0     0     0     0]
+ [    1     0  1371     0     1     0     0     0     0     0     0     0]
+ [    0     0     0   107     1     0     0     0     0     0     0     0]
+ [    6     0     0     0  1878     0     0     0     0     0     0     0]
+ [    0     0     0     0     0    50     0     0     0     0     0     0]
+ [    0     0     0     0     0     1    57     0     0     0     0     0]
+ [    0     0     0     0     0     0     0    70     0     0     0     0]
+ [    3     0     0     0     0     0     0     0  1262     0     0     0]
+ [    1     0     0     0     0     0     0     0     0    41     0     0]
+ [    3     0     0     0     0     0     0     0     0     0    10     0]
+ [    0     0     0     0     0     0     0     0     0     0     6     0]]
+=
+
+Sample size      : 100,000
+Train / Test     : 80,000 / 20,000
+
+Accuracy         : 0.997950
+Precision (wt.)  : 0.997657
+Recall    (wt.)  : 0.997950
+F1-score  (wt.)  : 0.997709
+
+Classification Report:
+                          precision    recall  f1-score   support
+
+                  BENIGN       1.00      1.00      1.00     15110
+                     Bot       0.90      0.43      0.58        21
+                    DDoS       1.00      1.00      1.00      1373
+           DoS GoldenEye       0.99      0.99      0.99       108
+                DoS Hulk       1.00      1.00      1.00      1884
+        DoS Slowhttptest       0.96      1.00      0.98        50
+           DoS slowloris       1.00      0.98      0.99        58
+             FTP-Patator       1.00      1.00      1.00        70
+                PortScan       1.00      1.00      1.00      1265
+             SSH-Patator       1.00      0.98      0.99        42
+Web Attack - Brute Force       0.62      0.77      0.69        13
+        Web Attack - XSS       0.00      0.00      0.00         6
+
+                accuracy                           1.00     20000
+               macro avg       0.87      0.85      0.85     20000
+            weighted avg       1.00      1.00      1.00     20000
+
+
+Confusion Matrix:
+[[15104     1     1     1     2     1     0     0     0     0     0     0]
+ [   12     9     0     0     0     0     0     0     0     0     0     0]
+ [    1     0  1371     0     1     0     0     0     0     0     0     0]
+ [    0     0     0   107     1     0     0     0     0     0     0     0]
+ [    6     0     0     0  1878     0     0     0     0     0     0     0]
+ [    0     0     0     0     0    50     0     0     0     0     0     0]
+ [    0     0     0     0     0     1    57     0     0     0     0     0]
+ [    0     0     0     0     0     0     0    70     0     0     0     0]
+ [    3     0     0     0     0     0     0     0  1262     0     0     0]
+ [    1     0     0     0     0     0     0     0     0    41     0     0]
+ [    3     0     0     0     0     0     0     0     0     0    10     0]
+ [    0     0     0     0     0     0     0     0     0     0     6     0]]
+=
+
+Sample size      : 100,000
+Train / Test     : 80,000 / 20,000
+
+Accuracy         : 0.997950
+Precision (wt.)  : 0.997657
+Recall    (wt.)  : 0.997950
+F1-score  (wt.)  : 0.997709
+
+Classification Report:
+                          precision    recall  f1-score   support
+
+                  BENIGN       1.00      1.00      1.00     15110
+                     Bot       0.90      0.43      0.58        21
+                    DDoS       1.00      1.00      1.00      1373
+           DoS GoldenEye       0.99      0.99      0.99       108
+                DoS Hulk       1.00      1.00      1.00      1884
+        DoS Slowhttptest       0.96      1.00      0.98        50
+           DoS slowloris       1.00      0.98      0.99        58
+             FTP-Patator       1.00      1.00      1.00        70
+                PortScan       1.00      1.00      1.00      1265
+             SSH-Patator       1.00      0.98      0.99        42
+Web Attack - Brute Force       0.62      0.77      0.69        13
+        Web Attack - XSS       0.00      0.00      0.00         6
+
+                accuracy                           1.00     20000
+               macro avg       0.87      0.85      0.85     20000
+            weighted avg       1.00      1.00      1.00     20000
+
+
+Confusion Matrix:
+[[15104     1     1     1     2     1     0     0     0     0     0     0]
+ [   12     9     0     0     0     0     0     0     0     0     0     0]
+ [    1     0  1371     0     1     0     0     0     0     0     0     0]
+ [    0     0     0   107     1     0     0     0     0     0     0     0]
+ [    6     0     0     0  1878     0     0     0     0     0     0     0]
+ [    0     0     0     0     0    50     0     0     0     0     0     0]
+ [    0     0     0     0     0     1    57     0     0     0     0     0]
+ [    0     0     0     0     0     0     0    70     0     0     0     0]
+ [    3     0     0     0     0     0     0     0  1262     0     0     0]
+ [    1     0     0     0     0     0     0     0     0    41     0     0]
+ [    3     0     0     0     0     0     0     0     0     0    10     0]
+ [    0     0     0     0     0     0     0     0     0     0     6     0]]
+=
+
+Sample size      : 100,000
+Train / Test     : 80,000 / 20,000
+
+Accuracy         : 0.997950
+Precision (wt.)  : 0.997657
+Recall    (wt.)  : 0.997950
+F1-score  (wt.)  : 0.997709
+
+Classification Report:
+                          precision    recall  f1-score   support
+
+                  BENIGN       1.00      1.00      1.00     15110
+                     Bot       0.90      0.43      0.58        21
+                    DDoS       1.00      1.00      1.00      1373
+           DoS GoldenEye       0.99      0.99      0.99       108
+                DoS Hulk       1.00      1.00      1.00      1884
+        DoS Slowhttptest       0.96      1.00      0.98        50
+           DoS slowloris       1.00      0.98      0.99        58
+             FTP-Patator       1.00      1.00      1.00        70
+                PortScan       1.00      1.00      1.00      1265
+             SSH-Patator       1.00      0.98      0.99        42
+Web Attack - Brute Force       0.62      0.77      0.69        13
+        Web Attack - XSS       0.00      0.00      0.00         6
+
+                accuracy                           1.00     20000
+               macro avg       0.87      0.85      0.85     20000
+            weighted avg       1.00      1.00      1.00     20000
+
+
+Confusion Matrix:
+[[15104     1     1     1     2     1     0     0     0     0     0     0]
+ [   12     9     0     0     0     0     0     0     0     0     0     0]
+ [    1     0  1371     0     1     0     0     0     0     0     0     0]
+ [    0     0     0   107     1     0     0     0     0     0     0     0]
+ [    6     0     0     0  1878     0     0     0     0     0     0     0]
+ [    0     0     0     0     0    50     0     0     0     0     0     0]
+ [    0     0     0     0     0     1    57     0     0     0     0     0]
+ [    0     0     0     0     0     0     0    70     0     0     0     0]
+ [    3     0     0     0     0     0     0     0  1262     0     0     0]
+ [    1     0     0     0     0     0     0     0     0    41     0     0]
+ [    3     0     0     0     0     0     0     0     0     0    10     0]
+ [    0     0     0     0     0     0     0     0     0     0     6     0]]
+=
+
+Sample size      : 100,000
+Train / Test     : 80,000 / 20,000
+
+Accuracy         : 0.997950
+Precision (wt.)  : 0.997657
+Recall    (wt.)  : 0.997950
+F1-score  (wt.)  : 0.997709
+
+Classification Report:
+                          precision    recall  f1-score   support
+
+                  BENIGN       1.00      1.00      1.00     15110
+                     Bot       0.90      0.43      0.58        21
+                    DDoS       1.00      1.00      1.00      1373
+           DoS GoldenEye       0.99      0.99      0.99       108
+                DoS Hulk       1.00      1.00      1.00      1884
+        DoS Slowhttptest       0.96      1.00      0.98        50
+           DoS slowloris       1.00      0.98      0.99        58
+             FTP-Patator       1.00      1.00      1.00        70
+                PortScan       1.00      1.00      1.00      1265
+             SSH-Patator       1.00      0.98      0.99        42
+Web Attack - Brute Force       0.62      0.77      0.69        13
+        Web Attack - XSS       0.00      0.00      0.00         6
+
+                accuracy                           1.00     20000
+               macro avg       0.87      0.85      0.85     20000
+            weighted avg       1.00      1.00      1.00     20000
+
+
+Confusion Matrix:
+[[15104     1     1     1     2     1     0     0     0     0     0     0]
+ [   12     9     0     0     0     0     0     0     0     0     0     0]
+ [    1     0  1371     0     1     0     0     0     0     0     0     0]
+ [    0     0     0   107     1     0     0     0     0     0     0     0]
+ [    6     0     0     0  1878     0     0     0     0     0     0     0]
+ [    0     0     0     0     0    50     0     0     0     0     0     0]
+ [    0     0     0     0     0     1    57     0     0     0     0     0]
+ [    0     0     0     0     0     0     0    70     0     0     0     0]
+ [    3     0     0     0     0     0     0     0  1262     0     0     0]
+ [    1     0     0     0     0     0     0     0     0    41     0     0]
+ [    3     0     0     0     0     0     0     0     0     0    10     0]
+ [    0     0     0     0     0     0     0     0     0     0     6     0]]
+=
+
+Sample size      : 100,000
+Train / Test     : 80,000 / 20,000
+
+Accuracy         : 0.997950
+Precision (wt.)  : 0.997657
+Recall    (wt.)  : 0.997950
+F1-score  (wt.)  : 0.997709
+
+Classification Report:
+                          precision    recall  f1-score   support
+
+                  BENIGN       1.00      1.00      1.00     15110
+                     Bot       0.90      0.43      0.58        21
+                    DDoS       1.00      1.00      1.00      1373
+           DoS GoldenEye       0.99      0.99      0.99       108
+                DoS Hulk       1.00      1.00      1.00      1884
+        DoS Slowhttptest       0.96      1.00      0.98        50
+           DoS slowloris       1.00      0.98      0.99        58
+             FTP-Patator       1.00      1.00      1.00        70
+                PortScan       1.00      1.00      1.00      1265
+             SSH-Patator       1.00      0.98      0.99        42
+Web Attack - Brute Force       0.62      0.77      0.69        13
+        Web Attack - XSS       0.00      0.00      0.00         6
+
+                accuracy                           1.00     20000
+               macro avg       0.87      0.85      0.85     20000
+            weighted avg       1.00      1.00      1.00     20000
+
+
+Confusion Matrix:
+[[15104     1     1     1     2     1     0     0     0     0     0     0]
+ [   12     9     0     0     0     0     0     0     0     0     0     0]
+ [    1     0  1371     0     1     0     0     0     0     0     0     0]
+ [    0     0     0   107     1     0     0     0     0     0     0     0]
+ [    6     0     0     0  1878     0     0     0     0     0     0     0]
+ [    0     0     0     0     0    50     0     0     0     0     0     0]
+ [    0     0     0     0     0     1    57     0     0     0     0     0]
+ [    0     0     0     0     0     0     0    70     0     0     0     0]
+ [    3     0     0     0     0     0     0     0  1262     0     0     0]
+ [    1     0     0     0     0     0     0     0     0    41     0     0]
+ [    3     0     0     0     0     0     0     0     0     0    10     0]
+ [    0     0     0     0     0     0     0     0     0     0     6     0]]
+=
+
+Sample size      : 100,000
+Train / Test     : 80,000 / 20,000
+
+Accuracy         : 0.997950
+Precision (wt.)  : 0.997657
+Recall    (wt.)  : 0.997950
+F1-score  (wt.)  : 0.997709
+
+Classification Report:
+                          precision    recall  f1-score   support
+
+                  BENIGN       1.00      1.00      1.00     15110
+                     Bot       0.90      0.43      0.58        21
+                    DDoS       1.00      1.00      1.00      1373
+           DoS GoldenEye       0.99      0.99      0.99       108
+                DoS Hulk       1.00      1.00      1.00      1884
+        DoS Slowhttptest       0.96      1.00      0.98        50
+           DoS slowloris       1.00      0.98      0.99        58
+             FTP-Patator       1.00      1.00      1.00        70
+                PortScan       1.00      1.00      1.00      1265
+             SSH-Patator       1.00      0.98      0.99        42
+Web Attack - Brute Force       0.62      0.77      0.69        13
+        Web Attack - XSS       0.00      0.00      0.00         6
+
+                accuracy                           1.00     20000
+               macro avg       0.87      0.85      0.85     20000
+            weighted avg       1.00      1.00      1.00     20000
+
+
+Confusion Matrix:
+[[15104     1     1     1     2     1     0     0     0     0     0     0]
+ [   12     9     0     0     0     0     0     0     0     0     0     0]
+ [    1     0  1371     0     1     0     0     0     0     0     0     0]
+ [    0     0     0   107     1     0     0     0     0     0     0     0]
+ [    6     0     0     0  1878     0     0     0     0     0     0     0]
+ [    0     0     0     0     0    50     0     0     0     0     0     0]
+ [    0     0     0     0     0     1    57     0     0     0     0     0]
+ [    0     0     0     0     0     0     0    70     0     0     0     0]
+ [    3     0     0     0     0     0     0     0  1262     0     0     0]
+ [    1     0     0     0     0     0     0     0     0    41     0     0]
+ [    3     0     0     0     0     0     0     0     0     0    10     0]
+ [    0     0     0     0     0     0     0     0     0     0     6     0]]
+=
+
+Sample size      : 100,000
+Train / Test     : 80,000 / 20,000
+
+Accuracy         : 0.997950
+Precision (wt.)  : 0.997657
+Recall    (wt.)  : 0.997950
+F1-score  (wt.)  : 0.997709
+
+Classification Report:
+                          precision    recall  f1-score   support
+
+                  BENIGN       1.00      1.00      1.00     15110
+                     Bot       0.90      0.43      0.58        21
+                    DDoS       1.00      1.00      1.00      1373
+           DoS GoldenEye       0.99      0.99      0.99       108
+                DoS Hulk       1.00      1.00      1.00      1884
+        DoS Slowhttptest       0.96      1.00      0.98        50
+           DoS slowloris       1.00      0.98      0.99        58
+             FTP-Patator       1.00      1.00      1.00        70
+                PortScan       1.00      1.00      1.00      1265
+             SSH-Patator       1.00      0.98      0.99        42
+Web Attack - Brute Force       0.62      0.77      0.69        13
+        Web Attack - XSS       0.00      0.00      0.00         6
+
+                accuracy                           1.00     20000
+               macro avg       0.87      0.85      0.85     20000
+            weighted avg       1.00      1.00      1.00     20000
+
+
+Confusion Matrix:
+[[15104     1     1     1     2     1     0     0     0     0     0     0]
+ [   12     9     0     0     0     0     0     0     0     0     0     0]
+ [    1     0  1371     0     1     0     0     0     0     0     0     0]
+ [    0     0     0   107     1     0     0     0     0     0     0     0]
+ [    6     0     0     0  1878     0     0     0     0     0     0     0]
+ [    0     0     0     0     0    50     0     0     0     0     0     0]
+ [    0     0     0     0     0     1    57     0     0     0     0     0]
+ [    0     0     0     0     0     0     0    70     0     0     0     0]
+ [    3     0     0     0     0     0     0     0  1262     0     0     0]
+ [    1     0     0     0     0     0     0     0     0    41     0     0]
+ [    3     0     0     0     0     0     0     0     0     0    10     0]
+ [    0     0     0     0     0     0     0     0     0     0     6     0]]
+=
+
+Sample size      : 100,000
+Train / Test     : 80,000 / 20,000
+
+Accuracy         : 0.997950
+Precision (wt.)  : 0.997657
+Recall    (wt.)  : 0.997950
+F1-score  (wt.)  : 0.997709
+
+Classification Report:
+                          precision    recall  f1-score   support
+
+                  BENIGN       1.00      1.00      1.00     15110
+                     Bot       0.90      0.43      0.58        21
+                    DDoS       1.00      1.00      1.00      1373
+           DoS GoldenEye       0.99      0.99      0.99       108
+                DoS Hulk       1.00      1.00      1.00      1884
+        DoS Slowhttptest       0.96      1.00      0.98        50
+           DoS slowloris       1.00      0.98      0.99        58
+             FTP-Patator       1.00      1.00      1.00        70
+                PortScan       1.00      1.00      1.00      1265
+             SSH-Patator       1.00      0.98      0.99        42
+Web Attack - Brute Force       0.62      0.77      0.69        13
+        Web Attack - XSS       0.00      0.00      0.00         6
+
+                accuracy                           1.00     20000
+               macro avg       0.87      0.85      0.85     20000
+            weighted avg       1.00      1.00      1.00     20000
+
+
+Confusion Matrix:
+[[15104     1     1     1     2     1     0     0     0     0     0     0]
+ [   12     9     0     0     0     0     0     0     0     0     0     0]
+ [    1     0  1371     0     1     0     0     0     0     0     0     0]
+ [    0     0     0   107     1     0     0     0     0     0     0     0]
+ [    6     0     0     0  1878     0     0     0     0     0     0     0]
+ [    0     0     0     0     0    50     0     0     0     0     0     0]
+ [    0     0     0     0     0     1    57     0     0     0     0     0]
+ [    0     0     0     0     0     0     0    70     0     0     0     0]
+ [    3     0     0     0     0     0     0     0  1262     0     0     0]
+ [    1     0     0     0     0     0     0     0     0    41     0     0]
+ [    3     0     0     0     0     0     0     0     0     0    10     0]
+ [    0     0     0     0     0     0     0     0     0     0     6     0]]
+=
+
+Sample size      : 100,000
+Train / Test     : 80,000 / 20,000
+
+Accuracy         : 0.997950
+Precision (wt.)  : 0.997657
+Recall    (wt.)  : 0.997950
+F1-score  (wt.)  : 0.997709
+
+Classification Report:
+                          precision    recall  f1-score   support
+
+                  BENIGN       1.00      1.00      1.00     15110
+                     Bot       0.90      0.43      0.58        21
+                    DDoS       1.00      1.00      1.00      1373
+           DoS GoldenEye       0.99      0.99      0.99       108
+                DoS Hulk       1.00      1.00      1.00      1884
+        DoS Slowhttptest       0.96      1.00      0.98        50
+           DoS slowloris       1.00      0.98      0.99        58
+             FTP-Patator       1.00      1.00      1.00        70
+                PortScan       1.00      1.00      1.00      1265
+             SSH-Patator       1.00      0.98      0.99        42
+Web Attack - Brute Force       0.62      0.77      0.69        13
+        Web Attack - XSS       0.00      0.00      0.00         6
+
+                accuracy                           1.00     20000
+               macro avg       0.87      0.85      0.85     20000
+            weighted avg       1.00      1.00      1.00     20000
+
+
+Confusion Matrix:
+[[15104     1     1     1     2     1     0     0     0     0     0     0]
+ [   12     9     0     0     0     0     0     0     0     0     0     0]
+ [    1     0  1371     0     1     0     0     0     0     0     0     0]
+ [    0     0     0   107     1     0     0     0     0     0     0     0]
+ [    6     0     0     0  1878     0     0     0     0     0     0     0]
+ [    0     0     0     0     0    50     0     0     0     0     0     0]
+ [    0     0     0     0     0     1    57     0     0     0     0     0]
+ [    0     0     0     0     0     0     0    70     0     0     0     0]
+ [    3     0     0     0     0     0     0     0  1262     0     0     0]
+ [    1     0     0     0     0     0     0     0     0    41     0     0]
+ [    3     0     0     0     0     0     0     0     0     0    10     0]
+ [    0     0     0     0     0     0     0     0     0     0     6     0]]
+=
+
+Sample size      : 100,000
+Train / Test     : 80,000 / 20,000
+
+Accuracy         : 0.997950
+Precision (wt.)  : 0.997657
+Recall    (wt.)  : 0.997950
+F1-score  (wt.)  : 0.997709
+
+Classification Report:
+                          precision    recall  f1-score   support
+
+                  BENIGN       1.00      1.00      1.00     15110
+                     Bot       0.90      0.43      0.58        21
+                    DDoS       1.00      1.00      1.00      1373
+           DoS GoldenEye       0.99      0.99      0.99       108
+                DoS Hulk       1.00      1.00      1.00      1884
+        DoS Slowhttptest       0.96      1.00      0.98        50
+           DoS slowloris       1.00      0.98      0.99        58
+             FTP-Patator       1.00      1.00      1.00        70
+                PortScan       1.00      1.00      1.00      1265
+             SSH-Patator       1.00      0.98      0.99        42
+Web Attack - Brute Force       0.62      0.77      0.69        13
+        Web Attack - XSS       0.00      0.00      0.00         6
+
+                accuracy                           1.00     20000
+               macro avg       0.87      0.85      0.85     20000
+            weighted avg       1.00      1.00      1.00     20000
+
+
+Confusion Matrix:
+[[15104     1     1     1     2     1     0     0     0     0     0     0]
+ [   12     9     0     0     0     0     0     0     0     0     0     0]
+ [    1     0  1371     0     1     0     0     0     0     0     0     0]
+ [    0     0     0   107     1     0     0     0     0     0     0     0]
+ [    6     0     0     0  1878     0     0     0     0     0     0     0]
+ [    0     0     0     0     0    50     0     0     0     0     0     0]
+ [    0     0     0     0     0     1    57     0     0     0     0     0]
+ [    0     0     0     0     0     0     0    70     0     0     0     0]
+ [    3     0     0     0     0     0     0     0  1262     0     0     0]
+ [    1     0     0     0     0     0     0     0     0    41     0     0]
+ [    3     0     0     0     0     0     0     0     0     0    10     0]
+ [    0     0     0     0     0     0     0     0     0     0     6     0]]
+=
+
+Sample size      : 100,000
+Train / Test     : 80,000 / 20,000
+
+Accuracy         : 0.997950
+Precision (wt.)  : 0.997657
+Recall    (wt.)  : 0.997950
+F1-score  (wt.)  : 0.997709
+
+Classification Report:
+                          precision    recall  f1-score   support
+
+                  BENIGN       1.00      1.00      1.00     15110
+                     Bot       0.90      0.43      0.58        21
+                    DDoS       1.00      1.00      1.00      1373
+           DoS GoldenEye       0.99      0.99      0.99       108
+                DoS Hulk       1.00      1.00      1.00      1884
+        DoS Slowhttptest       0.96      1.00      0.98        50
+           DoS slowloris       1.00      0.98      0.99        58
+             FTP-Patator       1.00      1.00      1.00        70
+                PortScan       1.00      1.00      1.00      1265
+             SSH-Patator       1.00      0.98      0.99        42
+Web Attack - Brute Force       0.62      0.77      0.69        13
+        Web Attack - XSS       0.00      0.00      0.00         6
+
+                accuracy                           1.00     20000
+               macro avg       0.87      0.85      0.85     20000
+            weighted avg       1.00      1.00      1.00     20000
+
+
+Confusion Matrix:
+[[15104     1     1     1     2     1     0     0     0     0     0     0]
+ [   12     9     0     0     0     0     0     0     0     0     0     0]
+ [    1     0  1371     0     1     0     0     0     0     0     0     0]
+ [    0     0     0   107     1     0     0     0     0     0     0     0]
+ [    6     0     0     0  1878     0     0     0     0     0     0     0]
+ [    0     0     0     0     0    50     0     0     0     0     0     0]
+ [    0     0     0     0     0     1    57     0     0     0     0     0]
+ [    0     0     0     0     0     0     0    70     0     0     0     0]
+ [    3     0     0     0     0     0     0     0  1262     0     0     0]
+ [    1     0     0     0     0     0     0     0     0    41     0     0]
+ [    3     0     0     0     0     0     0     0     0     0    10     0]
+ [    0     0     0     0     0     0     0     0     0     0     6     0]]
+=
+
+Sample size      : 100,000
+Train / Test     : 80,000 / 20,000
+
+Accuracy         : 0.997950
+Precision (wt.)  : 0.997657
+Recall    (wt.)  : 0.997950
+F1-score  (wt.)  : 0.997709
+
+Classification Report:
+                          precision    recall  f1-score   support
+
+                  BENIGN       1.00      1.00      1.00     15110
+                     Bot       0.90      0.43      0.58        21
+                    DDoS       1.00      1.00      1.00      1373
+           DoS GoldenEye       0.99      0.99      0.99       108
+                DoS Hulk       1.00      1.00      1.00      1884
+        DoS Slowhttptest       0.96      1.00      0.98        50
+           DoS slowloris       1.00      0.98      0.99        58
+             FTP-Patator       1.00      1.00      1.00        70
+                PortScan       1.00      1.00      1.00      1265
+             SSH-Patator       1.00      0.98      0.99        42
+Web Attack - Brute Force       0.62      0.77      0.69        13
+        Web Attack - XSS       0.00      0.00      0.00         6
+
+                accuracy                           1.00     20000
+               macro avg       0.87      0.85      0.85     20000
+            weighted avg       1.00      1.00      1.00     20000
+
+
+Confusion Matrix:
+[[15104     1     1     1     2     1     0     0     0     0     0     0]
+ [   12     9     0     0     0     0     0     0     0     0     0     0]
+ [    1     0  1371     0     1     0     0     0     0     0     0     0]
+ [    0     0     0   107     1     0     0     0     0     0     0     0]
+ [    6     0     0     0  1878     0     0     0     0     0     0     0]
+ [    0     0     0     0     0    50     0     0     0     0     0     0]
+ [    0     0     0     0     0     1    57     0     0     0     0     0]
+ [    0     0     0     0     0     0     0    70     0     0     0     0]
+ [    3     0     0     0     0     0     0     0  1262     0     0     0]
+ [    1     0     0     0     0     0     0     0     0    41     0     0]
+ [    3     0     0     0     0     0     0     0     0     0    10     0]
+ [    0     0     0     0     0     0     0     0     0     0     6     0]]
+=
+
+Sample size      : 100,000
+Train / Test     : 80,000 / 20,000
+
+Accuracy         : 0.997950
+Precision (wt.)  : 0.997657
+Recall    (wt.)  : 0.997950
+F1-score  (wt.)  : 0.997709
+
+Classification Report:
+                          precision    recall  f1-score   support
+
+                  BENIGN       1.00      1.00      1.00     15110
+                     Bot       0.90      0.43      0.58        21
+                    DDoS       1.00      1.00      1.00      1373
+           DoS GoldenEye       0.99      0.99      0.99       108
+                DoS Hulk       1.00      1.00      1.00      1884
+        DoS Slowhttptest       0.96      1.00      0.98        50
+           DoS slowloris       1.00      0.98      0.99        58
+             FTP-Patator       1.00      1.00      1.00        70
+                PortScan       1.00      1.00      1.00      1265
+             SSH-Patator       1.00      0.98      0.99        42
+Web Attack - Brute Force       0.62      0.77      0.69        13
+        Web Attack - XSS       0.00      0.00      0.00         6
+
+                accuracy                           1.00     20000
+               macro avg       0.87      0.85      0.85     20000
+            weighted avg       1.00      1.00      1.00     20000
+
+
+Confusion Matrix:
+[[15104     1     1     1     2     1     0     0     0     0     0     0]
+ [   12     9     0     0     0     0     0     0     0     0     0     0]
+ [    1     0  1371     0     1     0     0     0     0     0     0     0]
+ [    0     0     0   107     1     0     0     0     0     0     0     0]
+ [    6     0     0     0  1878     0     0     0     0     0     0     0]
+ [    0     0     0     0     0    50     0     0     0     0     0     0]
+ [    0     0     0     0     0     1    57     0     0     0     0     0]
+ [    0     0     0     0     0     0     0    70     0     0     0     0]
+ [    3     0     0     0     0     0     0     0  1262     0     0     0]
+ [    1     0     0     0     0     0     0     0     0    41     0     0]
+ [    3     0     0     0     0     0     0     0     0     0    10     0]
+ [    0     0     0     0     0     0     0     0     0     0     6     0]]
+=
+
+Sample size      : 100,000
+Train / Test     : 80,000 / 20,000
+
+Accuracy         : 0.997950
+Precision (wt.)  : 0.997657
+Recall    (wt.)  : 0.997950
+F1-score  (wt.)  : 0.997709
+
+Classification Report:
+                          precision    recall  f1-score   support
+
+                  BENIGN       1.00      1.00      1.00     15110
+                     Bot       0.90      0.43      0.58        21
+                    DDoS       1.00      1.00      1.00      1373
+           DoS GoldenEye       0.99      0.99      0.99       108
+                DoS Hulk       1.00      1.00      1.00      1884
+        DoS Slowhttptest       0.96      1.00      0.98        50
+           DoS slowloris       1.00      0.98      0.99        58
+             FTP-Patator       1.00      1.00      1.00        70
+                PortScan       1.00      1.00      1.00      1265
+             SSH-Patator       1.00      0.98      0.99        42
+Web Attack - Brute Force       0.62      0.77      0.69        13
+        Web Attack - XSS       0.00      0.00      0.00         6
+
+                accuracy                           1.00     20000
+               macro avg       0.87      0.85      0.85     20000
+            weighted avg       1.00      1.00      1.00     20000
+
+
+Confusion Matrix:
+[[15104     1     1     1     2     1     0     0     0     0     0     0]
+ [   12     9     0     0     0     0     0     0     0     0     0     0]
+ [    1     0  1371     0     1     0     0     0     0     0     0     0]
+ [    0     0     0   107     1     0     0     0     0     0     0     0]
+ [    6     0     0     0  1878     0     0     0     0     0     0     0]
+ [    0     0     0     0     0    50     0     0     0     0     0     0]
+ [    0     0     0     0     0     1    57     0     0     0     0     0]
+ [    0     0     0     0     0     0     0    70     0     0     0     0]
+ [    3     0     0     0     0     0     0     0  1262     0     0     0]
+ [    1     0     0     0     0     0     0     0     0    41     0     0]
+ [    3     0     0     0     0     0     0     0     0     0    10     0]
+ [    0     0     0     0     0     0     0     0     0     0     6     0]]
+=
+
+Sample size      : 100,000
+Train / Test     : 80,000 / 20,000
+
+Accuracy         : 0.997950
+Precision (wt.)  : 0.997657
+Recall    (wt.)  : 0.997950
+F1-score  (wt.)  : 0.997709
+
+Classification Report:
+                          precision    recall  f1-score   support
+
+                  BENIGN       1.00      1.00      1.00     15110
+                     Bot       0.90      0.43      0.58        21
+                    DDoS       1.00      1.00      1.00      1373
+           DoS GoldenEye       0.99      0.99      0.99       108
+                DoS Hulk       1.00      1.00      1.00      1884
+        DoS Slowhttptest       0.96      1.00      0.98        50
+           DoS slowloris       1.00      0.98      0.99        58
+             FTP-Patator       1.00      1.00      1.00        70
+                PortScan       1.00      1.00      1.00      1265
+             SSH-Patator       1.00      0.98      0.99        42
+Web Attack - Brute Force       0.62      0.77      0.69        13
+        Web Attack - XSS       0.00      0.00      0.00         6
+
+                accuracy                           1.00     20000
+               macro avg       0.87      0.85      0.85     20000
+            weighted avg       1.00      1.00      1.00     20000
+
+
+Confusion Matrix:
+[[15104     1     1     1     2     1     0     0     0     0     0     0]
+ [   12     9     0     0     0     0     0     0     0     0     0     0]
+ [    1     0  1371     0     1     0     0     0     0     0     0     0]
+ [    0     0     0   107     1     0     0     0     0     0     0     0]
+ [    6     0     0     0  1878     0     0     0     0     0     0     0]
+ [    0     0     0     0     0    50     0     0     0     0     0     0]
+ [    0     0     0     0     0     1    57     0     0     0     0     0]
+ [    0     0     0     0     0     0     0    70     0     0     0     0]
+ [    3     0     0     0     0     0     0     0  1262     0     0     0]
+ [    1     0     0     0     0     0     0     0     0    41     0     0]
+ [    3     0     0     0     0     0     0     0     0     0    10     0]
+ [    0     0     0     0     0     0     0     0     0     0     6     0]]
+=
+
+Sample size      : 100,000
+Train / Test     : 80,000 / 20,000
+
+Accuracy         : 0.997950
+Precision (wt.)  : 0.997657
+Recall    (wt.)  : 0.997950
+F1-score  (wt.)  : 0.997709
+
+Classification Report:
+                          precision    recall  f1-score   support
+
+                  BENIGN       1.00      1.00      1.00     15110
+                     Bot       0.90      0.43      0.58        21
+                    DDoS       1.00      1.00      1.00      1373
+           DoS GoldenEye       0.99      0.99      0.99       108
+                DoS Hulk       1.00      1.00      1.00      1884
+        DoS Slowhttptest       0.96      1.00      0.98        50
+           DoS slowloris       1.00      0.98      0.99        58
+             FTP-Patator       1.00      1.00      1.00        70
+                PortScan       1.00      1.00      1.00      1265
+             SSH-Patator       1.00      0.98      0.99        42
+Web Attack - Brute Force       0.62      0.77      0.69        13
+        Web Attack - XSS       0.00      0.00      0.00         6
+
+                accuracy                           1.00     20000
+               macro avg       0.87      0.85      0.85     20000
+            weighted avg       1.00      1.00      1.00     20000
+
+
+Confusion Matrix:
+[[15104     1     1     1     2     1     0     0     0     0     0     0]
+ [   12     9     0     0     0     0     0     0     0     0     0     0]
+ [    1     0  1371     0     1     0     0     0     0     0     0     0]
+ [    0     0     0   107     1     0     0     0     0     0     0     0]
+ [    6     0     0     0  1878     0     0     0     0     0     0     0]
+ [    0     0     0     0     0    50     0     0     0     0     0     0]
+ [    0     0     0     0     0     1    57     0     0     0     0     0]
+ [    0     0     0     0     0     0     0    70     0     0     0     0]
+ [    3     0     0     0     0     0     0     0  1262     0     0     0]
+ [    1     0     0     0     0     0     0     0     0    41     0     0]
+ [    3     0     0     0     0     0     0     0     0     0    10     0]
+ [    0     0     0     0     0     0     0     0     0     0     6     0]]
+=
+
+Sample size      : 100,000
+Train / Test     : 80,000 / 20,000
+
+Accuracy         : 0.997950
+Precision (wt.)  : 0.997657
+Recall    (wt.)  : 0.997950
+F1-score  (wt.)  : 0.997709
+
+Classification Report:
+                          precision    recall  f1-score   support
+
+                  BENIGN       1.00      1.00      1.00     15110
+                     Bot       0.90      0.43      0.58        21
+                    DDoS       1.00      1.00      1.00      1373
+           DoS GoldenEye       0.99      0.99      0.99       108
+                DoS Hulk       1.00      1.00      1.00      1884
+        DoS Slowhttptest       0.96      1.00      0.98        50
+           DoS slowloris       1.00      0.98      0.99        58
+             FTP-Patator       1.00      1.00      1.00        70
+                PortScan       1.00      1.00      1.00      1265
+             SSH-Patator       1.00      0.98      0.99        42
+Web Attack - Brute Force       0.62      0.77      0.69        13
+        Web Attack - XSS       0.00      0.00      0.00         6
+
+                accuracy                           1.00     20000
+               macro avg       0.87      0.85      0.85     20000
+            weighted avg       1.00      1.00      1.00     20000
+
+
+Confusion Matrix:
+[[15104     1     1     1     2     1     0     0     0     0     0     0]
+ [   12     9     0     0     0     0     0     0     0     0     0     0]
+ [    1     0  1371     0     1     0     0     0     0     0     0     0]
+ [    0     0     0   107     1     0     0     0     0     0     0     0]
+ [    6     0     0     0  1878     0     0     0     0     0     0     0]
+ [    0     0     0     0     0    50     0     0     0     0     0     0]
+ [    0     0     0     0     0     1    57     0     0     0     0     0]
+ [    0     0     0     0     0     0     0    70     0     0     0     0]
+ [    3     0     0     0     0     0     0     0  1262     0     0     0]
+ [    1     0     0     0     0     0     0     0     0    41     0     0]
+ [    3     0     0     0     0     0     0     0     0     0    10     0]
+ [    0     0     0     0     0     0     0     0     0     0     6     0]]
+=
+
+Sample size      : 100,000
+Train / Test     : 80,000 / 20,000
+
+Accuracy         : 0.997950
+Precision (wt.)  : 0.997657
+Recall    (wt.)  : 0.997950
+F1-score  (wt.)  : 0.997709
+
+Classification Report:
+                          precision    recall  f1-score   support
+
+                  BENIGN       1.00      1.00      1.00     15110
+                     Bot       0.90      0.43      0.58        21
+                    DDoS       1.00      1.00      1.00      1373
+           DoS GoldenEye       0.99      0.99      0.99       108
+                DoS Hulk       1.00      1.00      1.00      1884
+        DoS Slowhttptest       0.96      1.00      0.98        50
+           DoS slowloris       1.00      0.98      0.99        58
+             FTP-Patator       1.00      1.00      1.00        70
+                PortScan       1.00      1.00      1.00      1265
+             SSH-Patator       1.00      0.98      0.99        42
+Web Attack - Brute Force       0.62      0.77      0.69        13
+        Web Attack - XSS       0.00      0.00      0.00         6
+
+                accuracy                           1.00     20000
+               macro avg       0.87      0.85      0.85     20000
+            weighted avg       1.00      1.00      1.00     20000
+
+
+Confusion Matrix:
+[[15104     1     1     1     2     1     0     0     0     0     0     0]
+ [   12     9     0     0     0     0     0     0     0     0     0     0]
+ [    1     0  1371     0     1     0     0     0     0     0     0     0]
+ [    0     0     0   107     1     0     0     0     0     0     0     0]
+ [    6     0     0     0  1878     0     0     0     0     0     0     0]
+ [    0     0     0     0     0    50     0     0     0     0     0     0]
+ [    0     0     0     0     0     1    57     0     0     0     0     0]
+ [    0     0     0     0     0     0     0    70     0     0     0     0]
+ [    3     0     0     0     0     0     0     0  1262     0     0     0]
+ [    1     0     0     0     0     0     0     0     0    41     0     0]
+ [    3     0     0     0     0     0     0     0     0     0    10     0]
+ [    0     0     0     0     0     0     0     0     0     0     6     0]]
+=
+
+Sample size      : 100,000
+Train / Test     : 80,000 / 20,000
+
+Accuracy         : 0.997950
+Precision (wt.)  : 0.997657
+Recall    (wt.)  : 0.997950
+F1-score  (wt.)  : 0.997709
+
+Classification Report:
+                          precision    recall  f1-score   support
+
+                  BENIGN       1.00      1.00      1.00     15110
+                     Bot       0.90      0.43      0.58        21
+                    DDoS       1.00      1.00      1.00      1373
+           DoS GoldenEye       0.99      0.99      0.99       108
+                DoS Hulk       1.00      1.00      1.00      1884
+        DoS Slowhttptest       0.96      1.00      0.98        50
+           DoS slowloris       1.00      0.98      0.99        58
+             FTP-Patator       1.00      1.00      1.00        70
+                PortScan       1.00      1.00      1.00      1265
+             SSH-Patator       1.00      0.98      0.99        42
+Web Attack - Brute Force       0.62      0.77      0.69        13
+        Web Attack - XSS       0.00      0.00      0.00         6
+
+                accuracy                           1.00     20000
+               macro avg       0.87      0.85      0.85     20000
+            weighted avg       1.00      1.00      1.00     20000
+
+
+Confusion Matrix:
+[[15104     1     1     1     2     1     0     0     0     0     0     0]
+ [   12     9     0     0     0     0     0     0     0     0     0     0]
+ [    1     0  1371     0     1     0     0     0     0     0     0     0]
+ [    0     0     0   107     1     0     0     0     0     0     0     0]
+ [    6     0     0     0  1878     0     0     0     0     0     0     0]
+ [    0     0     0     0     0    50     0     0     0     0     0     0]
+ [    0     0     0     0     0     1    57     0     0     0     0     0]
+ [    0     0     0     0     0     0     0    70     0     0     0     0]
+ [    3     0     0     0     0     0     0     0  1262     0     0     0]
+ [    1     0     0     0     0     0     0     0     0    41     0     0]
+ [    3     0     0     0     0     0     0     0     0     0    10     0]
+ [    0     0     0     0     0     0     0     0     0     0     6     0]]
+=
+
+Sample size      : 100,000
+Train / Test     : 80,000 / 20,000
+
+Accuracy         : 0.997950
+Precision (wt.)  : 0.997657
+Recall    (wt.)  : 0.997950
+F1-score  (wt.)  : 0.997709
+
+Classification Report:
+                          precision    recall  f1-score   support
+
+                  BENIGN       1.00      1.00      1.00     15110
+                     Bot       0.90      0.43      0.58        21
+                    DDoS       1.00      1.00      1.00      1373
+           DoS GoldenEye       0.99      0.99      0.99       108
+                DoS Hulk       1.00      1.00      1.00      1884
+        DoS Slowhttptest       0.96      1.00      0.98        50
+           DoS slowloris       1.00      0.98      0.99        58
+             FTP-Patator       1.00      1.00      1.00        70
+                PortScan       1.00      1.00      1.00      1265
+             SSH-Patator       1.00      0.98      0.99        42
+Web Attack - Brute Force       0.62      0.77      0.69        13
+        Web Attack - XSS       0.00      0.00      0.00         6
+
+                accuracy                           1.00     20000
+               macro avg       0.87      0.85      0.85     20000
+            weighted avg       1.00      1.00      1.00     20000
+
+
+Confusion Matrix:
+[[15104     1     1     1     2     1     0     0     0     0     0     0]
+ [   12     9     0     0     0     0     0     0     0     0     0     0]
+ [    1     0  1371     0     1     0     0     0     0     0     0     0]
+ [    0     0     0   107     1     0     0     0     0     0     0     0]
+ [    6     0     0     0  1878     0     0     0     0     0     0     0]
+ [    0     0     0     0     0    50     0     0     0     0     0     0]
+ [    0     0     0     0     0     1    57     0     0     0     0     0]
+ [    0     0     0     0     0     0     0    70     0     0     0     0]
+ [    3     0     0     0     0     0     0     0  1262     0     0     0]
+ [    1     0     0     0     0     0     0     0     0    41     0     0]
+ [    3     0     0     0     0     0     0     0     0     0    10     0]
+ [    0     0     0     0     0     0     0     0     0     0     6     0]]
+=
+
+Sample size      : 100,000
+Train / Test     : 80,000 / 20,000
+
+Accuracy         : 0.997950
+Precision (wt.)  : 0.997657
+Recall    (wt.)  : 0.997950
+F1-score  (wt.)  : 0.997709
+
+Classification Report:
+                          precision    recall  f1-score   support
+
+                  BENIGN       1.00      1.00      1.00     15110
+                     Bot       0.90      0.43      0.58        21
+                    DDoS       1.00      1.00      1.00      1373
+           DoS GoldenEye       0.99      0.99      0.99       108
+                DoS Hulk       1.00      1.00      1.00      1884
+        DoS Slowhttptest       0.96      1.00      0.98        50
+           DoS slowloris       1.00      0.98      0.99        58
+             FTP-Patator       1.00      1.00      1.00        70
+                PortScan       1.00      1.00      1.00      1265
+             SSH-Patator       1.00      0.98      0.99        42
+Web Attack - Brute Force       0.62      0.77      0.69        13
+        Web Attack - XSS       0.00      0.00      0.00         6
+
+                accuracy                           1.00     20000
+               macro avg       0.87      0.85      0.85     20000
+            weighted avg       1.00      1.00      1.00     20000
+
+
+Confusion Matrix:
+[[15104     1     1     1     2     1     0     0     0     0     0     0]
+ [   12     9     0     0     0     0     0     0     0     0     0     0]
+ [    1     0  1371     0     1     0     0     0     0     0     0     0]
+ [    0     0     0   107     1     0     0     0     0     0     0     0]
+ [    6     0     0     0  1878     0     0     0     0     0     0     0]
+ [    0     0     0     0     0    50     0     0     0     0     0     0]
+ [    0     0     0     0     0     1    57     0     0     0     0     0]
+ [    0     0     0     0     0     0     0    70     0     0     0     0]
+ [    3     0     0     0     0     0     0     0  1262     0     0     0]
+ [    1     0     0     0     0     0     0     0     0    41     0     0]
+ [    3     0     0     0     0     0     0     0     0     0    10     0]
+ [    0     0     0     0     0     0     0     0     0     0     6     0]]
+=
+
+Sample size      : 100,000
+Train / Test     : 80,000 / 20,000
+
+Accuracy         : 0.997950
+Precision (wt.)  : 0.997657
+Recall    (wt.)  : 0.997950
+F1-score  (wt.)  : 0.997709
+
+Classification Report:
+                          precision    recall  f1-score   support
+
+                  BENIGN       1.00      1.00      1.00     15110
+                     Bot       0.90      0.43      0.58        21
+                    DDoS       1.00      1.00      1.00      1373
+           DoS GoldenEye       0.99      0.99      0.99       108
+                DoS Hulk       1.00      1.00      1.00      1884
+        DoS Slowhttptest       0.96      1.00      0.98        50
+           DoS slowloris       1.00      0.98      0.99        58
+             FTP-Patator       1.00      1.00      1.00        70
+                PortScan       1.00      1.00      1.00      1265
+             SSH-Patator       1.00      0.98      0.99        42
+Web Attack - Brute Force       0.62      0.77      0.69        13
+        Web Attack - XSS       0.00      0.00      0.00         6
+
+                accuracy                           1.00     20000
+               macro avg       0.87      0.85      0.85     20000
+            weighted avg       1.00      1.00      1.00     20000
+
+
+Confusion Matrix:
+[[15104     1     1     1     2     1     0     0     0     0     0     0]
+ [   12     9     0     0     0     0     0     0     0     0     0     0]
+ [    1     0  1371     0     1     0     0     0     0     0     0     0]
+ [    0     0     0   107     1     0     0     0     0     0     0     0]
+ [    6     0     0     0  1878     0     0     0     0     0     0     0]
+ [    0     0     0     0     0    50     0     0     0     0     0     0]
+ [    0     0     0     0     0     1    57     0     0     0     0     0]
+ [    0     0     0     0     0     0     0    70     0     0     0     0]
+ [    3     0     0     0     0     0     0     0  1262     0     0     0]
+ [    1     0     0     0     0     0     0     0     0    41     0     0]
+ [    3     0     0     0     0     0     0     0     0     0    10     0]
+ [    0     0     0     0     0     0     0     0     0     0     6     0]]
+=
+
+Sample size      : 100,000
+Train / Test     : 80,000 / 20,000
+
+Accuracy         : 0.997950
+Precision (wt.)  : 0.997657
+Recall    (wt.)  : 0.997950
+F1-score  (wt.)  : 0.997709
+
+Classification Report:
+                          precision    recall  f1-score   support
+
+                  BENIGN       1.00      1.00      1.00     15110
+                     Bot       0.90      0.43      0.58        21
+                    DDoS       1.00      1.00      1.00      1373
+           DoS GoldenEye       0.99      0.99      0.99       108
+                DoS Hulk       1.00      1.00      1.00      1884
+        DoS Slowhttptest       0.96      1.00      0.98        50
+           DoS slowloris       1.00      0.98      0.99        58
+             FTP-Patator       1.00      1.00      1.00        70
+                PortScan       1.00      1.00      1.00      1265
+             SSH-Patator       1.00      0.98      0.99        42
+Web Attack - Brute Force       0.62      0.77      0.69        13
+        Web Attack - XSS       0.00      0.00      0.00         6
+
+                accuracy                           1.00     20000
+               macro avg       0.87      0.85      0.85     20000
+            weighted avg       1.00      1.00      1.00     20000
+
+
+Confusion Matrix:
+[[15104     1     1     1     2     1     0     0     0     0     0     0]
+ [   12     9     0     0     0     0     0     0     0     0     0     0]
+ [    1     0  1371     0     1     0     0     0     0     0     0     0]
+ [    0     0     0   107     1     0     0     0     0     0     0     0]
+ [    6     0     0     0  1878     0     0     0     0     0     0     0]
+ [    0     0     0     0     0    50     0     0     0     0     0     0]
+ [    0     0     0     0     0     1    57     0     0     0     0     0]
+ [    0     0     0     0     0     0     0    70     0     0     0     0]
+ [    3     0     0     0     0     0     0     0  1262     0     0     0]
+ [    1     0     0     0     0     0     0     0     0    41     0     0]
+ [    3     0     0     0     0     0     0     0     0     0    10     0]
+ [    0     0     0     0     0     0     0     0     0     0     6     0]]
+=
+
+Sample size      : 100,000
+Train / Test     : 80,000 / 20,000
+
+Accuracy         : 0.997950
+Precision (wt.)  : 0.997657
+Recall    (wt.)  : 0.997950
+F1-score  (wt.)  : 0.997709
+
+Classification Report:
+                          precision    recall  f1-score   support
+
+                  BENIGN       1.00      1.00      1.00     15110
+                     Bot       0.90      0.43      0.58        21
+                    DDoS       1.00      1.00      1.00      1373
+           DoS GoldenEye       0.99      0.99      0.99       108
+                DoS Hulk       1.00      1.00      1.00      1884
+        DoS Slowhttptest       0.96      1.00      0.98        50
+           DoS slowloris       1.00      0.98      0.99        58
+             FTP-Patator       1.00      1.00      1.00        70
+                PortScan       1.00      1.00      1.00      1265
+             SSH-Patator       1.00      0.98      0.99        42
+Web Attack - Brute Force       0.62      0.77      0.69        13
+        Web Attack - XSS       0.00      0.00      0.00         6
+
+                accuracy                           1.00     20000
+               macro avg       0.87      0.85      0.85     20000
+            weighted avg       1.00      1.00      1.00     20000
+
+
+Confusion Matrix:
+[[15104     1     1     1     2     1     0     0     0     0     0     0]
+ [   12     9     0     0     0     0     0     0     0     0     0     0]
+ [    1     0  1371     0     1     0     0     0     0     0     0     0]
+ [    0     0     0   107     1     0     0     0     0     0     0     0]
+ [    6     0     0     0  1878     0     0     0     0     0     0     0]
+ [    0     0     0     0     0    50     0     0     0     0     0     0]
+ [    0     0     0     0     0     1    57     0     0     0     0     0]
+ [    0     0     0     0     0     0     0    70     0     0     0     0]
+ [    3     0     0     0     0     0     0     0  1262     0     0     0]
+ [    1     0     0     0     0     0     0     0     0    41     0     0]
+ [    3     0     0     0     0     0     0     0     0     0    10     0]
+ [    0     0     0     0     0     0     0     0     0     0     6     0]]
+=
+
+Sample size      : 100,000
+Train / Test     : 80,000 / 20,000
+
+Accuracy         : 0.997950
+Precision (wt.)  : 0.997657
+Recall    (wt.)  : 0.997950
+F1-score  (wt.)  : 0.997709
+
+Classification Report:
+                          precision    recall  f1-score   support
+
+                  BENIGN       1.00      1.00      1.00     15110
+                     Bot       0.90      0.43      0.58        21
+                    DDoS       1.00      1.00      1.00      1373
+           DoS GoldenEye       0.99      0.99      0.99       108
+                DoS Hulk       1.00      1.00      1.00      1884
+        DoS Slowhttptest       0.96      1.00      0.98        50
+           DoS slowloris       1.00      0.98      0.99        58
+             FTP-Patator       1.00      1.00      1.00        70
+                PortScan       1.00      1.00      1.00      1265
+             SSH-Patator       1.00      0.98      0.99        42
+Web Attack - Brute Force       0.62      0.77      0.69        13
+        Web Attack - XSS       0.00      0.00      0.00         6
+
+                accuracy                           1.00     20000
+               macro avg       0.87      0.85      0.85     20000
+            weighted avg       1.00      1.00      1.00     20000
+
+
+Confusion Matrix:
+[[15104     1     1     1     2     1     0     0     0     0     0     0]
+ [   12     9     0     0     0     0     0     0     0     0     0     0]
+ [    1     0  1371     0     1     0     0     0     0     0     0     0]
+ [    0     0     0   107     1     0     0     0     0     0     0     0]
+ [    6     0     0     0  1878     0     0     0     0     0     0     0]
+ [    0     0     0     0     0    50     0     0     0     0     0     0]
+ [    0     0     0     0     0     1    57     0     0     0     0     0]
+ [    0     0     0     0     0     0     0    70     0     0     0     0]
+ [    3     0     0     0     0     0     0     0  1262     0     0     0]
+ [    1     0     0     0     0     0     0     0     0    41     0     0]
+ [    3     0     0     0     0     0     0     0     0     0    10     0]
+ [    0     0     0     0     0     0     0     0     0     0     6     0]]
+=
+
+Sample size      : 100,000
+Train / Test     : 80,000 / 20,000
+
+Accuracy         : 0.997950
+Precision (wt.)  : 0.997657
+Recall    (wt.)  : 0.997950
+F1-score  (wt.)  : 0.997709
+
+Classification Report:
+                          precision    recall  f1-score   support
+
+                  BENIGN       1.00      1.00      1.00     15110
+                     Bot       0.90      0.43      0.58        21
+                    DDoS       1.00      1.00      1.00      1373
+           DoS GoldenEye       0.99      0.99      0.99       108
+                DoS Hulk       1.00      1.00      1.00      1884
+        DoS Slowhttptest       0.96      1.00      0.98        50
+           DoS slowloris       1.00      0.98      0.99        58
+             FTP-Patator       1.00      1.00      1.00        70
+                PortScan       1.00      1.00      1.00      1265
+             SSH-Patator       1.00      0.98      0.99        42
+Web Attack - Brute Force       0.62      0.77      0.69        13
+        Web Attack - XSS       0.00      0.00      0.00         6
+
+                accuracy                           1.00     20000
+               macro avg       0.87      0.85      0.85     20000
+            weighted avg       1.00      1.00      1.00     20000
+
+
+Confusion Matrix:
+[[15104     1     1     1     2     1     0     0     0     0     0     0]
+ [   12     9     0     0     0     0     0     0     0     0     0     0]
+ [    1     0  1371     0     1     0     0     0     0     0     0     0]
+ [    0     0     0   107     1     0     0     0     0     0     0     0]
+ [    6     0     0     0  1878     0     0     0     0     0     0     0]
+ [    0     0     0     0     0    50     0     0     0     0     0     0]
+ [    0     0     0     0     0     1    57     0     0     0     0     0]
+ [    0     0     0     0     0     0     0    70     0     0     0     0]
+ [    3     0     0     0     0     0     0     0  1262     0     0     0]
+ [    1     0     0     0     0     0     0     0     0    41     0     0]
+ [    3     0     0     0     0     0     0     0     0     0    10     0]
+ [    0     0     0     0     0     0     0     0     0     0     6     0]]
+=
+
+Sample size      : 100,000
+Train / Test     : 80,000 / 20,000
+
+Accuracy         : 0.997950
+Precision (wt.)  : 0.997657
+Recall    (wt.)  : 0.997950
+F1-score  (wt.)  : 0.997709
+
+Classification Report:
+                          precision    recall  f1-score   support
+
+                  BENIGN       1.00      1.00      1.00     15110
+                     Bot       0.90      0.43      0.58        21
+                    DDoS       1.00      1.00      1.00      1373
+           DoS GoldenEye       0.99      0.99      0.99       108
+                DoS Hulk       1.00      1.00      1.00      1884
+        DoS Slowhttptest       0.96      1.00      0.98        50
+           DoS slowloris       1.00      0.98      0.99        58
+             FTP-Patator       1.00      1.00      1.00        70
+                PortScan       1.00      1.00      1.00      1265
+             SSH-Patator       1.00      0.98      0.99        42
+Web Attack - Brute Force       0.62      0.77      0.69        13
+        Web Attack - XSS       0.00      0.00      0.00         6
+
+                accuracy                           1.00     20000
+               macro avg       0.87      0.85      0.85     20000
+            weighted avg       1.00      1.00      1.00     20000
+
+
+Confusion Matrix:
+[[15104     1     1     1     2     1     0     0     0     0     0     0]
+ [   12     9     0     0     0     0     0     0     0     0     0     0]
+ [    1     0  1371     0     1     0     0     0     0     0     0     0]
+ [    0     0     0   107     1     0     0     0     0     0     0     0]
+ [    6     0     0     0  1878     0     0     0     0     0     0     0]
+ [    0     0     0     0     0    50     0     0     0     0     0     0]
+ [    0     0     0     0     0     1    57     0     0     0     0     0]
+ [    0     0     0     0     0     0     0    70     0     0     0     0]
+ [    3     0     0     0     0     0     0     0  1262     0     0     0]
+ [    1     0     0     0     0     0     0     0     0    41     0     0]
+ [    3     0     0     0     0     0     0     0     0     0    10     0]
+ [    0     0     0     0     0     0     0     0     0     0     6     0]]
+=
+
+Sample size      : 100,000
+Train / Test     : 80,000 / 20,000
+
+Accuracy         : 0.997950
+Precision (wt.)  : 0.997657
+Recall    (wt.)  : 0.997950
+F1-score  (wt.)  : 0.997709
+
+Classification Report:
+                          precision    recall  f1-score   support
+
+                  BENIGN       1.00      1.00      1.00     15110
+                     Bot       0.90      0.43      0.58        21
+                    DDoS       1.00      1.00      1.00      1373
+           DoS GoldenEye       0.99      0.99      0.99       108
+                DoS Hulk       1.00      1.00      1.00      1884
+        DoS Slowhttptest       0.96      1.00      0.98        50
+           DoS slowloris       1.00      0.98      0.99        58
+             FTP-Patator       1.00      1.00      1.00        70
+                PortScan       1.00      1.00      1.00      1265
+             SSH-Patator       1.00      0.98      0.99        42
+Web Attack - Brute Force       0.62      0.77      0.69        13
+        Web Attack - XSS       0.00      0.00      0.00         6
+
+                accuracy                           1.00     20000
+               macro avg       0.87      0.85      0.85     20000
+            weighted avg       1.00      1.00      1.00     20000
+
+
+Confusion Matrix:
+[[15104     1     1     1     2     1     0     0     0     0     0     0]
+ [   12     9     0     0     0     0     0     0     0     0     0     0]
+ [    1     0  1371     0     1     0     0     0     0     0     0     0]
+ [    0     0     0   107     1     0     0     0     0     0     0     0]
+ [    6     0     0     0  1878     0     0     0     0     0     0     0]
+ [    0     0     0     0     0    50     0     0     0     0     0     0]
+ [    0     0     0     0     0     1    57     0     0     0     0     0]
+ [    0     0     0     0     0     0     0    70     0     0     0     0]
+ [    3     0     0     0     0     0     0     0  1262     0     0     0]
+ [    1     0     0     0     0     0     0     0     0    41     0     0]
+ [    3     0     0     0     0     0     0     0     0     0    10     0]
+ [    0     0     0     0     0     0     0     0     0     0     6     0]]
+=
+
+Sample size      : 100,000
+Train / Test     : 80,000 / 20,000
+
+Accuracy         : 0.997950
+Precision (wt.)  : 0.997657
+Recall    (wt.)  : 0.997950
+F1-score  (wt.)  : 0.997709
+
+Classification Report:
+                          precision    recall  f1-score   support
+
+                  BENIGN       1.00      1.00      1.00     15110
+                     Bot       0.90      0.43      0.58        21
+                    DDoS       1.00      1.00      1.00      1373
+           DoS GoldenEye       0.99      0.99      0.99       108
+                DoS Hulk       1.00      1.00      1.00      1884
+        DoS Slowhttptest       0.96      1.00      0.98        50
+           DoS slowloris       1.00      0.98      0.99        58
+             FTP-Patator       1.00      1.00      1.00        70
+                PortScan       1.00      1.00      1.00      1265
+             SSH-Patator       1.00      0.98      0.99        42
+Web Attack - Brute Force       0.62      0.77      0.69        13
+        Web Attack - XSS       0.00      0.00      0.00         6
+
+                accuracy                           1.00     20000
+               macro avg       0.87      0.85      0.85     20000
+            weighted avg       1.00      1.00      1.00     20000
+
+
+Confusion Matrix:
+[[15104     1     1     1     2     1     0     0     0     0     0     0]
+ [   12     9     0     0     0     0     0     0     0     0     0     0]
+ [    1     0  1371     0     1     0     0     0     0     0     0     0]
+ [    0     0     0   107     1     0     0     0     0     0     0     0]
+ [    6     0     0     0  1878     0     0     0     0     0     0     0]
+ [    0     0     0     0     0    50     0     0     0     0     0     0]
+ [    0     0     0     0     0     1    57     0     0     0     0     0]
+ [    0     0     0     0     0     0     0    70     0     0     0     0]
+ [    3     0     0     0     0     0     0     0  1262     0     0     0]
+ [    1     0     0     0     0     0     0     0     0    41     0     0]
+ [    3     0     0     0     0     0     0     0     0     0    10     0]
+ [    0     0     0     0     0     0     0     0     0     0     6     0]]
+=
+
+Sample size      : 100,000
+Train / Test     : 80,000 / 20,000
+
+Accuracy         : 0.997950
+Precision (wt.)  : 0.997657
+Recall    (wt.)  : 0.997950
+F1-score  (wt.)  : 0.997709
+
+Classification Report:
+                          precision    recall  f1-score   support
+
+                  BENIGN       1.00      1.00      1.00     15110
+                     Bot       0.90      0.43      0.58        21
+                    DDoS       1.00      1.00      1.00      1373
+           DoS GoldenEye       0.99      0.99      0.99       108
+                DoS Hulk       1.00      1.00      1.00      1884
+        DoS Slowhttptest       0.96      1.00      0.98        50
+           DoS slowloris       1.00      0.98      0.99        58
+             FTP-Patator       1.00      1.00      1.00        70
+                PortScan       1.00      1.00      1.00      1265
+             SSH-Patator       1.00      0.98      0.99        42
+Web Attack - Brute Force       0.62      0.77      0.69        13
+        Web Attack - XSS       0.00      0.00      0.00         6
+
+                accuracy                           1.00     20000
+               macro avg       0.87      0.85      0.85     20000
+            weighted avg       1.00      1.00      1.00     20000
+
+
+Confusion Matrix:
+[[15104     1     1     1     2     1     0     0     0     0     0     0]
+ [   12     9     0     0     0     0     0     0     0     0     0     0]
+ [    1     0  1371     0     1     0     0     0     0     0     0     0]
+ [    0     0     0   107     1     0     0     0     0     0     0     0]
+ [    6     0     0     0  1878     0     0     0     0     0     0     0]
+ [    0     0     0     0     0    50     0     0     0     0     0     0]
+ [    0     0     0     0     0     1    57     0     0     0     0     0]
+ [    0     0     0     0     0     0     0    70     0     0     0     0]
+ [    3     0     0     0     0     0     0     0  1262     0     0     0]
+ [    1     0     0     0     0     0     0     0     0    41     0     0]
+ [    3     0     0     0     0     0     0     0     0     0    10     0]
+ [    0     0     0     0     0     0     0     0     0     0     6     0]]
+=
