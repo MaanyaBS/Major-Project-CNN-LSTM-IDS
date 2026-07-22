@@ -75,14 +75,14 @@ def build_cnn_lstm_model(input_shape, num_classes):
 if __name__ == "__main__":
 
     # Dummy synthetic data
-    # 500 samples, sequence_length=10, num_features=40
-    X_dummy = np.random.rand(500, 10, 40).astype('float32')
+    # 500 samples, sequence_length=10, num_features=68
+    X_dummy = np.random.rand(500, 10, 68).astype('float32')
 
-    # 6 classes (DoS, DDoS, brute-force, port scanning, web attacks, normal)
-    y_dummy = np.random.randint(0, 6, size=(500,))
+    # 15 classes (matching real CICIDS2017 label count)
+    y_dummy = np.random.randint(0, 15, size=(500,))
 
     # Build model
-    model = build_cnn_lstm_model(input_shape=(10, 40), num_classes=6)
+    model = build_cnn_lstm_model(input_shape=(10, 68), num_classes=15)
 
     # Print summary
     model.summary()
