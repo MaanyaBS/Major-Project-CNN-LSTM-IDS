@@ -63,8 +63,8 @@ def create_sequences(data, labels, sequence_length):
 # ------------------------------------------------------------------
 if __name__ == "__main__":
 
-    # Dummy data: 1000 rows, 68 features (matching real feature count)
-    dummy_data = np.random.rand(1000, 68).astype("float32")
+    # Dummy data: 1000 rows, 20 features (matching selected top features count)
+    dummy_data = np.random.rand(1000, 20).astype("float32")
 
     # 15 classes (matching real CICIDS2017 label count)
     dummy_labels = np.random.randint(0, 15, size=(1000,))

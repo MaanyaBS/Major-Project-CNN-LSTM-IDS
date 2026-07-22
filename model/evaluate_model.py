@@ -140,7 +140,7 @@ if __name__ == "__main__":
 
     # ---- Dummy data ----
     np.random.seed(42)
-    dummy_data   = np.random.rand(1000, 68).astype("float32")
+    dummy_data   = np.random.rand(1000, 20).astype("float32")
     dummy_labels = np.random.randint(0, 15, size=(1000,))
 
     # ---- Reshape into sequences ----
@@ -155,13 +155,13 @@ if __name__ == "__main__":
     print(f"Train: {X_train.shape}  |  Test: {X_test.shape}")
 
     # ---- Build & quick-train ----
-    class_names = ['BENIGN', 'DoS Hulk', 'DDoS', 'PortScan', 'DoS GoldenEye',
-                   'FTP-Patator', 'DoS slowloris', 'DoS Slowhttptest',
-                   'SSH-Patator', 'Bot', 'Web Attack Brute Force',
-                   'Web Attack XSS', 'Infiltration',
-                   'Web Attack Sql Injection', 'Heartbleed']
+    class_names = ['BENIGN', 'Bot', 'DDoS', 'DoS GoldenEye', 'DoS Hulk',
+                   'DoS Slowhttptest', 'DoS slowloris', 'FTP-Patator',
+                   'Heartbleed', 'Infiltration', 'PortScan', 'SSH-Patator',
+                   'Web Attack - Brute Force', 'Web Attack - Sql Injection',
+                   'Web Attack - XSS']
     model = build_cnn_lstm_model(
-        input_shape=(sequence_length, 68),
+        input_shape=(sequence_length, 20),
         num_classes=len(class_names),
     )
 
