@@ -106,6 +106,9 @@ for chunk in pd.read_csv(DATA_PATH, chunksize=100_000, low_memory=False):
     # Strip whitespace from Label values
     chunk['Label'] = chunk['Label'].astype(str).str.strip()
 
+    # Fix corrupted encoding in Web Attack labels (U+FFFD -> hyphen)
+    chunk['Label'] = chunk['Label'].str.replace('\ufffd', '-', regex=False)
+
     # Keep only needed columns
     chunk = chunk[COLS_TO_LOAD]
 
