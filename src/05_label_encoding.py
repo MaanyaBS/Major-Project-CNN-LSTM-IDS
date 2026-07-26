@@ -14,9 +14,9 @@ OUTPUT_FILE = os.path.join(
 
 MAPPING_FILE = r"D:\Major_Project\output\label_mapping.csv"
 
-print("="*80)
+print("=" * 80)
 print("LABEL ENCODING")
-print("="*80)
+print("=" * 80)
 
 encoder = LabelEncoder()
 
@@ -37,6 +37,14 @@ for chunk in pd.read_csv(
         .dropna()
         .astype(str)
         .str.strip()
+        .replace({
+            "Web Attack ï¿½ Brute Force": "Web Attack - Brute Force",
+            "Web Attack ï¿½ XSS": "Web Attack - XSS",
+            "Web Attack ï¿½ Sql Injection": "Web Attack - Sql Injection",
+            "Web Attack � Brute Force": "Web Attack - Brute Force",
+            "Web Attack � XSS": "Web Attack - XSS",
+            "Web Attack � Sql Injection": "Web Attack - Sql Injection",
+        })
     )
 
     chunk = chunk[chunk["Label"] != ""]
@@ -74,6 +82,16 @@ for chunk in pd.read_csv(
         chunk["Label"]
         .astype(str)
         .str.strip()
+        .replace({
+            "Web Attack ï¿½ Brute Force": "Web Attack - Brute Force",
+            "Web Attack ï¿½ XSS": "Web Attack - XSS",
+            "Web Attack ï¿½ Sql Injection": "Web Attack - Sql Injection",
+            "Web Attack � Brute Force": "Web Attack - Brute Force",
+            "Web Attack � XSS": "Web Attack - XSS",
+            "Web Attack �XSS": "Web Attack - XSS",
+            "Web Attack ï¿½XSS": "Web Attack - XSS",
+            "Web Attack � Sql Injection": "Web Attack - Sql Injection",
+        })
     )
 
     chunk["Label"] = encoder.transform(chunk["Label"])
