@@ -1,0 +1,33 @@
+======================================================================
+Logistic Regression — FULL DATASET RESULTS
+======================================================================
+
+Training time    : 1864.48s
+Accuracy         : 0.865054
+F1-score (wt.)   : 0.843217
+F1-score (macro) : 0.137295
+
+Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       0.93      0.95      0.94    439994
+                       Bot       0.00      0.00      0.00       390
+                      DDoS       0.59      0.47      0.53     25604
+             DoS GoldenEye       0.00      0.00      0.00      2057
+                  DoS Hulk       0.48      0.78      0.59     35037
+          DoS Slowhttptest       0.00      0.00      0.00      1046
+             DoS slowloris       0.00      0.00      0.00      1091
+               FTP-Patator       0.00      0.00      0.00      1227
+                Heartbleed       0.00      0.00      0.00         2
+              Infiltration       0.00      0.00      0.00         7
+                  PortScan       0.00      0.00      0.00     23387
+               SSH-Patator       0.00      0.00      0.00       738
+  Web Attack - Brute Force       0.00      0.00      0.00       297
+Web Attack - Sql Injection       0.00      0.00      0.00         4
+          Web Attack - XSS       0.00      0.00      0.00       131
+
+                  accuracy                           0.87    531012
+                 macro avg       0.13      0.15      0.14    531012
+              weighted avg       0.83      0.87      0.84    531012
+
+======================================================================

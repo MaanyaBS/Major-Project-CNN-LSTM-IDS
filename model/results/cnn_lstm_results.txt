@@ -1,0 +1,3501 @@
+======================================================================
+CNN-LSTM EVALUATION RESULTS
+=
+CNN-LSTM EVALUATION RESULTS
+=
+CNN-LSTM EVALUATION RESULTS
+=
+CNN-LSTM EVALUATION RESULTS
+=
+CNN-LSTM EVALUATION RESULTS
+=
+CNN-LSTM EVALUATION RESULTS
+=
+CNN-LSTM EVALUATION RESULTS
+=
+CNN-LSTM EVALUATION RESULTS
+=
+CNN-LSTM EVALUATION RESULTS
+=
+CNN-LSTM EVALUATION RESULTS
+=
+CNN-LSTM EVALUATION RESULTS
+=
+CNN-LSTM EVALUATION RESULTS
+=
+CNN-LSTM EVALUATION RESULTS
+=
+CNN-LSTM EVALUATION RESULTS
+=
+CNN-LSTM EVALUATION RESULTS
+=
+CNN-LSTM EVALUATION RESULTS
+=
+CNN-LSTM EVALUATION RESULTS
+=
+CNN-LSTM EVALUATION RESULTS
+=
+CNN-LSTM EVALUATION RESULTS
+=
+CNN-LSTM EVALUATION RESULTS
+=
+CNN-LSTM EVALUATION RESULTS
+=
+CNN-LSTM EVALUATION RESULTS
+=
+CNN-LSTM EVALUATION RESULTS
+=
+CNN-LSTM EVALUATION RESULTS
+=
+CNN-LSTM EVALUATION RESULTS
+=
+CNN-LSTM EVALUATION RESULTS
+=
+CNN-LSTM EVALUATION RESULTS
+=
+CNN-LSTM EVALUATION RESULTS
+=
+CNN-LSTM EVALUATION RESULTS
+=
+CNN-LSTM EVALUATION RESULTS
+=
+CNN-LSTM EVALUATION RESULTS
+=
+CNN-LSTM EVALUATION RESULTS
+=
+CNN-LSTM EVALUATION RESULTS
+=
+CNN-LSTM EVALUATION RESULTS
+=
+CNN-LSTM EVALUATION RESULTS
+=
+CNN-LSTM EVALUATION RESULTS
+=
+CNN-LSTM EVALUATION RESULTS
+=
+CNN-LSTM EVALUATION RESULTS
+=
+CNN-LSTM EVALUATION RESULTS
+=
+CNN-LSTM EVALUATION RESULTS
+=
+CNN-LSTM EVALUATION RESULTS
+=
+CNN-LSTM EVALUATION RESULTS
+=
+CNN-LSTM EVALUATION RESULTS
+=
+CNN-LSTM EVALUATION RESULTS
+=
+CNN-LSTM EVALUATION RESULTS
+=
+CNN-LSTM EVALUATION RESULTS
+=
+CNN-LSTM EVALUATION RESULTS
+=
+CNN-LSTM EVALUATION RESULTS
+=
+CNN-LSTM EVALUATION RESULTS
+=
+CNN-LSTM EVALUATION RESULTS
+=
+CNN-LSTM EVALUATION RESULTS
+=
+CNN-LSTM EVALUATION RESULTS
+=
+CNN-LSTM EVALUATION RESULTS
+=
+CNN-LSTM EVALUATION RESULTS
+=
+CNN-LSTM EVALUATION RESULTS
+=
+CNN-LSTM EVALUATION RESULTS
+=
+CNN-LSTM EVALUATION RESULTS
+=
+CNN-LSTM EVALUATION RESULTS
+=
+CNN-LSTM EVALUATION RESULTS
+=
+CNN-LSTM EVALUATION RESULTS
+=
+CNN-LSTM EVALUATION RESULTS
+=
+CNN-LSTM EVALUATION RESULTS
+=
+CNN-LSTM EVALUATION RESULTS
+=
+CNN-LSTM EVALUATION RESULTS
+=
+CNN-LSTM EVALUATION RESULTS
+=
+CNN-LSTM EVALUATION RESULTS
+=
+CNN-LSTM EVALUATION RESULTS
+=
+CNN-LSTM EVALUATION RESULTS
+=
+CNN-LSTM EVALUATION RESULTS
+=
+CNN-LSTM EVALUATION RESULTS
+=
+
+Accuracy         : 0.060302
+Precision (wt.)  : —  (see per-class report below)
+Recall    (wt.)  : —  (see per-class report below)
+F1-score  (wt.)  : 0.019910
+F1-score  (macro): 0.019368
+
+Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       0.00      0.00      0.00        13
+                       Bot       0.00      0.00      0.00        18
+                      DDoS       0.00      0.00      0.00        11
+             DoS GoldenEye       0.00      0.00      0.00        13
+                  DoS Hulk       0.09      0.07      0.08        14
+          DoS Slowhttptest       0.00      0.00      0.00        11
+             DoS slowloris       0.00      0.00      0.00         8
+               FTP-Patator       0.00      0.00      0.00        13
+                Heartbleed       0.00      0.00      0.00        14
+              Infiltration       0.00      0.00      0.00        12
+                  PortScan       0.00      0.00      0.00        11
+               SSH-Patator       0.00      0.00      0.00        22
+  Web Attack - Brute Force       0.00      0.00      0.00        12
+Web Attack - Sql Injection       0.50      0.06      0.11        17
+          Web Attack - XSS       0.06      1.00      0.11        10
+
+                  accuracy                           0.06       199
+                 macro avg       0.04      0.08      0.02       199
+              weighted avg       0.05      0.06      0.02       199
+
+
+Confusion Matrix:
+[[ 0  0  0  0  2  0  0  0  0  0  1  0  0  0 10]
+ [ 0  0  0  0  2  0  0  0  0  0  2  0  0  0 14]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 10]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  8]
+ [ 0  0  0  0  0  0  0  0  0  0  1  0  0  0 12]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 12]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  1  0  0  0  0  0  1  0  0  1 19]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  2  0  0  0  1  0  0  0  0  1 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+=
+
+Accuracy         : 0.060302
+Precision (wt.)  : —  (see per-class report below)
+Recall    (wt.)  : —  (see per-class report below)
+F1-score  (wt.)  : 0.019910
+F1-score  (macro): 0.019368
+
+Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       0.00      0.00      0.00        13
+                       Bot       0.00      0.00      0.00        18
+                      DDoS       0.00      0.00      0.00        11
+             DoS GoldenEye       0.00      0.00      0.00        13
+                  DoS Hulk       0.09      0.07      0.08        14
+          DoS Slowhttptest       0.00      0.00      0.00        11
+             DoS slowloris       0.00      0.00      0.00         8
+               FTP-Patator       0.00      0.00      0.00        13
+                Heartbleed       0.00      0.00      0.00        14
+              Infiltration       0.00      0.00      0.00        12
+                  PortScan       0.00      0.00      0.00        11
+               SSH-Patator       0.00      0.00      0.00        22
+  Web Attack - Brute Force       0.00      0.00      0.00        12
+Web Attack - Sql Injection       0.50      0.06      0.11        17
+          Web Attack - XSS       0.06      1.00      0.11        10
+
+                  accuracy                           0.06       199
+                 macro avg       0.04      0.08      0.02       199
+              weighted avg       0.05      0.06      0.02       199
+
+
+Confusion Matrix:
+[[ 0  0  0  0  2  0  0  0  0  0  1  0  0  0 10]
+ [ 0  0  0  0  2  0  0  0  0  0  2  0  0  0 14]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 10]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  8]
+ [ 0  0  0  0  0  0  0  0  0  0  1  0  0  0 12]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 12]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  1  0  0  0  0  0  1  0  0  1 19]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  2  0  0  0  1  0  0  0  0  1 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+=
+
+Accuracy         : 0.060302
+Precision (wt.)  : —  (see per-class report below)
+Recall    (wt.)  : —  (see per-class report below)
+F1-score  (wt.)  : 0.019910
+F1-score  (macro): 0.019368
+
+Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       0.00      0.00      0.00        13
+                       Bot       0.00      0.00      0.00        18
+                      DDoS       0.00      0.00      0.00        11
+             DoS GoldenEye       0.00      0.00      0.00        13
+                  DoS Hulk       0.09      0.07      0.08        14
+          DoS Slowhttptest       0.00      0.00      0.00        11
+             DoS slowloris       0.00      0.00      0.00         8
+               FTP-Patator       0.00      0.00      0.00        13
+                Heartbleed       0.00      0.00      0.00        14
+              Infiltration       0.00      0.00      0.00        12
+                  PortScan       0.00      0.00      0.00        11
+               SSH-Patator       0.00      0.00      0.00        22
+  Web Attack - Brute Force       0.00      0.00      0.00        12
+Web Attack - Sql Injection       0.50      0.06      0.11        17
+          Web Attack - XSS       0.06      1.00      0.11        10
+
+                  accuracy                           0.06       199
+                 macro avg       0.04      0.08      0.02       199
+              weighted avg       0.05      0.06      0.02       199
+
+
+Confusion Matrix:
+[[ 0  0  0  0  2  0  0  0  0  0  1  0  0  0 10]
+ [ 0  0  0  0  2  0  0  0  0  0  2  0  0  0 14]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 10]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  8]
+ [ 0  0  0  0  0  0  0  0  0  0  1  0  0  0 12]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 12]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  1  0  0  0  0  0  1  0  0  1 19]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  2  0  0  0  1  0  0  0  0  1 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+=
+
+Accuracy         : 0.060302
+Precision (wt.)  : —  (see per-class report below)
+Recall    (wt.)  : —  (see per-class report below)
+F1-score  (wt.)  : 0.019910
+F1-score  (macro): 0.019368
+
+Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       0.00      0.00      0.00        13
+                       Bot       0.00      0.00      0.00        18
+                      DDoS       0.00      0.00      0.00        11
+             DoS GoldenEye       0.00      0.00      0.00        13
+                  DoS Hulk       0.09      0.07      0.08        14
+          DoS Slowhttptest       0.00      0.00      0.00        11
+             DoS slowloris       0.00      0.00      0.00         8
+               FTP-Patator       0.00      0.00      0.00        13
+                Heartbleed       0.00      0.00      0.00        14
+              Infiltration       0.00      0.00      0.00        12
+                  PortScan       0.00      0.00      0.00        11
+               SSH-Patator       0.00      0.00      0.00        22
+  Web Attack - Brute Force       0.00      0.00      0.00        12
+Web Attack - Sql Injection       0.50      0.06      0.11        17
+          Web Attack - XSS       0.06      1.00      0.11        10
+
+                  accuracy                           0.06       199
+                 macro avg       0.04      0.08      0.02       199
+              weighted avg       0.05      0.06      0.02       199
+
+
+Confusion Matrix:
+[[ 0  0  0  0  2  0  0  0  0  0  1  0  0  0 10]
+ [ 0  0  0  0  2  0  0  0  0  0  2  0  0  0 14]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 10]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  8]
+ [ 0  0  0  0  0  0  0  0  0  0  1  0  0  0 12]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 12]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  1  0  0  0  0  0  1  0  0  1 19]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  2  0  0  0  1  0  0  0  0  1 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+=
+
+Accuracy         : 0.060302
+Precision (wt.)  : —  (see per-class report below)
+Recall    (wt.)  : —  (see per-class report below)
+F1-score  (wt.)  : 0.019910
+F1-score  (macro): 0.019368
+
+Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       0.00      0.00      0.00        13
+                       Bot       0.00      0.00      0.00        18
+                      DDoS       0.00      0.00      0.00        11
+             DoS GoldenEye       0.00      0.00      0.00        13
+                  DoS Hulk       0.09      0.07      0.08        14
+          DoS Slowhttptest       0.00      0.00      0.00        11
+             DoS slowloris       0.00      0.00      0.00         8
+               FTP-Patator       0.00      0.00      0.00        13
+                Heartbleed       0.00      0.00      0.00        14
+              Infiltration       0.00      0.00      0.00        12
+                  PortScan       0.00      0.00      0.00        11
+               SSH-Patator       0.00      0.00      0.00        22
+  Web Attack - Brute Force       0.00      0.00      0.00        12
+Web Attack - Sql Injection       0.50      0.06      0.11        17
+          Web Attack - XSS       0.06      1.00      0.11        10
+
+                  accuracy                           0.06       199
+                 macro avg       0.04      0.08      0.02       199
+              weighted avg       0.05      0.06      0.02       199
+
+
+Confusion Matrix:
+[[ 0  0  0  0  2  0  0  0  0  0  1  0  0  0 10]
+ [ 0  0  0  0  2  0  0  0  0  0  2  0  0  0 14]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 10]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  8]
+ [ 0  0  0  0  0  0  0  0  0  0  1  0  0  0 12]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 12]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  1  0  0  0  0  0  1  0  0  1 19]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  2  0  0  0  1  0  0  0  0  1 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+=
+
+Accuracy         : 0.060302
+Precision (wt.)  : —  (see per-class report below)
+Recall    (wt.)  : —  (see per-class report below)
+F1-score  (wt.)  : 0.019910
+F1-score  (macro): 0.019368
+
+Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       0.00      0.00      0.00        13
+                       Bot       0.00      0.00      0.00        18
+                      DDoS       0.00      0.00      0.00        11
+             DoS GoldenEye       0.00      0.00      0.00        13
+                  DoS Hulk       0.09      0.07      0.08        14
+          DoS Slowhttptest       0.00      0.00      0.00        11
+             DoS slowloris       0.00      0.00      0.00         8
+               FTP-Patator       0.00      0.00      0.00        13
+                Heartbleed       0.00      0.00      0.00        14
+              Infiltration       0.00      0.00      0.00        12
+                  PortScan       0.00      0.00      0.00        11
+               SSH-Patator       0.00      0.00      0.00        22
+  Web Attack - Brute Force       0.00      0.00      0.00        12
+Web Attack - Sql Injection       0.50      0.06      0.11        17
+          Web Attack - XSS       0.06      1.00      0.11        10
+
+                  accuracy                           0.06       199
+                 macro avg       0.04      0.08      0.02       199
+              weighted avg       0.05      0.06      0.02       199
+
+
+Confusion Matrix:
+[[ 0  0  0  0  2  0  0  0  0  0  1  0  0  0 10]
+ [ 0  0  0  0  2  0  0  0  0  0  2  0  0  0 14]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 10]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  8]
+ [ 0  0  0  0  0  0  0  0  0  0  1  0  0  0 12]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 12]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  1  0  0  0  0  0  1  0  0  1 19]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  2  0  0  0  1  0  0  0  0  1 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+=
+
+Accuracy         : 0.060302
+Precision (wt.)  : —  (see per-class report below)
+Recall    (wt.)  : —  (see per-class report below)
+F1-score  (wt.)  : 0.019910
+F1-score  (macro): 0.019368
+
+Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       0.00      0.00      0.00        13
+                       Bot       0.00      0.00      0.00        18
+                      DDoS       0.00      0.00      0.00        11
+             DoS GoldenEye       0.00      0.00      0.00        13
+                  DoS Hulk       0.09      0.07      0.08        14
+          DoS Slowhttptest       0.00      0.00      0.00        11
+             DoS slowloris       0.00      0.00      0.00         8
+               FTP-Patator       0.00      0.00      0.00        13
+                Heartbleed       0.00      0.00      0.00        14
+              Infiltration       0.00      0.00      0.00        12
+                  PortScan       0.00      0.00      0.00        11
+               SSH-Patator       0.00      0.00      0.00        22
+  Web Attack - Brute Force       0.00      0.00      0.00        12
+Web Attack - Sql Injection       0.50      0.06      0.11        17
+          Web Attack - XSS       0.06      1.00      0.11        10
+
+                  accuracy                           0.06       199
+                 macro avg       0.04      0.08      0.02       199
+              weighted avg       0.05      0.06      0.02       199
+
+
+Confusion Matrix:
+[[ 0  0  0  0  2  0  0  0  0  0  1  0  0  0 10]
+ [ 0  0  0  0  2  0  0  0  0  0  2  0  0  0 14]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 10]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  8]
+ [ 0  0  0  0  0  0  0  0  0  0  1  0  0  0 12]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 12]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  1  0  0  0  0  0  1  0  0  1 19]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  2  0  0  0  1  0  0  0  0  1 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+=
+
+Accuracy         : 0.060302
+Precision (wt.)  : —  (see per-class report below)
+Recall    (wt.)  : —  (see per-class report below)
+F1-score  (wt.)  : 0.019910
+F1-score  (macro): 0.019368
+
+Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       0.00      0.00      0.00        13
+                       Bot       0.00      0.00      0.00        18
+                      DDoS       0.00      0.00      0.00        11
+             DoS GoldenEye       0.00      0.00      0.00        13
+                  DoS Hulk       0.09      0.07      0.08        14
+          DoS Slowhttptest       0.00      0.00      0.00        11
+             DoS slowloris       0.00      0.00      0.00         8
+               FTP-Patator       0.00      0.00      0.00        13
+                Heartbleed       0.00      0.00      0.00        14
+              Infiltration       0.00      0.00      0.00        12
+                  PortScan       0.00      0.00      0.00        11
+               SSH-Patator       0.00      0.00      0.00        22
+  Web Attack - Brute Force       0.00      0.00      0.00        12
+Web Attack - Sql Injection       0.50      0.06      0.11        17
+          Web Attack - XSS       0.06      1.00      0.11        10
+
+                  accuracy                           0.06       199
+                 macro avg       0.04      0.08      0.02       199
+              weighted avg       0.05      0.06      0.02       199
+
+
+Confusion Matrix:
+[[ 0  0  0  0  2  0  0  0  0  0  1  0  0  0 10]
+ [ 0  0  0  0  2  0  0  0  0  0  2  0  0  0 14]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 10]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  8]
+ [ 0  0  0  0  0  0  0  0  0  0  1  0  0  0 12]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 12]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  1  0  0  0  0  0  1  0  0  1 19]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  2  0  0  0  1  0  0  0  0  1 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+=
+
+Accuracy         : 0.060302
+Precision (wt.)  : —  (see per-class report below)
+Recall    (wt.)  : —  (see per-class report below)
+F1-score  (wt.)  : 0.019910
+F1-score  (macro): 0.019368
+
+Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       0.00      0.00      0.00        13
+                       Bot       0.00      0.00      0.00        18
+                      DDoS       0.00      0.00      0.00        11
+             DoS GoldenEye       0.00      0.00      0.00        13
+                  DoS Hulk       0.09      0.07      0.08        14
+          DoS Slowhttptest       0.00      0.00      0.00        11
+             DoS slowloris       0.00      0.00      0.00         8
+               FTP-Patator       0.00      0.00      0.00        13
+                Heartbleed       0.00      0.00      0.00        14
+              Infiltration       0.00      0.00      0.00        12
+                  PortScan       0.00      0.00      0.00        11
+               SSH-Patator       0.00      0.00      0.00        22
+  Web Attack - Brute Force       0.00      0.00      0.00        12
+Web Attack - Sql Injection       0.50      0.06      0.11        17
+          Web Attack - XSS       0.06      1.00      0.11        10
+
+                  accuracy                           0.06       199
+                 macro avg       0.04      0.08      0.02       199
+              weighted avg       0.05      0.06      0.02       199
+
+
+Confusion Matrix:
+[[ 0  0  0  0  2  0  0  0  0  0  1  0  0  0 10]
+ [ 0  0  0  0  2  0  0  0  0  0  2  0  0  0 14]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 10]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  8]
+ [ 0  0  0  0  0  0  0  0  0  0  1  0  0  0 12]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 12]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  1  0  0  0  0  0  1  0  0  1 19]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  2  0  0  0  1  0  0  0  0  1 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+=
+
+Accuracy         : 0.060302
+Precision (wt.)  : —  (see per-class report below)
+Recall    (wt.)  : —  (see per-class report below)
+F1-score  (wt.)  : 0.019910
+F1-score  (macro): 0.019368
+
+Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       0.00      0.00      0.00        13
+                       Bot       0.00      0.00      0.00        18
+                      DDoS       0.00      0.00      0.00        11
+             DoS GoldenEye       0.00      0.00      0.00        13
+                  DoS Hulk       0.09      0.07      0.08        14
+          DoS Slowhttptest       0.00      0.00      0.00        11
+             DoS slowloris       0.00      0.00      0.00         8
+               FTP-Patator       0.00      0.00      0.00        13
+                Heartbleed       0.00      0.00      0.00        14
+              Infiltration       0.00      0.00      0.00        12
+                  PortScan       0.00      0.00      0.00        11
+               SSH-Patator       0.00      0.00      0.00        22
+  Web Attack - Brute Force       0.00      0.00      0.00        12
+Web Attack - Sql Injection       0.50      0.06      0.11        17
+          Web Attack - XSS       0.06      1.00      0.11        10
+
+                  accuracy                           0.06       199
+                 macro avg       0.04      0.08      0.02       199
+              weighted avg       0.05      0.06      0.02       199
+
+
+Confusion Matrix:
+[[ 0  0  0  0  2  0  0  0  0  0  1  0  0  0 10]
+ [ 0  0  0  0  2  0  0  0  0  0  2  0  0  0 14]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 10]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  8]
+ [ 0  0  0  0  0  0  0  0  0  0  1  0  0  0 12]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 12]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  1  0  0  0  0  0  1  0  0  1 19]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  2  0  0  0  1  0  0  0  0  1 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+=
+
+Accuracy         : 0.060302
+Precision (wt.)  : —  (see per-class report below)
+Recall    (wt.)  : —  (see per-class report below)
+F1-score  (wt.)  : 0.019910
+F1-score  (macro): 0.019368
+
+Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       0.00      0.00      0.00        13
+                       Bot       0.00      0.00      0.00        18
+                      DDoS       0.00      0.00      0.00        11
+             DoS GoldenEye       0.00      0.00      0.00        13
+                  DoS Hulk       0.09      0.07      0.08        14
+          DoS Slowhttptest       0.00      0.00      0.00        11
+             DoS slowloris       0.00      0.00      0.00         8
+               FTP-Patator       0.00      0.00      0.00        13
+                Heartbleed       0.00      0.00      0.00        14
+              Infiltration       0.00      0.00      0.00        12
+                  PortScan       0.00      0.00      0.00        11
+               SSH-Patator       0.00      0.00      0.00        22
+  Web Attack - Brute Force       0.00      0.00      0.00        12
+Web Attack - Sql Injection       0.50      0.06      0.11        17
+          Web Attack - XSS       0.06      1.00      0.11        10
+
+                  accuracy                           0.06       199
+                 macro avg       0.04      0.08      0.02       199
+              weighted avg       0.05      0.06      0.02       199
+
+
+Confusion Matrix:
+[[ 0  0  0  0  2  0  0  0  0  0  1  0  0  0 10]
+ [ 0  0  0  0  2  0  0  0  0  0  2  0  0  0 14]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 10]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  8]
+ [ 0  0  0  0  0  0  0  0  0  0  1  0  0  0 12]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 12]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  1  0  0  0  0  0  1  0  0  1 19]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  2  0  0  0  1  0  0  0  0  1 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+=
+
+Accuracy         : 0.060302
+Precision (wt.)  : —  (see per-class report below)
+Recall    (wt.)  : —  (see per-class report below)
+F1-score  (wt.)  : 0.019910
+F1-score  (macro): 0.019368
+
+Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       0.00      0.00      0.00        13
+                       Bot       0.00      0.00      0.00        18
+                      DDoS       0.00      0.00      0.00        11
+             DoS GoldenEye       0.00      0.00      0.00        13
+                  DoS Hulk       0.09      0.07      0.08        14
+          DoS Slowhttptest       0.00      0.00      0.00        11
+             DoS slowloris       0.00      0.00      0.00         8
+               FTP-Patator       0.00      0.00      0.00        13
+                Heartbleed       0.00      0.00      0.00        14
+              Infiltration       0.00      0.00      0.00        12
+                  PortScan       0.00      0.00      0.00        11
+               SSH-Patator       0.00      0.00      0.00        22
+  Web Attack - Brute Force       0.00      0.00      0.00        12
+Web Attack - Sql Injection       0.50      0.06      0.11        17
+          Web Attack - XSS       0.06      1.00      0.11        10
+
+                  accuracy                           0.06       199
+                 macro avg       0.04      0.08      0.02       199
+              weighted avg       0.05      0.06      0.02       199
+
+
+Confusion Matrix:
+[[ 0  0  0  0  2  0  0  0  0  0  1  0  0  0 10]
+ [ 0  0  0  0  2  0  0  0  0  0  2  0  0  0 14]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 10]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  8]
+ [ 0  0  0  0  0  0  0  0  0  0  1  0  0  0 12]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 12]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  1  0  0  0  0  0  1  0  0  1 19]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  2  0  0  0  1  0  0  0  0  1 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+=
+
+Accuracy         : 0.060302
+Precision (wt.)  : —  (see per-class report below)
+Recall    (wt.)  : —  (see per-class report below)
+F1-score  (wt.)  : 0.019910
+F1-score  (macro): 0.019368
+
+Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       0.00      0.00      0.00        13
+                       Bot       0.00      0.00      0.00        18
+                      DDoS       0.00      0.00      0.00        11
+             DoS GoldenEye       0.00      0.00      0.00        13
+                  DoS Hulk       0.09      0.07      0.08        14
+          DoS Slowhttptest       0.00      0.00      0.00        11
+             DoS slowloris       0.00      0.00      0.00         8
+               FTP-Patator       0.00      0.00      0.00        13
+                Heartbleed       0.00      0.00      0.00        14
+              Infiltration       0.00      0.00      0.00        12
+                  PortScan       0.00      0.00      0.00        11
+               SSH-Patator       0.00      0.00      0.00        22
+  Web Attack - Brute Force       0.00      0.00      0.00        12
+Web Attack - Sql Injection       0.50      0.06      0.11        17
+          Web Attack - XSS       0.06      1.00      0.11        10
+
+                  accuracy                           0.06       199
+                 macro avg       0.04      0.08      0.02       199
+              weighted avg       0.05      0.06      0.02       199
+
+
+Confusion Matrix:
+[[ 0  0  0  0  2  0  0  0  0  0  1  0  0  0 10]
+ [ 0  0  0  0  2  0  0  0  0  0  2  0  0  0 14]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 10]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  8]
+ [ 0  0  0  0  0  0  0  0  0  0  1  0  0  0 12]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 12]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  1  0  0  0  0  0  1  0  0  1 19]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  2  0  0  0  1  0  0  0  0  1 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+=
+
+Accuracy         : 0.060302
+Precision (wt.)  : —  (see per-class report below)
+Recall    (wt.)  : —  (see per-class report below)
+F1-score  (wt.)  : 0.019910
+F1-score  (macro): 0.019368
+
+Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       0.00      0.00      0.00        13
+                       Bot       0.00      0.00      0.00        18
+                      DDoS       0.00      0.00      0.00        11
+             DoS GoldenEye       0.00      0.00      0.00        13
+                  DoS Hulk       0.09      0.07      0.08        14
+          DoS Slowhttptest       0.00      0.00      0.00        11
+             DoS slowloris       0.00      0.00      0.00         8
+               FTP-Patator       0.00      0.00      0.00        13
+                Heartbleed       0.00      0.00      0.00        14
+              Infiltration       0.00      0.00      0.00        12
+                  PortScan       0.00      0.00      0.00        11
+               SSH-Patator       0.00      0.00      0.00        22
+  Web Attack - Brute Force       0.00      0.00      0.00        12
+Web Attack - Sql Injection       0.50      0.06      0.11        17
+          Web Attack - XSS       0.06      1.00      0.11        10
+
+                  accuracy                           0.06       199
+                 macro avg       0.04      0.08      0.02       199
+              weighted avg       0.05      0.06      0.02       199
+
+
+Confusion Matrix:
+[[ 0  0  0  0  2  0  0  0  0  0  1  0  0  0 10]
+ [ 0  0  0  0  2  0  0  0  0  0  2  0  0  0 14]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 10]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  8]
+ [ 0  0  0  0  0  0  0  0  0  0  1  0  0  0 12]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 12]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  1  0  0  0  0  0  1  0  0  1 19]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  2  0  0  0  1  0  0  0  0  1 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+=
+
+Accuracy         : 0.060302
+Precision (wt.)  : —  (see per-class report below)
+Recall    (wt.)  : —  (see per-class report below)
+F1-score  (wt.)  : 0.019910
+F1-score  (macro): 0.019368
+
+Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       0.00      0.00      0.00        13
+                       Bot       0.00      0.00      0.00        18
+                      DDoS       0.00      0.00      0.00        11
+             DoS GoldenEye       0.00      0.00      0.00        13
+                  DoS Hulk       0.09      0.07      0.08        14
+          DoS Slowhttptest       0.00      0.00      0.00        11
+             DoS slowloris       0.00      0.00      0.00         8
+               FTP-Patator       0.00      0.00      0.00        13
+                Heartbleed       0.00      0.00      0.00        14
+              Infiltration       0.00      0.00      0.00        12
+                  PortScan       0.00      0.00      0.00        11
+               SSH-Patator       0.00      0.00      0.00        22
+  Web Attack - Brute Force       0.00      0.00      0.00        12
+Web Attack - Sql Injection       0.50      0.06      0.11        17
+          Web Attack - XSS       0.06      1.00      0.11        10
+
+                  accuracy                           0.06       199
+                 macro avg       0.04      0.08      0.02       199
+              weighted avg       0.05      0.06      0.02       199
+
+
+Confusion Matrix:
+[[ 0  0  0  0  2  0  0  0  0  0  1  0  0  0 10]
+ [ 0  0  0  0  2  0  0  0  0  0  2  0  0  0 14]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 10]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  8]
+ [ 0  0  0  0  0  0  0  0  0  0  1  0  0  0 12]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 12]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  1  0  0  0  0  0  1  0  0  1 19]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  2  0  0  0  1  0  0  0  0  1 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+=
+
+Accuracy         : 0.060302
+Precision (wt.)  : —  (see per-class report below)
+Recall    (wt.)  : —  (see per-class report below)
+F1-score  (wt.)  : 0.019910
+F1-score  (macro): 0.019368
+
+Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       0.00      0.00      0.00        13
+                       Bot       0.00      0.00      0.00        18
+                      DDoS       0.00      0.00      0.00        11
+             DoS GoldenEye       0.00      0.00      0.00        13
+                  DoS Hulk       0.09      0.07      0.08        14
+          DoS Slowhttptest       0.00      0.00      0.00        11
+             DoS slowloris       0.00      0.00      0.00         8
+               FTP-Patator       0.00      0.00      0.00        13
+                Heartbleed       0.00      0.00      0.00        14
+              Infiltration       0.00      0.00      0.00        12
+                  PortScan       0.00      0.00      0.00        11
+               SSH-Patator       0.00      0.00      0.00        22
+  Web Attack - Brute Force       0.00      0.00      0.00        12
+Web Attack - Sql Injection       0.50      0.06      0.11        17
+          Web Attack - XSS       0.06      1.00      0.11        10
+
+                  accuracy                           0.06       199
+                 macro avg       0.04      0.08      0.02       199
+              weighted avg       0.05      0.06      0.02       199
+
+
+Confusion Matrix:
+[[ 0  0  0  0  2  0  0  0  0  0  1  0  0  0 10]
+ [ 0  0  0  0  2  0  0  0  0  0  2  0  0  0 14]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 10]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  8]
+ [ 0  0  0  0  0  0  0  0  0  0  1  0  0  0 12]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 12]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  1  0  0  0  0  0  1  0  0  1 19]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  2  0  0  0  1  0  0  0  0  1 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+=
+
+Accuracy         : 0.060302
+Precision (wt.)  : —  (see per-class report below)
+Recall    (wt.)  : —  (see per-class report below)
+F1-score  (wt.)  : 0.019910
+F1-score  (macro): 0.019368
+
+Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       0.00      0.00      0.00        13
+                       Bot       0.00      0.00      0.00        18
+                      DDoS       0.00      0.00      0.00        11
+             DoS GoldenEye       0.00      0.00      0.00        13
+                  DoS Hulk       0.09      0.07      0.08        14
+          DoS Slowhttptest       0.00      0.00      0.00        11
+             DoS slowloris       0.00      0.00      0.00         8
+               FTP-Patator       0.00      0.00      0.00        13
+                Heartbleed       0.00      0.00      0.00        14
+              Infiltration       0.00      0.00      0.00        12
+                  PortScan       0.00      0.00      0.00        11
+               SSH-Patator       0.00      0.00      0.00        22
+  Web Attack - Brute Force       0.00      0.00      0.00        12
+Web Attack - Sql Injection       0.50      0.06      0.11        17
+          Web Attack - XSS       0.06      1.00      0.11        10
+
+                  accuracy                           0.06       199
+                 macro avg       0.04      0.08      0.02       199
+              weighted avg       0.05      0.06      0.02       199
+
+
+Confusion Matrix:
+[[ 0  0  0  0  2  0  0  0  0  0  1  0  0  0 10]
+ [ 0  0  0  0  2  0  0  0  0  0  2  0  0  0 14]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 10]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  8]
+ [ 0  0  0  0  0  0  0  0  0  0  1  0  0  0 12]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 12]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  1  0  0  0  0  0  1  0  0  1 19]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  2  0  0  0  1  0  0  0  0  1 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+=
+
+Accuracy         : 0.060302
+Precision (wt.)  : —  (see per-class report below)
+Recall    (wt.)  : —  (see per-class report below)
+F1-score  (wt.)  : 0.019910
+F1-score  (macro): 0.019368
+
+Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       0.00      0.00      0.00        13
+                       Bot       0.00      0.00      0.00        18
+                      DDoS       0.00      0.00      0.00        11
+             DoS GoldenEye       0.00      0.00      0.00        13
+                  DoS Hulk       0.09      0.07      0.08        14
+          DoS Slowhttptest       0.00      0.00      0.00        11
+             DoS slowloris       0.00      0.00      0.00         8
+               FTP-Patator       0.00      0.00      0.00        13
+                Heartbleed       0.00      0.00      0.00        14
+              Infiltration       0.00      0.00      0.00        12
+                  PortScan       0.00      0.00      0.00        11
+               SSH-Patator       0.00      0.00      0.00        22
+  Web Attack - Brute Force       0.00      0.00      0.00        12
+Web Attack - Sql Injection       0.50      0.06      0.11        17
+          Web Attack - XSS       0.06      1.00      0.11        10
+
+                  accuracy                           0.06       199
+                 macro avg       0.04      0.08      0.02       199
+              weighted avg       0.05      0.06      0.02       199
+
+
+Confusion Matrix:
+[[ 0  0  0  0  2  0  0  0  0  0  1  0  0  0 10]
+ [ 0  0  0  0  2  0  0  0  0  0  2  0  0  0 14]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 10]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  8]
+ [ 0  0  0  0  0  0  0  0  0  0  1  0  0  0 12]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 12]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  1  0  0  0  0  0  1  0  0  1 19]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  2  0  0  0  1  0  0  0  0  1 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+=
+
+Accuracy         : 0.060302
+Precision (wt.)  : —  (see per-class report below)
+Recall    (wt.)  : —  (see per-class report below)
+F1-score  (wt.)  : 0.019910
+F1-score  (macro): 0.019368
+
+Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       0.00      0.00      0.00        13
+                       Bot       0.00      0.00      0.00        18
+                      DDoS       0.00      0.00      0.00        11
+             DoS GoldenEye       0.00      0.00      0.00        13
+                  DoS Hulk       0.09      0.07      0.08        14
+          DoS Slowhttptest       0.00      0.00      0.00        11
+             DoS slowloris       0.00      0.00      0.00         8
+               FTP-Patator       0.00      0.00      0.00        13
+                Heartbleed       0.00      0.00      0.00        14
+              Infiltration       0.00      0.00      0.00        12
+                  PortScan       0.00      0.00      0.00        11
+               SSH-Patator       0.00      0.00      0.00        22
+  Web Attack - Brute Force       0.00      0.00      0.00        12
+Web Attack - Sql Injection       0.50      0.06      0.11        17
+          Web Attack - XSS       0.06      1.00      0.11        10
+
+                  accuracy                           0.06       199
+                 macro avg       0.04      0.08      0.02       199
+              weighted avg       0.05      0.06      0.02       199
+
+
+Confusion Matrix:
+[[ 0  0  0  0  2  0  0  0  0  0  1  0  0  0 10]
+ [ 0  0  0  0  2  0  0  0  0  0  2  0  0  0 14]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 10]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  8]
+ [ 0  0  0  0  0  0  0  0  0  0  1  0  0  0 12]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 12]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  1  0  0  0  0  0  1  0  0  1 19]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  2  0  0  0  1  0  0  0  0  1 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+=
+
+Accuracy         : 0.060302
+Precision (wt.)  : —  (see per-class report below)
+Recall    (wt.)  : —  (see per-class report below)
+F1-score  (wt.)  : 0.019910
+F1-score  (macro): 0.019368
+
+Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       0.00      0.00      0.00        13
+                       Bot       0.00      0.00      0.00        18
+                      DDoS       0.00      0.00      0.00        11
+             DoS GoldenEye       0.00      0.00      0.00        13
+                  DoS Hulk       0.09      0.07      0.08        14
+          DoS Slowhttptest       0.00      0.00      0.00        11
+             DoS slowloris       0.00      0.00      0.00         8
+               FTP-Patator       0.00      0.00      0.00        13
+                Heartbleed       0.00      0.00      0.00        14
+              Infiltration       0.00      0.00      0.00        12
+                  PortScan       0.00      0.00      0.00        11
+               SSH-Patator       0.00      0.00      0.00        22
+  Web Attack - Brute Force       0.00      0.00      0.00        12
+Web Attack - Sql Injection       0.50      0.06      0.11        17
+          Web Attack - XSS       0.06      1.00      0.11        10
+
+                  accuracy                           0.06       199
+                 macro avg       0.04      0.08      0.02       199
+              weighted avg       0.05      0.06      0.02       199
+
+
+Confusion Matrix:
+[[ 0  0  0  0  2  0  0  0  0  0  1  0  0  0 10]
+ [ 0  0  0  0  2  0  0  0  0  0  2  0  0  0 14]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 10]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  8]
+ [ 0  0  0  0  0  0  0  0  0  0  1  0  0  0 12]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 12]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  1  0  0  0  0  0  1  0  0  1 19]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  2  0  0  0  1  0  0  0  0  1 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+=
+
+Accuracy         : 0.060302
+Precision (wt.)  : —  (see per-class report below)
+Recall    (wt.)  : —  (see per-class report below)
+F1-score  (wt.)  : 0.019910
+F1-score  (macro): 0.019368
+
+Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       0.00      0.00      0.00        13
+                       Bot       0.00      0.00      0.00        18
+                      DDoS       0.00      0.00      0.00        11
+             DoS GoldenEye       0.00      0.00      0.00        13
+                  DoS Hulk       0.09      0.07      0.08        14
+          DoS Slowhttptest       0.00      0.00      0.00        11
+             DoS slowloris       0.00      0.00      0.00         8
+               FTP-Patator       0.00      0.00      0.00        13
+                Heartbleed       0.00      0.00      0.00        14
+              Infiltration       0.00      0.00      0.00        12
+                  PortScan       0.00      0.00      0.00        11
+               SSH-Patator       0.00      0.00      0.00        22
+  Web Attack - Brute Force       0.00      0.00      0.00        12
+Web Attack - Sql Injection       0.50      0.06      0.11        17
+          Web Attack - XSS       0.06      1.00      0.11        10
+
+                  accuracy                           0.06       199
+                 macro avg       0.04      0.08      0.02       199
+              weighted avg       0.05      0.06      0.02       199
+
+
+Confusion Matrix:
+[[ 0  0  0  0  2  0  0  0  0  0  1  0  0  0 10]
+ [ 0  0  0  0  2  0  0  0  0  0  2  0  0  0 14]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 10]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  8]
+ [ 0  0  0  0  0  0  0  0  0  0  1  0  0  0 12]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 12]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  1  0  0  0  0  0  1  0  0  1 19]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  2  0  0  0  1  0  0  0  0  1 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+=
+
+Accuracy         : 0.060302
+Precision (wt.)  : —  (see per-class report below)
+Recall    (wt.)  : —  (see per-class report below)
+F1-score  (wt.)  : 0.019910
+F1-score  (macro): 0.019368
+
+Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       0.00      0.00      0.00        13
+                       Bot       0.00      0.00      0.00        18
+                      DDoS       0.00      0.00      0.00        11
+             DoS GoldenEye       0.00      0.00      0.00        13
+                  DoS Hulk       0.09      0.07      0.08        14
+          DoS Slowhttptest       0.00      0.00      0.00        11
+             DoS slowloris       0.00      0.00      0.00         8
+               FTP-Patator       0.00      0.00      0.00        13
+                Heartbleed       0.00      0.00      0.00        14
+              Infiltration       0.00      0.00      0.00        12
+                  PortScan       0.00      0.00      0.00        11
+               SSH-Patator       0.00      0.00      0.00        22
+  Web Attack - Brute Force       0.00      0.00      0.00        12
+Web Attack - Sql Injection       0.50      0.06      0.11        17
+          Web Attack - XSS       0.06      1.00      0.11        10
+
+                  accuracy                           0.06       199
+                 macro avg       0.04      0.08      0.02       199
+              weighted avg       0.05      0.06      0.02       199
+
+
+Confusion Matrix:
+[[ 0  0  0  0  2  0  0  0  0  0  1  0  0  0 10]
+ [ 0  0  0  0  2  0  0  0  0  0  2  0  0  0 14]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 10]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  8]
+ [ 0  0  0  0  0  0  0  0  0  0  1  0  0  0 12]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 12]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  1  0  0  0  0  0  1  0  0  1 19]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  2  0  0  0  1  0  0  0  0  1 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+=
+
+Accuracy         : 0.060302
+Precision (wt.)  : —  (see per-class report below)
+Recall    (wt.)  : —  (see per-class report below)
+F1-score  (wt.)  : 0.019910
+F1-score  (macro): 0.019368
+
+Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       0.00      0.00      0.00        13
+                       Bot       0.00      0.00      0.00        18
+                      DDoS       0.00      0.00      0.00        11
+             DoS GoldenEye       0.00      0.00      0.00        13
+                  DoS Hulk       0.09      0.07      0.08        14
+          DoS Slowhttptest       0.00      0.00      0.00        11
+             DoS slowloris       0.00      0.00      0.00         8
+               FTP-Patator       0.00      0.00      0.00        13
+                Heartbleed       0.00      0.00      0.00        14
+              Infiltration       0.00      0.00      0.00        12
+                  PortScan       0.00      0.00      0.00        11
+               SSH-Patator       0.00      0.00      0.00        22
+  Web Attack - Brute Force       0.00      0.00      0.00        12
+Web Attack - Sql Injection       0.50      0.06      0.11        17
+          Web Attack - XSS       0.06      1.00      0.11        10
+
+                  accuracy                           0.06       199
+                 macro avg       0.04      0.08      0.02       199
+              weighted avg       0.05      0.06      0.02       199
+
+
+Confusion Matrix:
+[[ 0  0  0  0  2  0  0  0  0  0  1  0  0  0 10]
+ [ 0  0  0  0  2  0  0  0  0  0  2  0  0  0 14]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 10]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  8]
+ [ 0  0  0  0  0  0  0  0  0  0  1  0  0  0 12]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 12]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  1  0  0  0  0  0  1  0  0  1 19]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  2  0  0  0  1  0  0  0  0  1 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+=
+
+Accuracy         : 0.060302
+Precision (wt.)  : —  (see per-class report below)
+Recall    (wt.)  : —  (see per-class report below)
+F1-score  (wt.)  : 0.019910
+F1-score  (macro): 0.019368
+
+Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       0.00      0.00      0.00        13
+                       Bot       0.00      0.00      0.00        18
+                      DDoS       0.00      0.00      0.00        11
+             DoS GoldenEye       0.00      0.00      0.00        13
+                  DoS Hulk       0.09      0.07      0.08        14
+          DoS Slowhttptest       0.00      0.00      0.00        11
+             DoS slowloris       0.00      0.00      0.00         8
+               FTP-Patator       0.00      0.00      0.00        13
+                Heartbleed       0.00      0.00      0.00        14
+              Infiltration       0.00      0.00      0.00        12
+                  PortScan       0.00      0.00      0.00        11
+               SSH-Patator       0.00      0.00      0.00        22
+  Web Attack - Brute Force       0.00      0.00      0.00        12
+Web Attack - Sql Injection       0.50      0.06      0.11        17
+          Web Attack - XSS       0.06      1.00      0.11        10
+
+                  accuracy                           0.06       199
+                 macro avg       0.04      0.08      0.02       199
+              weighted avg       0.05      0.06      0.02       199
+
+
+Confusion Matrix:
+[[ 0  0  0  0  2  0  0  0  0  0  1  0  0  0 10]
+ [ 0  0  0  0  2  0  0  0  0  0  2  0  0  0 14]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 10]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  8]
+ [ 0  0  0  0  0  0  0  0  0  0  1  0  0  0 12]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 12]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  1  0  0  0  0  0  1  0  0  1 19]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  2  0  0  0  1  0  0  0  0  1 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+=
+
+Accuracy         : 0.060302
+Precision (wt.)  : —  (see per-class report below)
+Recall    (wt.)  : —  (see per-class report below)
+F1-score  (wt.)  : 0.019910
+F1-score  (macro): 0.019368
+
+Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       0.00      0.00      0.00        13
+                       Bot       0.00      0.00      0.00        18
+                      DDoS       0.00      0.00      0.00        11
+             DoS GoldenEye       0.00      0.00      0.00        13
+                  DoS Hulk       0.09      0.07      0.08        14
+          DoS Slowhttptest       0.00      0.00      0.00        11
+             DoS slowloris       0.00      0.00      0.00         8
+               FTP-Patator       0.00      0.00      0.00        13
+                Heartbleed       0.00      0.00      0.00        14
+              Infiltration       0.00      0.00      0.00        12
+                  PortScan       0.00      0.00      0.00        11
+               SSH-Patator       0.00      0.00      0.00        22
+  Web Attack - Brute Force       0.00      0.00      0.00        12
+Web Attack - Sql Injection       0.50      0.06      0.11        17
+          Web Attack - XSS       0.06      1.00      0.11        10
+
+                  accuracy                           0.06       199
+                 macro avg       0.04      0.08      0.02       199
+              weighted avg       0.05      0.06      0.02       199
+
+
+Confusion Matrix:
+[[ 0  0  0  0  2  0  0  0  0  0  1  0  0  0 10]
+ [ 0  0  0  0  2  0  0  0  0  0  2  0  0  0 14]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 10]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  8]
+ [ 0  0  0  0  0  0  0  0  0  0  1  0  0  0 12]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 12]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  1  0  0  0  0  0  1  0  0  1 19]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  2  0  0  0  1  0  0  0  0  1 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+=
+
+Accuracy         : 0.060302
+Precision (wt.)  : —  (see per-class report below)
+Recall    (wt.)  : —  (see per-class report below)
+F1-score  (wt.)  : 0.019910
+F1-score  (macro): 0.019368
+
+Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       0.00      0.00      0.00        13
+                       Bot       0.00      0.00      0.00        18
+                      DDoS       0.00      0.00      0.00        11
+             DoS GoldenEye       0.00      0.00      0.00        13
+                  DoS Hulk       0.09      0.07      0.08        14
+          DoS Slowhttptest       0.00      0.00      0.00        11
+             DoS slowloris       0.00      0.00      0.00         8
+               FTP-Patator       0.00      0.00      0.00        13
+                Heartbleed       0.00      0.00      0.00        14
+              Infiltration       0.00      0.00      0.00        12
+                  PortScan       0.00      0.00      0.00        11
+               SSH-Patator       0.00      0.00      0.00        22
+  Web Attack - Brute Force       0.00      0.00      0.00        12
+Web Attack - Sql Injection       0.50      0.06      0.11        17
+          Web Attack - XSS       0.06      1.00      0.11        10
+
+                  accuracy                           0.06       199
+                 macro avg       0.04      0.08      0.02       199
+              weighted avg       0.05      0.06      0.02       199
+
+
+Confusion Matrix:
+[[ 0  0  0  0  2  0  0  0  0  0  1  0  0  0 10]
+ [ 0  0  0  0  2  0  0  0  0  0  2  0  0  0 14]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 10]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  8]
+ [ 0  0  0  0  0  0  0  0  0  0  1  0  0  0 12]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 12]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  1  0  0  0  0  0  1  0  0  1 19]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  2  0  0  0  1  0  0  0  0  1 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+=
+
+Accuracy         : 0.060302
+Precision (wt.)  : —  (see per-class report below)
+Recall    (wt.)  : —  (see per-class report below)
+F1-score  (wt.)  : 0.019910
+F1-score  (macro): 0.019368
+
+Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       0.00      0.00      0.00        13
+                       Bot       0.00      0.00      0.00        18
+                      DDoS       0.00      0.00      0.00        11
+             DoS GoldenEye       0.00      0.00      0.00        13
+                  DoS Hulk       0.09      0.07      0.08        14
+          DoS Slowhttptest       0.00      0.00      0.00        11
+             DoS slowloris       0.00      0.00      0.00         8
+               FTP-Patator       0.00      0.00      0.00        13
+                Heartbleed       0.00      0.00      0.00        14
+              Infiltration       0.00      0.00      0.00        12
+                  PortScan       0.00      0.00      0.00        11
+               SSH-Patator       0.00      0.00      0.00        22
+  Web Attack - Brute Force       0.00      0.00      0.00        12
+Web Attack - Sql Injection       0.50      0.06      0.11        17
+          Web Attack - XSS       0.06      1.00      0.11        10
+
+                  accuracy                           0.06       199
+                 macro avg       0.04      0.08      0.02       199
+              weighted avg       0.05      0.06      0.02       199
+
+
+Confusion Matrix:
+[[ 0  0  0  0  2  0  0  0  0  0  1  0  0  0 10]
+ [ 0  0  0  0  2  0  0  0  0  0  2  0  0  0 14]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 10]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  8]
+ [ 0  0  0  0  0  0  0  0  0  0  1  0  0  0 12]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 12]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  1  0  0  0  0  0  1  0  0  1 19]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  2  0  0  0  1  0  0  0  0  1 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+=
+
+Accuracy         : 0.060302
+Precision (wt.)  : —  (see per-class report below)
+Recall    (wt.)  : —  (see per-class report below)
+F1-score  (wt.)  : 0.019910
+F1-score  (macro): 0.019368
+
+Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       0.00      0.00      0.00        13
+                       Bot       0.00      0.00      0.00        18
+                      DDoS       0.00      0.00      0.00        11
+             DoS GoldenEye       0.00      0.00      0.00        13
+                  DoS Hulk       0.09      0.07      0.08        14
+          DoS Slowhttptest       0.00      0.00      0.00        11
+             DoS slowloris       0.00      0.00      0.00         8
+               FTP-Patator       0.00      0.00      0.00        13
+                Heartbleed       0.00      0.00      0.00        14
+              Infiltration       0.00      0.00      0.00        12
+                  PortScan       0.00      0.00      0.00        11
+               SSH-Patator       0.00      0.00      0.00        22
+  Web Attack - Brute Force       0.00      0.00      0.00        12
+Web Attack - Sql Injection       0.50      0.06      0.11        17
+          Web Attack - XSS       0.06      1.00      0.11        10
+
+                  accuracy                           0.06       199
+                 macro avg       0.04      0.08      0.02       199
+              weighted avg       0.05      0.06      0.02       199
+
+
+Confusion Matrix:
+[[ 0  0  0  0  2  0  0  0  0  0  1  0  0  0 10]
+ [ 0  0  0  0  2  0  0  0  0  0  2  0  0  0 14]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 10]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  8]
+ [ 0  0  0  0  0  0  0  0  0  0  1  0  0  0 12]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 12]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  1  0  0  0  0  0  1  0  0  1 19]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  2  0  0  0  1  0  0  0  0  1 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+=
+
+Accuracy         : 0.060302
+Precision (wt.)  : —  (see per-class report below)
+Recall    (wt.)  : —  (see per-class report below)
+F1-score  (wt.)  : 0.019910
+F1-score  (macro): 0.019368
+
+Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       0.00      0.00      0.00        13
+                       Bot       0.00      0.00      0.00        18
+                      DDoS       0.00      0.00      0.00        11
+             DoS GoldenEye       0.00      0.00      0.00        13
+                  DoS Hulk       0.09      0.07      0.08        14
+          DoS Slowhttptest       0.00      0.00      0.00        11
+             DoS slowloris       0.00      0.00      0.00         8
+               FTP-Patator       0.00      0.00      0.00        13
+                Heartbleed       0.00      0.00      0.00        14
+              Infiltration       0.00      0.00      0.00        12
+                  PortScan       0.00      0.00      0.00        11
+               SSH-Patator       0.00      0.00      0.00        22
+  Web Attack - Brute Force       0.00      0.00      0.00        12
+Web Attack - Sql Injection       0.50      0.06      0.11        17
+          Web Attack - XSS       0.06      1.00      0.11        10
+
+                  accuracy                           0.06       199
+                 macro avg       0.04      0.08      0.02       199
+              weighted avg       0.05      0.06      0.02       199
+
+
+Confusion Matrix:
+[[ 0  0  0  0  2  0  0  0  0  0  1  0  0  0 10]
+ [ 0  0  0  0  2  0  0  0  0  0  2  0  0  0 14]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 10]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  8]
+ [ 0  0  0  0  0  0  0  0  0  0  1  0  0  0 12]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 12]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  1  0  0  0  0  0  1  0  0  1 19]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  2  0  0  0  1  0  0  0  0  1 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+=
+
+Accuracy         : 0.060302
+Precision (wt.)  : —  (see per-class report below)
+Recall    (wt.)  : —  (see per-class report below)
+F1-score  (wt.)  : 0.019910
+F1-score  (macro): 0.019368
+
+Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       0.00      0.00      0.00        13
+                       Bot       0.00      0.00      0.00        18
+                      DDoS       0.00      0.00      0.00        11
+             DoS GoldenEye       0.00      0.00      0.00        13
+                  DoS Hulk       0.09      0.07      0.08        14
+          DoS Slowhttptest       0.00      0.00      0.00        11
+             DoS slowloris       0.00      0.00      0.00         8
+               FTP-Patator       0.00      0.00      0.00        13
+                Heartbleed       0.00      0.00      0.00        14
+              Infiltration       0.00      0.00      0.00        12
+                  PortScan       0.00      0.00      0.00        11
+               SSH-Patator       0.00      0.00      0.00        22
+  Web Attack - Brute Force       0.00      0.00      0.00        12
+Web Attack - Sql Injection       0.50      0.06      0.11        17
+          Web Attack - XSS       0.06      1.00      0.11        10
+
+                  accuracy                           0.06       199
+                 macro avg       0.04      0.08      0.02       199
+              weighted avg       0.05      0.06      0.02       199
+
+
+Confusion Matrix:
+[[ 0  0  0  0  2  0  0  0  0  0  1  0  0  0 10]
+ [ 0  0  0  0  2  0  0  0  0  0  2  0  0  0 14]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 10]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  8]
+ [ 0  0  0  0  0  0  0  0  0  0  1  0  0  0 12]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 12]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  1  0  0  0  0  0  1  0  0  1 19]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  2  0  0  0  1  0  0  0  0  1 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+=
+
+Accuracy         : 0.060302
+Precision (wt.)  : —  (see per-class report below)
+Recall    (wt.)  : —  (see per-class report below)
+F1-score  (wt.)  : 0.019910
+F1-score  (macro): 0.019368
+
+Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       0.00      0.00      0.00        13
+                       Bot       0.00      0.00      0.00        18
+                      DDoS       0.00      0.00      0.00        11
+             DoS GoldenEye       0.00      0.00      0.00        13
+                  DoS Hulk       0.09      0.07      0.08        14
+          DoS Slowhttptest       0.00      0.00      0.00        11
+             DoS slowloris       0.00      0.00      0.00         8
+               FTP-Patator       0.00      0.00      0.00        13
+                Heartbleed       0.00      0.00      0.00        14
+              Infiltration       0.00      0.00      0.00        12
+                  PortScan       0.00      0.00      0.00        11
+               SSH-Patator       0.00      0.00      0.00        22
+  Web Attack - Brute Force       0.00      0.00      0.00        12
+Web Attack - Sql Injection       0.50      0.06      0.11        17
+          Web Attack - XSS       0.06      1.00      0.11        10
+
+                  accuracy                           0.06       199
+                 macro avg       0.04      0.08      0.02       199
+              weighted avg       0.05      0.06      0.02       199
+
+
+Confusion Matrix:
+[[ 0  0  0  0  2  0  0  0  0  0  1  0  0  0 10]
+ [ 0  0  0  0  2  0  0  0  0  0  2  0  0  0 14]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 10]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  8]
+ [ 0  0  0  0  0  0  0  0  0  0  1  0  0  0 12]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 12]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  1  0  0  0  0  0  1  0  0  1 19]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  2  0  0  0  1  0  0  0  0  1 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+=
+
+Accuracy         : 0.060302
+Precision (wt.)  : —  (see per-class report below)
+Recall    (wt.)  : —  (see per-class report below)
+F1-score  (wt.)  : 0.019910
+F1-score  (macro): 0.019368
+
+Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       0.00      0.00      0.00        13
+                       Bot       0.00      0.00      0.00        18
+                      DDoS       0.00      0.00      0.00        11
+             DoS GoldenEye       0.00      0.00      0.00        13
+                  DoS Hulk       0.09      0.07      0.08        14
+          DoS Slowhttptest       0.00      0.00      0.00        11
+             DoS slowloris       0.00      0.00      0.00         8
+               FTP-Patator       0.00      0.00      0.00        13
+                Heartbleed       0.00      0.00      0.00        14
+              Infiltration       0.00      0.00      0.00        12
+                  PortScan       0.00      0.00      0.00        11
+               SSH-Patator       0.00      0.00      0.00        22
+  Web Attack - Brute Force       0.00      0.00      0.00        12
+Web Attack - Sql Injection       0.50      0.06      0.11        17
+          Web Attack - XSS       0.06      1.00      0.11        10
+
+                  accuracy                           0.06       199
+                 macro avg       0.04      0.08      0.02       199
+              weighted avg       0.05      0.06      0.02       199
+
+
+Confusion Matrix:
+[[ 0  0  0  0  2  0  0  0  0  0  1  0  0  0 10]
+ [ 0  0  0  0  2  0  0  0  0  0  2  0  0  0 14]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 10]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  8]
+ [ 0  0  0  0  0  0  0  0  0  0  1  0  0  0 12]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 12]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  1  0  0  0  0  0  1  0  0  1 19]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  2  0  0  0  1  0  0  0  0  1 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+=
+
+Accuracy         : 0.060302
+Precision (wt.)  : —  (see per-class report below)
+Recall    (wt.)  : —  (see per-class report below)
+F1-score  (wt.)  : 0.019910
+F1-score  (macro): 0.019368
+
+Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       0.00      0.00      0.00        13
+                       Bot       0.00      0.00      0.00        18
+                      DDoS       0.00      0.00      0.00        11
+             DoS GoldenEye       0.00      0.00      0.00        13
+                  DoS Hulk       0.09      0.07      0.08        14
+          DoS Slowhttptest       0.00      0.00      0.00        11
+             DoS slowloris       0.00      0.00      0.00         8
+               FTP-Patator       0.00      0.00      0.00        13
+                Heartbleed       0.00      0.00      0.00        14
+              Infiltration       0.00      0.00      0.00        12
+                  PortScan       0.00      0.00      0.00        11
+               SSH-Patator       0.00      0.00      0.00        22
+  Web Attack - Brute Force       0.00      0.00      0.00        12
+Web Attack - Sql Injection       0.50      0.06      0.11        17
+          Web Attack - XSS       0.06      1.00      0.11        10
+
+                  accuracy                           0.06       199
+                 macro avg       0.04      0.08      0.02       199
+              weighted avg       0.05      0.06      0.02       199
+
+
+Confusion Matrix:
+[[ 0  0  0  0  2  0  0  0  0  0  1  0  0  0 10]
+ [ 0  0  0  0  2  0  0  0  0  0  2  0  0  0 14]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 10]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  8]
+ [ 0  0  0  0  0  0  0  0  0  0  1  0  0  0 12]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 12]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  1  0  0  0  0  0  1  0  0  1 19]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  2  0  0  0  1  0  0  0  0  1 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+=
+
+Accuracy         : 0.060302
+Precision (wt.)  : —  (see per-class report below)
+Recall    (wt.)  : —  (see per-class report below)
+F1-score  (wt.)  : 0.019910
+F1-score  (macro): 0.019368
+
+Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       0.00      0.00      0.00        13
+                       Bot       0.00      0.00      0.00        18
+                      DDoS       0.00      0.00      0.00        11
+             DoS GoldenEye       0.00      0.00      0.00        13
+                  DoS Hulk       0.09      0.07      0.08        14
+          DoS Slowhttptest       0.00      0.00      0.00        11
+             DoS slowloris       0.00      0.00      0.00         8
+               FTP-Patator       0.00      0.00      0.00        13
+                Heartbleed       0.00      0.00      0.00        14
+              Infiltration       0.00      0.00      0.00        12
+                  PortScan       0.00      0.00      0.00        11
+               SSH-Patator       0.00      0.00      0.00        22
+  Web Attack - Brute Force       0.00      0.00      0.00        12
+Web Attack - Sql Injection       0.50      0.06      0.11        17
+          Web Attack - XSS       0.06      1.00      0.11        10
+
+                  accuracy                           0.06       199
+                 macro avg       0.04      0.08      0.02       199
+              weighted avg       0.05      0.06      0.02       199
+
+
+Confusion Matrix:
+[[ 0  0  0  0  2  0  0  0  0  0  1  0  0  0 10]
+ [ 0  0  0  0  2  0  0  0  0  0  2  0  0  0 14]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 10]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  8]
+ [ 0  0  0  0  0  0  0  0  0  0  1  0  0  0 12]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 12]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  1  0  0  0  0  0  1  0  0  1 19]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  2  0  0  0  1  0  0  0  0  1 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+=
+
+Accuracy         : 0.060302
+Precision (wt.)  : —  (see per-class report below)
+Recall    (wt.)  : —  (see per-class report below)
+F1-score  (wt.)  : 0.019910
+F1-score  (macro): 0.019368
+
+Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       0.00      0.00      0.00        13
+                       Bot       0.00      0.00      0.00        18
+                      DDoS       0.00      0.00      0.00        11
+             DoS GoldenEye       0.00      0.00      0.00        13
+                  DoS Hulk       0.09      0.07      0.08        14
+          DoS Slowhttptest       0.00      0.00      0.00        11
+             DoS slowloris       0.00      0.00      0.00         8
+               FTP-Patator       0.00      0.00      0.00        13
+                Heartbleed       0.00      0.00      0.00        14
+              Infiltration       0.00      0.00      0.00        12
+                  PortScan       0.00      0.00      0.00        11
+               SSH-Patator       0.00      0.00      0.00        22
+  Web Attack - Brute Force       0.00      0.00      0.00        12
+Web Attack - Sql Injection       0.50      0.06      0.11        17
+          Web Attack - XSS       0.06      1.00      0.11        10
+
+                  accuracy                           0.06       199
+                 macro avg       0.04      0.08      0.02       199
+              weighted avg       0.05      0.06      0.02       199
+
+
+Confusion Matrix:
+[[ 0  0  0  0  2  0  0  0  0  0  1  0  0  0 10]
+ [ 0  0  0  0  2  0  0  0  0  0  2  0  0  0 14]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 10]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  8]
+ [ 0  0  0  0  0  0  0  0  0  0  1  0  0  0 12]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 12]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  1  0  0  0  0  0  1  0  0  1 19]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  2  0  0  0  1  0  0  0  0  1 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+=
+
+Accuracy         : 0.060302
+Precision (wt.)  : —  (see per-class report below)
+Recall    (wt.)  : —  (see per-class report below)
+F1-score  (wt.)  : 0.019910
+F1-score  (macro): 0.019368
+
+Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       0.00      0.00      0.00        13
+                       Bot       0.00      0.00      0.00        18
+                      DDoS       0.00      0.00      0.00        11
+             DoS GoldenEye       0.00      0.00      0.00        13
+                  DoS Hulk       0.09      0.07      0.08        14
+          DoS Slowhttptest       0.00      0.00      0.00        11
+             DoS slowloris       0.00      0.00      0.00         8
+               FTP-Patator       0.00      0.00      0.00        13
+                Heartbleed       0.00      0.00      0.00        14
+              Infiltration       0.00      0.00      0.00        12
+                  PortScan       0.00      0.00      0.00        11
+               SSH-Patator       0.00      0.00      0.00        22
+  Web Attack - Brute Force       0.00      0.00      0.00        12
+Web Attack - Sql Injection       0.50      0.06      0.11        17
+          Web Attack - XSS       0.06      1.00      0.11        10
+
+                  accuracy                           0.06       199
+                 macro avg       0.04      0.08      0.02       199
+              weighted avg       0.05      0.06      0.02       199
+
+
+Confusion Matrix:
+[[ 0  0  0  0  2  0  0  0  0  0  1  0  0  0 10]
+ [ 0  0  0  0  2  0  0  0  0  0  2  0  0  0 14]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 10]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  8]
+ [ 0  0  0  0  0  0  0  0  0  0  1  0  0  0 12]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 12]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  1  0  0  0  0  0  1  0  0  1 19]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  2  0  0  0  1  0  0  0  0  1 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+=
+
+Accuracy         : 0.060302
+Precision (wt.)  : —  (see per-class report below)
+Recall    (wt.)  : —  (see per-class report below)
+F1-score  (wt.)  : 0.019910
+F1-score  (macro): 0.019368
+
+Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       0.00      0.00      0.00        13
+                       Bot       0.00      0.00      0.00        18
+                      DDoS       0.00      0.00      0.00        11
+             DoS GoldenEye       0.00      0.00      0.00        13
+                  DoS Hulk       0.09      0.07      0.08        14
+          DoS Slowhttptest       0.00      0.00      0.00        11
+             DoS slowloris       0.00      0.00      0.00         8
+               FTP-Patator       0.00      0.00      0.00        13
+                Heartbleed       0.00      0.00      0.00        14
+              Infiltration       0.00      0.00      0.00        12
+                  PortScan       0.00      0.00      0.00        11
+               SSH-Patator       0.00      0.00      0.00        22
+  Web Attack - Brute Force       0.00      0.00      0.00        12
+Web Attack - Sql Injection       0.50      0.06      0.11        17
+          Web Attack - XSS       0.06      1.00      0.11        10
+
+                  accuracy                           0.06       199
+                 macro avg       0.04      0.08      0.02       199
+              weighted avg       0.05      0.06      0.02       199
+
+
+Confusion Matrix:
+[[ 0  0  0  0  2  0  0  0  0  0  1  0  0  0 10]
+ [ 0  0  0  0  2  0  0  0  0  0  2  0  0  0 14]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 10]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  8]
+ [ 0  0  0  0  0  0  0  0  0  0  1  0  0  0 12]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 12]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  1  0  0  0  0  0  1  0  0  1 19]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  2  0  0  0  1  0  0  0  0  1 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+=
+
+Accuracy         : 0.060302
+Precision (wt.)  : —  (see per-class report below)
+Recall    (wt.)  : —  (see per-class report below)
+F1-score  (wt.)  : 0.019910
+F1-score  (macro): 0.019368
+
+Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       0.00      0.00      0.00        13
+                       Bot       0.00      0.00      0.00        18
+                      DDoS       0.00      0.00      0.00        11
+             DoS GoldenEye       0.00      0.00      0.00        13
+                  DoS Hulk       0.09      0.07      0.08        14
+          DoS Slowhttptest       0.00      0.00      0.00        11
+             DoS slowloris       0.00      0.00      0.00         8
+               FTP-Patator       0.00      0.00      0.00        13
+                Heartbleed       0.00      0.00      0.00        14
+              Infiltration       0.00      0.00      0.00        12
+                  PortScan       0.00      0.00      0.00        11
+               SSH-Patator       0.00      0.00      0.00        22
+  Web Attack - Brute Force       0.00      0.00      0.00        12
+Web Attack - Sql Injection       0.50      0.06      0.11        17
+          Web Attack - XSS       0.06      1.00      0.11        10
+
+                  accuracy                           0.06       199
+                 macro avg       0.04      0.08      0.02       199
+              weighted avg       0.05      0.06      0.02       199
+
+
+Confusion Matrix:
+[[ 0  0  0  0  2  0  0  0  0  0  1  0  0  0 10]
+ [ 0  0  0  0  2  0  0  0  0  0  2  0  0  0 14]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 10]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  8]
+ [ 0  0  0  0  0  0  0  0  0  0  1  0  0  0 12]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 12]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  1  0  0  0  0  0  1  0  0  1 19]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  2  0  0  0  1  0  0  0  0  1 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+=
+
+Accuracy         : 0.060302
+Precision (wt.)  : —  (see per-class report below)
+Recall    (wt.)  : —  (see per-class report below)
+F1-score  (wt.)  : 0.019910
+F1-score  (macro): 0.019368
+
+Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       0.00      0.00      0.00        13
+                       Bot       0.00      0.00      0.00        18
+                      DDoS       0.00      0.00      0.00        11
+             DoS GoldenEye       0.00      0.00      0.00        13
+                  DoS Hulk       0.09      0.07      0.08        14
+          DoS Slowhttptest       0.00      0.00      0.00        11
+             DoS slowloris       0.00      0.00      0.00         8
+               FTP-Patator       0.00      0.00      0.00        13
+                Heartbleed       0.00      0.00      0.00        14
+              Infiltration       0.00      0.00      0.00        12
+                  PortScan       0.00      0.00      0.00        11
+               SSH-Patator       0.00      0.00      0.00        22
+  Web Attack - Brute Force       0.00      0.00      0.00        12
+Web Attack - Sql Injection       0.50      0.06      0.11        17
+          Web Attack - XSS       0.06      1.00      0.11        10
+
+                  accuracy                           0.06       199
+                 macro avg       0.04      0.08      0.02       199
+              weighted avg       0.05      0.06      0.02       199
+
+
+Confusion Matrix:
+[[ 0  0  0  0  2  0  0  0  0  0  1  0  0  0 10]
+ [ 0  0  0  0  2  0  0  0  0  0  2  0  0  0 14]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 10]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  8]
+ [ 0  0  0  0  0  0  0  0  0  0  1  0  0  0 12]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 12]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  1  0  0  0  0  0  1  0  0  1 19]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  2  0  0  0  1  0  0  0  0  1 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+=
+
+Accuracy         : 0.060302
+Precision (wt.)  : —  (see per-class report below)
+Recall    (wt.)  : —  (see per-class report below)
+F1-score  (wt.)  : 0.019910
+F1-score  (macro): 0.019368
+
+Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       0.00      0.00      0.00        13
+                       Bot       0.00      0.00      0.00        18
+                      DDoS       0.00      0.00      0.00        11
+             DoS GoldenEye       0.00      0.00      0.00        13
+                  DoS Hulk       0.09      0.07      0.08        14
+          DoS Slowhttptest       0.00      0.00      0.00        11
+             DoS slowloris       0.00      0.00      0.00         8
+               FTP-Patator       0.00      0.00      0.00        13
+                Heartbleed       0.00      0.00      0.00        14
+              Infiltration       0.00      0.00      0.00        12
+                  PortScan       0.00      0.00      0.00        11
+               SSH-Patator       0.00      0.00      0.00        22
+  Web Attack - Brute Force       0.00      0.00      0.00        12
+Web Attack - Sql Injection       0.50      0.06      0.11        17
+          Web Attack - XSS       0.06      1.00      0.11        10
+
+                  accuracy                           0.06       199
+                 macro avg       0.04      0.08      0.02       199
+              weighted avg       0.05      0.06      0.02       199
+
+
+Confusion Matrix:
+[[ 0  0  0  0  2  0  0  0  0  0  1  0  0  0 10]
+ [ 0  0  0  0  2  0  0  0  0  0  2  0  0  0 14]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 10]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  8]
+ [ 0  0  0  0  0  0  0  0  0  0  1  0  0  0 12]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 12]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  1  0  0  0  0  0  1  0  0  1 19]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  2  0  0  0  1  0  0  0  0  1 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+=
+
+Accuracy         : 0.060302
+Precision (wt.)  : —  (see per-class report below)
+Recall    (wt.)  : —  (see per-class report below)
+F1-score  (wt.)  : 0.019910
+F1-score  (macro): 0.019368
+
+Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       0.00      0.00      0.00        13
+                       Bot       0.00      0.00      0.00        18
+                      DDoS       0.00      0.00      0.00        11
+             DoS GoldenEye       0.00      0.00      0.00        13
+                  DoS Hulk       0.09      0.07      0.08        14
+          DoS Slowhttptest       0.00      0.00      0.00        11
+             DoS slowloris       0.00      0.00      0.00         8
+               FTP-Patator       0.00      0.00      0.00        13
+                Heartbleed       0.00      0.00      0.00        14
+              Infiltration       0.00      0.00      0.00        12
+                  PortScan       0.00      0.00      0.00        11
+               SSH-Patator       0.00      0.00      0.00        22
+  Web Attack - Brute Force       0.00      0.00      0.00        12
+Web Attack - Sql Injection       0.50      0.06      0.11        17
+          Web Attack - XSS       0.06      1.00      0.11        10
+
+                  accuracy                           0.06       199
+                 macro avg       0.04      0.08      0.02       199
+              weighted avg       0.05      0.06      0.02       199
+
+
+Confusion Matrix:
+[[ 0  0  0  0  2  0  0  0  0  0  1  0  0  0 10]
+ [ 0  0  0  0  2  0  0  0  0  0  2  0  0  0 14]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 10]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  8]
+ [ 0  0  0  0  0  0  0  0  0  0  1  0  0  0 12]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 12]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  1  0  0  0  0  0  1  0  0  1 19]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  2  0  0  0  1  0  0  0  0  1 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+=
+
+Accuracy         : 0.060302
+Precision (wt.)  : —  (see per-class report below)
+Recall    (wt.)  : —  (see per-class report below)
+F1-score  (wt.)  : 0.019910
+F1-score  (macro): 0.019368
+
+Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       0.00      0.00      0.00        13
+                       Bot       0.00      0.00      0.00        18
+                      DDoS       0.00      0.00      0.00        11
+             DoS GoldenEye       0.00      0.00      0.00        13
+                  DoS Hulk       0.09      0.07      0.08        14
+          DoS Slowhttptest       0.00      0.00      0.00        11
+             DoS slowloris       0.00      0.00      0.00         8
+               FTP-Patator       0.00      0.00      0.00        13
+                Heartbleed       0.00      0.00      0.00        14
+              Infiltration       0.00      0.00      0.00        12
+                  PortScan       0.00      0.00      0.00        11
+               SSH-Patator       0.00      0.00      0.00        22
+  Web Attack - Brute Force       0.00      0.00      0.00        12
+Web Attack - Sql Injection       0.50      0.06      0.11        17
+          Web Attack - XSS       0.06      1.00      0.11        10
+
+                  accuracy                           0.06       199
+                 macro avg       0.04      0.08      0.02       199
+              weighted avg       0.05      0.06      0.02       199
+
+
+Confusion Matrix:
+[[ 0  0  0  0  2  0  0  0  0  0  1  0  0  0 10]
+ [ 0  0  0  0  2  0  0  0  0  0  2  0  0  0 14]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 10]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  8]
+ [ 0  0  0  0  0  0  0  0  0  0  1  0  0  0 12]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 12]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  1  0  0  0  0  0  1  0  0  1 19]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  2  0  0  0  1  0  0  0  0  1 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+=
+
+Accuracy         : 0.060302
+Precision (wt.)  : —  (see per-class report below)
+Recall    (wt.)  : —  (see per-class report below)
+F1-score  (wt.)  : 0.019910
+F1-score  (macro): 0.019368
+
+Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       0.00      0.00      0.00        13
+                       Bot       0.00      0.00      0.00        18
+                      DDoS       0.00      0.00      0.00        11
+             DoS GoldenEye       0.00      0.00      0.00        13
+                  DoS Hulk       0.09      0.07      0.08        14
+          DoS Slowhttptest       0.00      0.00      0.00        11
+             DoS slowloris       0.00      0.00      0.00         8
+               FTP-Patator       0.00      0.00      0.00        13
+                Heartbleed       0.00      0.00      0.00        14
+              Infiltration       0.00      0.00      0.00        12
+                  PortScan       0.00      0.00      0.00        11
+               SSH-Patator       0.00      0.00      0.00        22
+  Web Attack - Brute Force       0.00      0.00      0.00        12
+Web Attack - Sql Injection       0.50      0.06      0.11        17
+          Web Attack - XSS       0.06      1.00      0.11        10
+
+                  accuracy                           0.06       199
+                 macro avg       0.04      0.08      0.02       199
+              weighted avg       0.05      0.06      0.02       199
+
+
+Confusion Matrix:
+[[ 0  0  0  0  2  0  0  0  0  0  1  0  0  0 10]
+ [ 0  0  0  0  2  0  0  0  0  0  2  0  0  0 14]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 10]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  8]
+ [ 0  0  0  0  0  0  0  0  0  0  1  0  0  0 12]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 12]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  1  0  0  0  0  0  1  0  0  1 19]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  2  0  0  0  1  0  0  0  0  1 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+=
+
+Accuracy         : 0.060302
+Precision (wt.)  : —  (see per-class report below)
+Recall    (wt.)  : —  (see per-class report below)
+F1-score  (wt.)  : 0.019910
+F1-score  (macro): 0.019368
+
+Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       0.00      0.00      0.00        13
+                       Bot       0.00      0.00      0.00        18
+                      DDoS       0.00      0.00      0.00        11
+             DoS GoldenEye       0.00      0.00      0.00        13
+                  DoS Hulk       0.09      0.07      0.08        14
+          DoS Slowhttptest       0.00      0.00      0.00        11
+             DoS slowloris       0.00      0.00      0.00         8
+               FTP-Patator       0.00      0.00      0.00        13
+                Heartbleed       0.00      0.00      0.00        14
+              Infiltration       0.00      0.00      0.00        12
+                  PortScan       0.00      0.00      0.00        11
+               SSH-Patator       0.00      0.00      0.00        22
+  Web Attack - Brute Force       0.00      0.00      0.00        12
+Web Attack - Sql Injection       0.50      0.06      0.11        17
+          Web Attack - XSS       0.06      1.00      0.11        10
+
+                  accuracy                           0.06       199
+                 macro avg       0.04      0.08      0.02       199
+              weighted avg       0.05      0.06      0.02       199
+
+
+Confusion Matrix:
+[[ 0  0  0  0  2  0  0  0  0  0  1  0  0  0 10]
+ [ 0  0  0  0  2  0  0  0  0  0  2  0  0  0 14]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 10]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  8]
+ [ 0  0  0  0  0  0  0  0  0  0  1  0  0  0 12]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 12]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  1  0  0  0  0  0  1  0  0  1 19]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  2  0  0  0  1  0  0  0  0  1 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+=
+
+Accuracy         : 0.060302
+Precision (wt.)  : —  (see per-class report below)
+Recall    (wt.)  : —  (see per-class report below)
+F1-score  (wt.)  : 0.019910
+F1-score  (macro): 0.019368
+
+Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       0.00      0.00      0.00        13
+                       Bot       0.00      0.00      0.00        18
+                      DDoS       0.00      0.00      0.00        11
+             DoS GoldenEye       0.00      0.00      0.00        13
+                  DoS Hulk       0.09      0.07      0.08        14
+          DoS Slowhttptest       0.00      0.00      0.00        11
+             DoS slowloris       0.00      0.00      0.00         8
+               FTP-Patator       0.00      0.00      0.00        13
+                Heartbleed       0.00      0.00      0.00        14
+              Infiltration       0.00      0.00      0.00        12
+                  PortScan       0.00      0.00      0.00        11
+               SSH-Patator       0.00      0.00      0.00        22
+  Web Attack - Brute Force       0.00      0.00      0.00        12
+Web Attack - Sql Injection       0.50      0.06      0.11        17
+          Web Attack - XSS       0.06      1.00      0.11        10
+
+                  accuracy                           0.06       199
+                 macro avg       0.04      0.08      0.02       199
+              weighted avg       0.05      0.06      0.02       199
+
+
+Confusion Matrix:
+[[ 0  0  0  0  2  0  0  0  0  0  1  0  0  0 10]
+ [ 0  0  0  0  2  0  0  0  0  0  2  0  0  0 14]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 10]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  8]
+ [ 0  0  0  0  0  0  0  0  0  0  1  0  0  0 12]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 12]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  1  0  0  0  0  0  1  0  0  1 19]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  2  0  0  0  1  0  0  0  0  1 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+=
+
+Accuracy         : 0.060302
+Precision (wt.)  : —  (see per-class report below)
+Recall    (wt.)  : —  (see per-class report below)
+F1-score  (wt.)  : 0.019910
+F1-score  (macro): 0.019368
+
+Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       0.00      0.00      0.00        13
+                       Bot       0.00      0.00      0.00        18
+                      DDoS       0.00      0.00      0.00        11
+             DoS GoldenEye       0.00      0.00      0.00        13
+                  DoS Hulk       0.09      0.07      0.08        14
+          DoS Slowhttptest       0.00      0.00      0.00        11
+             DoS slowloris       0.00      0.00      0.00         8
+               FTP-Patator       0.00      0.00      0.00        13
+                Heartbleed       0.00      0.00      0.00        14
+              Infiltration       0.00      0.00      0.00        12
+                  PortScan       0.00      0.00      0.00        11
+               SSH-Patator       0.00      0.00      0.00        22
+  Web Attack - Brute Force       0.00      0.00      0.00        12
+Web Attack - Sql Injection       0.50      0.06      0.11        17
+          Web Attack - XSS       0.06      1.00      0.11        10
+
+                  accuracy                           0.06       199
+                 macro avg       0.04      0.08      0.02       199
+              weighted avg       0.05      0.06      0.02       199
+
+
+Confusion Matrix:
+[[ 0  0  0  0  2  0  0  0  0  0  1  0  0  0 10]
+ [ 0  0  0  0  2  0  0  0  0  0  2  0  0  0 14]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 10]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  8]
+ [ 0  0  0  0  0  0  0  0  0  0  1  0  0  0 12]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 12]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  1  0  0  0  0  0  1  0  0  1 19]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  2  0  0  0  1  0  0  0  0  1 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+=
+
+Accuracy         : 0.060302
+Precision (wt.)  : —  (see per-class report below)
+Recall    (wt.)  : —  (see per-class report below)
+F1-score  (wt.)  : 0.019910
+F1-score  (macro): 0.019368
+
+Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       0.00      0.00      0.00        13
+                       Bot       0.00      0.00      0.00        18
+                      DDoS       0.00      0.00      0.00        11
+             DoS GoldenEye       0.00      0.00      0.00        13
+                  DoS Hulk       0.09      0.07      0.08        14
+          DoS Slowhttptest       0.00      0.00      0.00        11
+             DoS slowloris       0.00      0.00      0.00         8
+               FTP-Patator       0.00      0.00      0.00        13
+                Heartbleed       0.00      0.00      0.00        14
+              Infiltration       0.00      0.00      0.00        12
+                  PortScan       0.00      0.00      0.00        11
+               SSH-Patator       0.00      0.00      0.00        22
+  Web Attack - Brute Force       0.00      0.00      0.00        12
+Web Attack - Sql Injection       0.50      0.06      0.11        17
+          Web Attack - XSS       0.06      1.00      0.11        10
+
+                  accuracy                           0.06       199
+                 macro avg       0.04      0.08      0.02       199
+              weighted avg       0.05      0.06      0.02       199
+
+
+Confusion Matrix:
+[[ 0  0  0  0  2  0  0  0  0  0  1  0  0  0 10]
+ [ 0  0  0  0  2  0  0  0  0  0  2  0  0  0 14]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 10]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  8]
+ [ 0  0  0  0  0  0  0  0  0  0  1  0  0  0 12]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 12]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  1  0  0  0  0  0  1  0  0  1 19]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  2  0  0  0  1  0  0  0  0  1 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+=
+
+Accuracy         : 0.060302
+Precision (wt.)  : —  (see per-class report below)
+Recall    (wt.)  : —  (see per-class report below)
+F1-score  (wt.)  : 0.019910
+F1-score  (macro): 0.019368
+
+Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       0.00      0.00      0.00        13
+                       Bot       0.00      0.00      0.00        18
+                      DDoS       0.00      0.00      0.00        11
+             DoS GoldenEye       0.00      0.00      0.00        13
+                  DoS Hulk       0.09      0.07      0.08        14
+          DoS Slowhttptest       0.00      0.00      0.00        11
+             DoS slowloris       0.00      0.00      0.00         8
+               FTP-Patator       0.00      0.00      0.00        13
+                Heartbleed       0.00      0.00      0.00        14
+              Infiltration       0.00      0.00      0.00        12
+                  PortScan       0.00      0.00      0.00        11
+               SSH-Patator       0.00      0.00      0.00        22
+  Web Attack - Brute Force       0.00      0.00      0.00        12
+Web Attack - Sql Injection       0.50      0.06      0.11        17
+          Web Attack - XSS       0.06      1.00      0.11        10
+
+                  accuracy                           0.06       199
+                 macro avg       0.04      0.08      0.02       199
+              weighted avg       0.05      0.06      0.02       199
+
+
+Confusion Matrix:
+[[ 0  0  0  0  2  0  0  0  0  0  1  0  0  0 10]
+ [ 0  0  0  0  2  0  0  0  0  0  2  0  0  0 14]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 10]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  8]
+ [ 0  0  0  0  0  0  0  0  0  0  1  0  0  0 12]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 12]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  1  0  0  0  0  0  1  0  0  1 19]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  2  0  0  0  1  0  0  0  0  1 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+=
+
+Accuracy         : 0.060302
+Precision (wt.)  : —  (see per-class report below)
+Recall    (wt.)  : —  (see per-class report below)
+F1-score  (wt.)  : 0.019910
+F1-score  (macro): 0.019368
+
+Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       0.00      0.00      0.00        13
+                       Bot       0.00      0.00      0.00        18
+                      DDoS       0.00      0.00      0.00        11
+             DoS GoldenEye       0.00      0.00      0.00        13
+                  DoS Hulk       0.09      0.07      0.08        14
+          DoS Slowhttptest       0.00      0.00      0.00        11
+             DoS slowloris       0.00      0.00      0.00         8
+               FTP-Patator       0.00      0.00      0.00        13
+                Heartbleed       0.00      0.00      0.00        14
+              Infiltration       0.00      0.00      0.00        12
+                  PortScan       0.00      0.00      0.00        11
+               SSH-Patator       0.00      0.00      0.00        22
+  Web Attack - Brute Force       0.00      0.00      0.00        12
+Web Attack - Sql Injection       0.50      0.06      0.11        17
+          Web Attack - XSS       0.06      1.00      0.11        10
+
+                  accuracy                           0.06       199
+                 macro avg       0.04      0.08      0.02       199
+              weighted avg       0.05      0.06      0.02       199
+
+
+Confusion Matrix:
+[[ 0  0  0  0  2  0  0  0  0  0  1  0  0  0 10]
+ [ 0  0  0  0  2  0  0  0  0  0  2  0  0  0 14]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 10]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  8]
+ [ 0  0  0  0  0  0  0  0  0  0  1  0  0  0 12]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 12]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  1  0  0  0  0  0  1  0  0  1 19]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  2  0  0  0  1  0  0  0  0  1 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+=
+
+Accuracy         : 0.060302
+Precision (wt.)  : —  (see per-class report below)
+Recall    (wt.)  : —  (see per-class report below)
+F1-score  (wt.)  : 0.019910
+F1-score  (macro): 0.019368
+
+Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       0.00      0.00      0.00        13
+                       Bot       0.00      0.00      0.00        18
+                      DDoS       0.00      0.00      0.00        11
+             DoS GoldenEye       0.00      0.00      0.00        13
+                  DoS Hulk       0.09      0.07      0.08        14
+          DoS Slowhttptest       0.00      0.00      0.00        11
+             DoS slowloris       0.00      0.00      0.00         8
+               FTP-Patator       0.00      0.00      0.00        13
+                Heartbleed       0.00      0.00      0.00        14
+              Infiltration       0.00      0.00      0.00        12
+                  PortScan       0.00      0.00      0.00        11
+               SSH-Patator       0.00      0.00      0.00        22
+  Web Attack - Brute Force       0.00      0.00      0.00        12
+Web Attack - Sql Injection       0.50      0.06      0.11        17
+          Web Attack - XSS       0.06      1.00      0.11        10
+
+                  accuracy                           0.06       199
+                 macro avg       0.04      0.08      0.02       199
+              weighted avg       0.05      0.06      0.02       199
+
+
+Confusion Matrix:
+[[ 0  0  0  0  2  0  0  0  0  0  1  0  0  0 10]
+ [ 0  0  0  0  2  0  0  0  0  0  2  0  0  0 14]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 10]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  8]
+ [ 0  0  0  0  0  0  0  0  0  0  1  0  0  0 12]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 12]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  1  0  0  0  0  0  1  0  0  1 19]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  2  0  0  0  1  0  0  0  0  1 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+=
+
+Accuracy         : 0.060302
+Precision (wt.)  : —  (see per-class report below)
+Recall    (wt.)  : —  (see per-class report below)
+F1-score  (wt.)  : 0.019910
+F1-score  (macro): 0.019368
+
+Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       0.00      0.00      0.00        13
+                       Bot       0.00      0.00      0.00        18
+                      DDoS       0.00      0.00      0.00        11
+             DoS GoldenEye       0.00      0.00      0.00        13
+                  DoS Hulk       0.09      0.07      0.08        14
+          DoS Slowhttptest       0.00      0.00      0.00        11
+             DoS slowloris       0.00      0.00      0.00         8
+               FTP-Patator       0.00      0.00      0.00        13
+                Heartbleed       0.00      0.00      0.00        14
+              Infiltration       0.00      0.00      0.00        12
+                  PortScan       0.00      0.00      0.00        11
+               SSH-Patator       0.00      0.00      0.00        22
+  Web Attack - Brute Force       0.00      0.00      0.00        12
+Web Attack - Sql Injection       0.50      0.06      0.11        17
+          Web Attack - XSS       0.06      1.00      0.11        10
+
+                  accuracy                           0.06       199
+                 macro avg       0.04      0.08      0.02       199
+              weighted avg       0.05      0.06      0.02       199
+
+
+Confusion Matrix:
+[[ 0  0  0  0  2  0  0  0  0  0  1  0  0  0 10]
+ [ 0  0  0  0  2  0  0  0  0  0  2  0  0  0 14]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 10]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  8]
+ [ 0  0  0  0  0  0  0  0  0  0  1  0  0  0 12]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 12]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  1  0  0  0  0  0  1  0  0  1 19]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  2  0  0  0  1  0  0  0  0  1 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+=
+
+Accuracy         : 0.060302
+Precision (wt.)  : —  (see per-class report below)
+Recall    (wt.)  : —  (see per-class report below)
+F1-score  (wt.)  : 0.019910
+F1-score  (macro): 0.019368
+
+Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       0.00      0.00      0.00        13
+                       Bot       0.00      0.00      0.00        18
+                      DDoS       0.00      0.00      0.00        11
+             DoS GoldenEye       0.00      0.00      0.00        13
+                  DoS Hulk       0.09      0.07      0.08        14
+          DoS Slowhttptest       0.00      0.00      0.00        11
+             DoS slowloris       0.00      0.00      0.00         8
+               FTP-Patator       0.00      0.00      0.00        13
+                Heartbleed       0.00      0.00      0.00        14
+              Infiltration       0.00      0.00      0.00        12
+                  PortScan       0.00      0.00      0.00        11
+               SSH-Patator       0.00      0.00      0.00        22
+  Web Attack - Brute Force       0.00      0.00      0.00        12
+Web Attack - Sql Injection       0.50      0.06      0.11        17
+          Web Attack - XSS       0.06      1.00      0.11        10
+
+                  accuracy                           0.06       199
+                 macro avg       0.04      0.08      0.02       199
+              weighted avg       0.05      0.06      0.02       199
+
+
+Confusion Matrix:
+[[ 0  0  0  0  2  0  0  0  0  0  1  0  0  0 10]
+ [ 0  0  0  0  2  0  0  0  0  0  2  0  0  0 14]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 10]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  8]
+ [ 0  0  0  0  0  0  0  0  0  0  1  0  0  0 12]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 12]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  1  0  0  0  0  0  1  0  0  1 19]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  2  0  0  0  1  0  0  0  0  1 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+=
+
+Accuracy         : 0.060302
+Precision (wt.)  : —  (see per-class report below)
+Recall    (wt.)  : —  (see per-class report below)
+F1-score  (wt.)  : 0.019910
+F1-score  (macro): 0.019368
+
+Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       0.00      0.00      0.00        13
+                       Bot       0.00      0.00      0.00        18
+                      DDoS       0.00      0.00      0.00        11
+             DoS GoldenEye       0.00      0.00      0.00        13
+                  DoS Hulk       0.09      0.07      0.08        14
+          DoS Slowhttptest       0.00      0.00      0.00        11
+             DoS slowloris       0.00      0.00      0.00         8
+               FTP-Patator       0.00      0.00      0.00        13
+                Heartbleed       0.00      0.00      0.00        14
+              Infiltration       0.00      0.00      0.00        12
+                  PortScan       0.00      0.00      0.00        11
+               SSH-Patator       0.00      0.00      0.00        22
+  Web Attack - Brute Force       0.00      0.00      0.00        12
+Web Attack - Sql Injection       0.50      0.06      0.11        17
+          Web Attack - XSS       0.06      1.00      0.11        10
+
+                  accuracy                           0.06       199
+                 macro avg       0.04      0.08      0.02       199
+              weighted avg       0.05      0.06      0.02       199
+
+
+Confusion Matrix:
+[[ 0  0  0  0  2  0  0  0  0  0  1  0  0  0 10]
+ [ 0  0  0  0  2  0  0  0  0  0  2  0  0  0 14]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 10]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  8]
+ [ 0  0  0  0  0  0  0  0  0  0  1  0  0  0 12]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 12]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  1  0  0  0  0  0  1  0  0  1 19]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  2  0  0  0  1  0  0  0  0  1 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+=
+
+Accuracy         : 0.060302
+Precision (wt.)  : —  (see per-class report below)
+Recall    (wt.)  : —  (see per-class report below)
+F1-score  (wt.)  : 0.019910
+F1-score  (macro): 0.019368
+
+Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       0.00      0.00      0.00        13
+                       Bot       0.00      0.00      0.00        18
+                      DDoS       0.00      0.00      0.00        11
+             DoS GoldenEye       0.00      0.00      0.00        13
+                  DoS Hulk       0.09      0.07      0.08        14
+          DoS Slowhttptest       0.00      0.00      0.00        11
+             DoS slowloris       0.00      0.00      0.00         8
+               FTP-Patator       0.00      0.00      0.00        13
+                Heartbleed       0.00      0.00      0.00        14
+              Infiltration       0.00      0.00      0.00        12
+                  PortScan       0.00      0.00      0.00        11
+               SSH-Patator       0.00      0.00      0.00        22
+  Web Attack - Brute Force       0.00      0.00      0.00        12
+Web Attack - Sql Injection       0.50      0.06      0.11        17
+          Web Attack - XSS       0.06      1.00      0.11        10
+
+                  accuracy                           0.06       199
+                 macro avg       0.04      0.08      0.02       199
+              weighted avg       0.05      0.06      0.02       199
+
+
+Confusion Matrix:
+[[ 0  0  0  0  2  0  0  0  0  0  1  0  0  0 10]
+ [ 0  0  0  0  2  0  0  0  0  0  2  0  0  0 14]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 10]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  8]
+ [ 0  0  0  0  0  0  0  0  0  0  1  0  0  0 12]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 12]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  1  0  0  0  0  0  1  0  0  1 19]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  2  0  0  0  1  0  0  0  0  1 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+=
+
+Accuracy         : 0.060302
+Precision (wt.)  : —  (see per-class report below)
+Recall    (wt.)  : —  (see per-class report below)
+F1-score  (wt.)  : 0.019910
+F1-score  (macro): 0.019368
+
+Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       0.00      0.00      0.00        13
+                       Bot       0.00      0.00      0.00        18
+                      DDoS       0.00      0.00      0.00        11
+             DoS GoldenEye       0.00      0.00      0.00        13
+                  DoS Hulk       0.09      0.07      0.08        14
+          DoS Slowhttptest       0.00      0.00      0.00        11
+             DoS slowloris       0.00      0.00      0.00         8
+               FTP-Patator       0.00      0.00      0.00        13
+                Heartbleed       0.00      0.00      0.00        14
+              Infiltration       0.00      0.00      0.00        12
+                  PortScan       0.00      0.00      0.00        11
+               SSH-Patator       0.00      0.00      0.00        22
+  Web Attack - Brute Force       0.00      0.00      0.00        12
+Web Attack - Sql Injection       0.50      0.06      0.11        17
+          Web Attack - XSS       0.06      1.00      0.11        10
+
+                  accuracy                           0.06       199
+                 macro avg       0.04      0.08      0.02       199
+              weighted avg       0.05      0.06      0.02       199
+
+
+Confusion Matrix:
+[[ 0  0  0  0  2  0  0  0  0  0  1  0  0  0 10]
+ [ 0  0  0  0  2  0  0  0  0  0  2  0  0  0 14]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 10]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  8]
+ [ 0  0  0  0  0  0  0  0  0  0  1  0  0  0 12]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 12]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  1  0  0  0  0  0  1  0  0  1 19]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  2  0  0  0  1  0  0  0  0  1 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+=
+
+Accuracy         : 0.060302
+Precision (wt.)  : —  (see per-class report below)
+Recall    (wt.)  : —  (see per-class report below)
+F1-score  (wt.)  : 0.019910
+F1-score  (macro): 0.019368
+
+Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       0.00      0.00      0.00        13
+                       Bot       0.00      0.00      0.00        18
+                      DDoS       0.00      0.00      0.00        11
+             DoS GoldenEye       0.00      0.00      0.00        13
+                  DoS Hulk       0.09      0.07      0.08        14
+          DoS Slowhttptest       0.00      0.00      0.00        11
+             DoS slowloris       0.00      0.00      0.00         8
+               FTP-Patator       0.00      0.00      0.00        13
+                Heartbleed       0.00      0.00      0.00        14
+              Infiltration       0.00      0.00      0.00        12
+                  PortScan       0.00      0.00      0.00        11
+               SSH-Patator       0.00      0.00      0.00        22
+  Web Attack - Brute Force       0.00      0.00      0.00        12
+Web Attack - Sql Injection       0.50      0.06      0.11        17
+          Web Attack - XSS       0.06      1.00      0.11        10
+
+                  accuracy                           0.06       199
+                 macro avg       0.04      0.08      0.02       199
+              weighted avg       0.05      0.06      0.02       199
+
+
+Confusion Matrix:
+[[ 0  0  0  0  2  0  0  0  0  0  1  0  0  0 10]
+ [ 0  0  0  0  2  0  0  0  0  0  2  0  0  0 14]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 10]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  8]
+ [ 0  0  0  0  0  0  0  0  0  0  1  0  0  0 12]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 12]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  1  0  0  0  0  0  1  0  0  1 19]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  2  0  0  0  1  0  0  0  0  1 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+=
+
+Accuracy         : 0.060302
+Precision (wt.)  : —  (see per-class report below)
+Recall    (wt.)  : —  (see per-class report below)
+F1-score  (wt.)  : 0.019910
+F1-score  (macro): 0.019368
+
+Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       0.00      0.00      0.00        13
+                       Bot       0.00      0.00      0.00        18
+                      DDoS       0.00      0.00      0.00        11
+             DoS GoldenEye       0.00      0.00      0.00        13
+                  DoS Hulk       0.09      0.07      0.08        14
+          DoS Slowhttptest       0.00      0.00      0.00        11
+             DoS slowloris       0.00      0.00      0.00         8
+               FTP-Patator       0.00      0.00      0.00        13
+                Heartbleed       0.00      0.00      0.00        14
+              Infiltration       0.00      0.00      0.00        12
+                  PortScan       0.00      0.00      0.00        11
+               SSH-Patator       0.00      0.00      0.00        22
+  Web Attack - Brute Force       0.00      0.00      0.00        12
+Web Attack - Sql Injection       0.50      0.06      0.11        17
+          Web Attack - XSS       0.06      1.00      0.11        10
+
+                  accuracy                           0.06       199
+                 macro avg       0.04      0.08      0.02       199
+              weighted avg       0.05      0.06      0.02       199
+
+
+Confusion Matrix:
+[[ 0  0  0  0  2  0  0  0  0  0  1  0  0  0 10]
+ [ 0  0  0  0  2  0  0  0  0  0  2  0  0  0 14]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 10]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  8]
+ [ 0  0  0  0  0  0  0  0  0  0  1  0  0  0 12]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 12]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  1  0  0  0  0  0  1  0  0  1 19]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  2  0  0  0  1  0  0  0  0  1 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+=
+
+Accuracy         : 0.060302
+Precision (wt.)  : —  (see per-class report below)
+Recall    (wt.)  : —  (see per-class report below)
+F1-score  (wt.)  : 0.019910
+F1-score  (macro): 0.019368
+
+Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       0.00      0.00      0.00        13
+                       Bot       0.00      0.00      0.00        18
+                      DDoS       0.00      0.00      0.00        11
+             DoS GoldenEye       0.00      0.00      0.00        13
+                  DoS Hulk       0.09      0.07      0.08        14
+          DoS Slowhttptest       0.00      0.00      0.00        11
+             DoS slowloris       0.00      0.00      0.00         8
+               FTP-Patator       0.00      0.00      0.00        13
+                Heartbleed       0.00      0.00      0.00        14
+              Infiltration       0.00      0.00      0.00        12
+                  PortScan       0.00      0.00      0.00        11
+               SSH-Patator       0.00      0.00      0.00        22
+  Web Attack - Brute Force       0.00      0.00      0.00        12
+Web Attack - Sql Injection       0.50      0.06      0.11        17
+          Web Attack - XSS       0.06      1.00      0.11        10
+
+                  accuracy                           0.06       199
+                 macro avg       0.04      0.08      0.02       199
+              weighted avg       0.05      0.06      0.02       199
+
+
+Confusion Matrix:
+[[ 0  0  0  0  2  0  0  0  0  0  1  0  0  0 10]
+ [ 0  0  0  0  2  0  0  0  0  0  2  0  0  0 14]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 10]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  8]
+ [ 0  0  0  0  0  0  0  0  0  0  1  0  0  0 12]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 12]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  1  0  0  0  0  0  1  0  0  1 19]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  2  0  0  0  1  0  0  0  0  1 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+=
+
+Accuracy         : 0.060302
+Precision (wt.)  : —  (see per-class report below)
+Recall    (wt.)  : —  (see per-class report below)
+F1-score  (wt.)  : 0.019910
+F1-score  (macro): 0.019368
+
+Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       0.00      0.00      0.00        13
+                       Bot       0.00      0.00      0.00        18
+                      DDoS       0.00      0.00      0.00        11
+             DoS GoldenEye       0.00      0.00      0.00        13
+                  DoS Hulk       0.09      0.07      0.08        14
+          DoS Slowhttptest       0.00      0.00      0.00        11
+             DoS slowloris       0.00      0.00      0.00         8
+               FTP-Patator       0.00      0.00      0.00        13
+                Heartbleed       0.00      0.00      0.00        14
+              Infiltration       0.00      0.00      0.00        12
+                  PortScan       0.00      0.00      0.00        11
+               SSH-Patator       0.00      0.00      0.00        22
+  Web Attack - Brute Force       0.00      0.00      0.00        12
+Web Attack - Sql Injection       0.50      0.06      0.11        17
+          Web Attack - XSS       0.06      1.00      0.11        10
+
+                  accuracy                           0.06       199
+                 macro avg       0.04      0.08      0.02       199
+              weighted avg       0.05      0.06      0.02       199
+
+
+Confusion Matrix:
+[[ 0  0  0  0  2  0  0  0  0  0  1  0  0  0 10]
+ [ 0  0  0  0  2  0  0  0  0  0  2  0  0  0 14]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 10]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  8]
+ [ 0  0  0  0  0  0  0  0  0  0  1  0  0  0 12]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 12]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  1  0  0  0  0  0  1  0  0  1 19]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  2  0  0  0  1  0  0  0  0  1 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+=
+
+Accuracy         : 0.060302
+Precision (wt.)  : —  (see per-class report below)
+Recall    (wt.)  : —  (see per-class report below)
+F1-score  (wt.)  : 0.019910
+F1-score  (macro): 0.019368
+
+Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       0.00      0.00      0.00        13
+                       Bot       0.00      0.00      0.00        18
+                      DDoS       0.00      0.00      0.00        11
+             DoS GoldenEye       0.00      0.00      0.00        13
+                  DoS Hulk       0.09      0.07      0.08        14
+          DoS Slowhttptest       0.00      0.00      0.00        11
+             DoS slowloris       0.00      0.00      0.00         8
+               FTP-Patator       0.00      0.00      0.00        13
+                Heartbleed       0.00      0.00      0.00        14
+              Infiltration       0.00      0.00      0.00        12
+                  PortScan       0.00      0.00      0.00        11
+               SSH-Patator       0.00      0.00      0.00        22
+  Web Attack - Brute Force       0.00      0.00      0.00        12
+Web Attack - Sql Injection       0.50      0.06      0.11        17
+          Web Attack - XSS       0.06      1.00      0.11        10
+
+                  accuracy                           0.06       199
+                 macro avg       0.04      0.08      0.02       199
+              weighted avg       0.05      0.06      0.02       199
+
+
+Confusion Matrix:
+[[ 0  0  0  0  2  0  0  0  0  0  1  0  0  0 10]
+ [ 0  0  0  0  2  0  0  0  0  0  2  0  0  0 14]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 10]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  8]
+ [ 0  0  0  0  0  0  0  0  0  0  1  0  0  0 12]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 12]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  1  0  0  0  0  0  1  0  0  1 19]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  2  0  0  0  1  0  0  0  0  1 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+=
+
+Accuracy         : 0.060302
+Precision (wt.)  : —  (see per-class report below)
+Recall    (wt.)  : —  (see per-class report below)
+F1-score  (wt.)  : 0.019910
+F1-score  (macro): 0.019368
+
+Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       0.00      0.00      0.00        13
+                       Bot       0.00      0.00      0.00        18
+                      DDoS       0.00      0.00      0.00        11
+             DoS GoldenEye       0.00      0.00      0.00        13
+                  DoS Hulk       0.09      0.07      0.08        14
+          DoS Slowhttptest       0.00      0.00      0.00        11
+             DoS slowloris       0.00      0.00      0.00         8
+               FTP-Patator       0.00      0.00      0.00        13
+                Heartbleed       0.00      0.00      0.00        14
+              Infiltration       0.00      0.00      0.00        12
+                  PortScan       0.00      0.00      0.00        11
+               SSH-Patator       0.00      0.00      0.00        22
+  Web Attack - Brute Force       0.00      0.00      0.00        12
+Web Attack - Sql Injection       0.50      0.06      0.11        17
+          Web Attack - XSS       0.06      1.00      0.11        10
+
+                  accuracy                           0.06       199
+                 macro avg       0.04      0.08      0.02       199
+              weighted avg       0.05      0.06      0.02       199
+
+
+Confusion Matrix:
+[[ 0  0  0  0  2  0  0  0  0  0  1  0  0  0 10]
+ [ 0  0  0  0  2  0  0  0  0  0  2  0  0  0 14]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 10]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  8]
+ [ 0  0  0  0  0  0  0  0  0  0  1  0  0  0 12]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 12]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  1  0  0  0  0  0  1  0  0  1 19]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  2  0  0  0  1  0  0  0  0  1 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+=
+
+Accuracy         : 0.060302
+Precision (wt.)  : —  (see per-class report below)
+Recall    (wt.)  : —  (see per-class report below)
+F1-score  (wt.)  : 0.019910
+F1-score  (macro): 0.019368
+
+Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       0.00      0.00      0.00        13
+                       Bot       0.00      0.00      0.00        18
+                      DDoS       0.00      0.00      0.00        11
+             DoS GoldenEye       0.00      0.00      0.00        13
+                  DoS Hulk       0.09      0.07      0.08        14
+          DoS Slowhttptest       0.00      0.00      0.00        11
+             DoS slowloris       0.00      0.00      0.00         8
+               FTP-Patator       0.00      0.00      0.00        13
+                Heartbleed       0.00      0.00      0.00        14
+              Infiltration       0.00      0.00      0.00        12
+                  PortScan       0.00      0.00      0.00        11
+               SSH-Patator       0.00      0.00      0.00        22
+  Web Attack - Brute Force       0.00      0.00      0.00        12
+Web Attack - Sql Injection       0.50      0.06      0.11        17
+          Web Attack - XSS       0.06      1.00      0.11        10
+
+                  accuracy                           0.06       199
+                 macro avg       0.04      0.08      0.02       199
+              weighted avg       0.05      0.06      0.02       199
+
+
+Confusion Matrix:
+[[ 0  0  0  0  2  0  0  0  0  0  1  0  0  0 10]
+ [ 0  0  0  0  2  0  0  0  0  0  2  0  0  0 14]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 10]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  8]
+ [ 0  0  0  0  0  0  0  0  0  0  1  0  0  0 12]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 12]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  1  0  0  0  0  0  1  0  0  1 19]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  2  0  0  0  1  0  0  0  0  1 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+=
+
+Accuracy         : 0.060302
+Precision (wt.)  : —  (see per-class report below)
+Recall    (wt.)  : —  (see per-class report below)
+F1-score  (wt.)  : 0.019910
+F1-score  (macro): 0.019368
+
+Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       0.00      0.00      0.00        13
+                       Bot       0.00      0.00      0.00        18
+                      DDoS       0.00      0.00      0.00        11
+             DoS GoldenEye       0.00      0.00      0.00        13
+                  DoS Hulk       0.09      0.07      0.08        14
+          DoS Slowhttptest       0.00      0.00      0.00        11
+             DoS slowloris       0.00      0.00      0.00         8
+               FTP-Patator       0.00      0.00      0.00        13
+                Heartbleed       0.00      0.00      0.00        14
+              Infiltration       0.00      0.00      0.00        12
+                  PortScan       0.00      0.00      0.00        11
+               SSH-Patator       0.00      0.00      0.00        22
+  Web Attack - Brute Force       0.00      0.00      0.00        12
+Web Attack - Sql Injection       0.50      0.06      0.11        17
+          Web Attack - XSS       0.06      1.00      0.11        10
+
+                  accuracy                           0.06       199
+                 macro avg       0.04      0.08      0.02       199
+              weighted avg       0.05      0.06      0.02       199
+
+
+Confusion Matrix:
+[[ 0  0  0  0  2  0  0  0  0  0  1  0  0  0 10]
+ [ 0  0  0  0  2  0  0  0  0  0  2  0  0  0 14]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 10]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  8]
+ [ 0  0  0  0  0  0  0  0  0  0  1  0  0  0 12]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 12]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  1  0  0  0  0  0  1  0  0  1 19]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  2  0  0  0  1  0  0  0  0  1 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+=
+
+Accuracy         : 0.060302
+Precision (wt.)  : —  (see per-class report below)
+Recall    (wt.)  : —  (see per-class report below)
+F1-score  (wt.)  : 0.019910
+F1-score  (macro): 0.019368
+
+Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       0.00      0.00      0.00        13
+                       Bot       0.00      0.00      0.00        18
+                      DDoS       0.00      0.00      0.00        11
+             DoS GoldenEye       0.00      0.00      0.00        13
+                  DoS Hulk       0.09      0.07      0.08        14
+          DoS Slowhttptest       0.00      0.00      0.00        11
+             DoS slowloris       0.00      0.00      0.00         8
+               FTP-Patator       0.00      0.00      0.00        13
+                Heartbleed       0.00      0.00      0.00        14
+              Infiltration       0.00      0.00      0.00        12
+                  PortScan       0.00      0.00      0.00        11
+               SSH-Patator       0.00      0.00      0.00        22
+  Web Attack - Brute Force       0.00      0.00      0.00        12
+Web Attack - Sql Injection       0.50      0.06      0.11        17
+          Web Attack - XSS       0.06      1.00      0.11        10
+
+                  accuracy                           0.06       199
+                 macro avg       0.04      0.08      0.02       199
+              weighted avg       0.05      0.06      0.02       199
+
+
+Confusion Matrix:
+[[ 0  0  0  0  2  0  0  0  0  0  1  0  0  0 10]
+ [ 0  0  0  0  2  0  0  0  0  0  2  0  0  0 14]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 10]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  8]
+ [ 0  0  0  0  0  0  0  0  0  0  1  0  0  0 12]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 12]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  1  0  0  0  0  0  1  0  0  1 19]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  2  0  0  0  1  0  0  0  0  1 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+=
+
+Accuracy         : 0.060302
+Precision (wt.)  : —  (see per-class report below)
+Recall    (wt.)  : —  (see per-class report below)
+F1-score  (wt.)  : 0.019910
+F1-score  (macro): 0.019368
+
+Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       0.00      0.00      0.00        13
+                       Bot       0.00      0.00      0.00        18
+                      DDoS       0.00      0.00      0.00        11
+             DoS GoldenEye       0.00      0.00      0.00        13
+                  DoS Hulk       0.09      0.07      0.08        14
+          DoS Slowhttptest       0.00      0.00      0.00        11
+             DoS slowloris       0.00      0.00      0.00         8
+               FTP-Patator       0.00      0.00      0.00        13
+                Heartbleed       0.00      0.00      0.00        14
+              Infiltration       0.00      0.00      0.00        12
+                  PortScan       0.00      0.00      0.00        11
+               SSH-Patator       0.00      0.00      0.00        22
+  Web Attack - Brute Force       0.00      0.00      0.00        12
+Web Attack - Sql Injection       0.50      0.06      0.11        17
+          Web Attack - XSS       0.06      1.00      0.11        10
+
+                  accuracy                           0.06       199
+                 macro avg       0.04      0.08      0.02       199
+              weighted avg       0.05      0.06      0.02       199
+
+
+Confusion Matrix:
+[[ 0  0  0  0  2  0  0  0  0  0  1  0  0  0 10]
+ [ 0  0  0  0  2  0  0  0  0  0  2  0  0  0 14]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 10]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  8]
+ [ 0  0  0  0  0  0  0  0  0  0  1  0  0  0 12]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 12]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  1  0  0  0  0  0  1  0  0  1 19]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  2  0  0  0  1  0  0  0  0  1 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+=
+
+Accuracy         : 0.060302
+Precision (wt.)  : —  (see per-class report below)
+Recall    (wt.)  : —  (see per-class report below)
+F1-score  (wt.)  : 0.019910
+F1-score  (macro): 0.019368
+
+Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       0.00      0.00      0.00        13
+                       Bot       0.00      0.00      0.00        18
+                      DDoS       0.00      0.00      0.00        11
+             DoS GoldenEye       0.00      0.00      0.00        13
+                  DoS Hulk       0.09      0.07      0.08        14
+          DoS Slowhttptest       0.00      0.00      0.00        11
+             DoS slowloris       0.00      0.00      0.00         8
+               FTP-Patator       0.00      0.00      0.00        13
+                Heartbleed       0.00      0.00      0.00        14
+              Infiltration       0.00      0.00      0.00        12
+                  PortScan       0.00      0.00      0.00        11
+               SSH-Patator       0.00      0.00      0.00        22
+  Web Attack - Brute Force       0.00      0.00      0.00        12
+Web Attack - Sql Injection       0.50      0.06      0.11        17
+          Web Attack - XSS       0.06      1.00      0.11        10
+
+                  accuracy                           0.06       199
+                 macro avg       0.04      0.08      0.02       199
+              weighted avg       0.05      0.06      0.02       199
+
+
+Confusion Matrix:
+[[ 0  0  0  0  2  0  0  0  0  0  1  0  0  0 10]
+ [ 0  0  0  0  2  0  0  0  0  0  2  0  0  0 14]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 10]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  8]
+ [ 0  0  0  0  0  0  0  0  0  0  1  0  0  0 12]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 12]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  1  0  0  0  0  0  1  0  0  1 19]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  2  0  0  0  1  0  0  0  0  1 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+=
+
+Accuracy         : 0.060302
+Precision (wt.)  : —  (see per-class report below)
+Recall    (wt.)  : —  (see per-class report below)
+F1-score  (wt.)  : 0.019910
+F1-score  (macro): 0.019368
+
+Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       0.00      0.00      0.00        13
+                       Bot       0.00      0.00      0.00        18
+                      DDoS       0.00      0.00      0.00        11
+             DoS GoldenEye       0.00      0.00      0.00        13
+                  DoS Hulk       0.09      0.07      0.08        14
+          DoS Slowhttptest       0.00      0.00      0.00        11
+             DoS slowloris       0.00      0.00      0.00         8
+               FTP-Patator       0.00      0.00      0.00        13
+                Heartbleed       0.00      0.00      0.00        14
+              Infiltration       0.00      0.00      0.00        12
+                  PortScan       0.00      0.00      0.00        11
+               SSH-Patator       0.00      0.00      0.00        22
+  Web Attack - Brute Force       0.00      0.00      0.00        12
+Web Attack - Sql Injection       0.50      0.06      0.11        17
+          Web Attack - XSS       0.06      1.00      0.11        10
+
+                  accuracy                           0.06       199
+                 macro avg       0.04      0.08      0.02       199
+              weighted avg       0.05      0.06      0.02       199
+
+
+Confusion Matrix:
+[[ 0  0  0  0  2  0  0  0  0  0  1  0  0  0 10]
+ [ 0  0  0  0  2  0  0  0  0  0  2  0  0  0 14]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 10]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  8]
+ [ 0  0  0  0  0  0  0  0  0  0  1  0  0  0 12]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 12]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  1  0  0  0  0  0  1  0  0  1 19]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  2  0  0  0  1  0  0  0  0  1 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+=
+
+Accuracy         : 0.060302
+Precision (wt.)  : —  (see per-class report below)
+Recall    (wt.)  : —  (see per-class report below)
+F1-score  (wt.)  : 0.019910
+F1-score  (macro): 0.019368
+
+Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       0.00      0.00      0.00        13
+                       Bot       0.00      0.00      0.00        18
+                      DDoS       0.00      0.00      0.00        11
+             DoS GoldenEye       0.00      0.00      0.00        13
+                  DoS Hulk       0.09      0.07      0.08        14
+          DoS Slowhttptest       0.00      0.00      0.00        11
+             DoS slowloris       0.00      0.00      0.00         8
+               FTP-Patator       0.00      0.00      0.00        13
+                Heartbleed       0.00      0.00      0.00        14
+              Infiltration       0.00      0.00      0.00        12
+                  PortScan       0.00      0.00      0.00        11
+               SSH-Patator       0.00      0.00      0.00        22
+  Web Attack - Brute Force       0.00      0.00      0.00        12
+Web Attack - Sql Injection       0.50      0.06      0.11        17
+          Web Attack - XSS       0.06      1.00      0.11        10
+
+                  accuracy                           0.06       199
+                 macro avg       0.04      0.08      0.02       199
+              weighted avg       0.05      0.06      0.02       199
+
+
+Confusion Matrix:
+[[ 0  0  0  0  2  0  0  0  0  0  1  0  0  0 10]
+ [ 0  0  0  0  2  0  0  0  0  0  2  0  0  0 14]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 10]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  8]
+ [ 0  0  0  0  0  0  0  0  0  0  1  0  0  0 12]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 12]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  1  0  0  0  0  0  1  0  0  1 19]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  2  0  0  0  1  0  0  0  0  1 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+=
+
+Accuracy         : 0.060302
+Precision (wt.)  : —  (see per-class report below)
+Recall    (wt.)  : —  (see per-class report below)
+F1-score  (wt.)  : 0.019910
+F1-score  (macro): 0.019368
+
+Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       0.00      0.00      0.00        13
+                       Bot       0.00      0.00      0.00        18
+                      DDoS       0.00      0.00      0.00        11
+             DoS GoldenEye       0.00      0.00      0.00        13
+                  DoS Hulk       0.09      0.07      0.08        14
+          DoS Slowhttptest       0.00      0.00      0.00        11
+             DoS slowloris       0.00      0.00      0.00         8
+               FTP-Patator       0.00      0.00      0.00        13
+                Heartbleed       0.00      0.00      0.00        14
+              Infiltration       0.00      0.00      0.00        12
+                  PortScan       0.00      0.00      0.00        11
+               SSH-Patator       0.00      0.00      0.00        22
+  Web Attack - Brute Force       0.00      0.00      0.00        12
+Web Attack - Sql Injection       0.50      0.06      0.11        17
+          Web Attack - XSS       0.06      1.00      0.11        10
+
+                  accuracy                           0.06       199
+                 macro avg       0.04      0.08      0.02       199
+              weighted avg       0.05      0.06      0.02       199
+
+
+Confusion Matrix:
+[[ 0  0  0  0  2  0  0  0  0  0  1  0  0  0 10]
+ [ 0  0  0  0  2  0  0  0  0  0  2  0  0  0 14]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 10]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  8]
+ [ 0  0  0  0  0  0  0  0  0  0  1  0  0  0 12]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 12]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  1  0  0  0  0  0  1  0  0  1 19]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  2  0  0  0  1  0  0  0  0  1 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+=
+
+Accuracy         : 0.060302
+Precision (wt.)  : —  (see per-class report below)
+Recall    (wt.)  : —  (see per-class report below)
+F1-score  (wt.)  : 0.019910
+F1-score  (macro): 0.019368
+
+Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       0.00      0.00      0.00        13
+                       Bot       0.00      0.00      0.00        18
+                      DDoS       0.00      0.00      0.00        11
+             DoS GoldenEye       0.00      0.00      0.00        13
+                  DoS Hulk       0.09      0.07      0.08        14
+          DoS Slowhttptest       0.00      0.00      0.00        11
+             DoS slowloris       0.00      0.00      0.00         8
+               FTP-Patator       0.00      0.00      0.00        13
+                Heartbleed       0.00      0.00      0.00        14
+              Infiltration       0.00      0.00      0.00        12
+                  PortScan       0.00      0.00      0.00        11
+               SSH-Patator       0.00      0.00      0.00        22
+  Web Attack - Brute Force       0.00      0.00      0.00        12
+Web Attack - Sql Injection       0.50      0.06      0.11        17
+          Web Attack - XSS       0.06      1.00      0.11        10
+
+                  accuracy                           0.06       199
+                 macro avg       0.04      0.08      0.02       199
+              weighted avg       0.05      0.06      0.02       199
+
+
+Confusion Matrix:
+[[ 0  0  0  0  2  0  0  0  0  0  1  0  0  0 10]
+ [ 0  0  0  0  2  0  0  0  0  0  2  0  0  0 14]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 10]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  8]
+ [ 0  0  0  0  0  0  0  0  0  0  1  0  0  0 12]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 12]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  1  0  0  0  0  0  1  0  0  1 19]
+ [ 0  0  0  0  1  0  0  0  0  0  0  0  0  0 11]
+ [ 0  0  0  0  2  0  0  0  1  0  0  0  0  1 13]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+=
