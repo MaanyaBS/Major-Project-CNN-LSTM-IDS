@@ -10,10 +10,13 @@ __pycache__/
 .ipynb_checkpoints/
 
 # Large datasets
+
 dataset/raw/
 dataset/cleaned/
 dataset/merged/
 datasets/
+dataset/
+
 
 # OS files
 .DS_Store

@@ -2,42 +2,102 @@ import os
 import pandas as pd
 from sklearn.preprocessing import LabelEncoder
 
-MERGED_PATH = r"D:\Major_Project\dataset\merged"
-OUTPUT_PATH = r"D:\Major_Project\output"
+INPUT_FILE = r"D:\Major_Project\dataset\merged\cicids2017_cleaned.csv"
 
-input_file = os.path.join(MERGED_PATH, "cicids2017_cleaned.csv")
-output_file = os.path.join(MERGED_PATH, "cicids2017_encoded.csv")
-mapping_file = os.path.join(OUTPUT_PATH, "label_mapping.csv")
+OUTPUT_FOLDER = r"D:\Major_Project\dataset\encoded"
+os.makedirs(OUTPUT_FOLDER, exist_ok=True)
+
+OUTPUT_FILE = os.path.join(
+    OUTPUT_FOLDER,
+    "cicids2017_encoded.csv"
+)
+
+MAPPING_FILE = r"D:\Major_Project\output\label_mapping.csv"
+
+print("=" * 80)
+print("LABEL ENCODING")
+print("=" * 80)
 
 encoder = LabelEncoder()
 
-# -------- Pass 1: Collect all labels --------
-all_labels = set()
+labels = set()
 
-for chunk in pd.read_csv(input_file, chunksize=50000):
-    label_col = [c for c in chunk.columns if c.strip().lower() == "label"][0]
-    all_labels.update(chunk[label_col].unique())
+print("\nScanning labels...")
 
-encoder.fit(sorted(all_labels))
+for chunk in pd.read_csv(
+        INPUT_FILE,
+        chunksize=100000,
+        usecols=["Label"],
+        low_memory=False):
+
+    chunk.columns = chunk.columns.str.strip()
+
+    chunk["Label"] = (
+        chunk["Label"]
+        .dropna()
+        .astype(str)
+        .str.strip()
+        .replace({
+            "Web Attack ï¿½ Brute Force": "Web Attack - Brute Force",
+            "Web Attack ï¿½ XSS": "Web Attack - XSS",
+            "Web Attack ï¿½ Sql Injection": "Web Attack - Sql Injection",
+            "Web Attack � Brute Force": "Web Attack - Brute Force",
+            "Web Attack � XSS": "Web Attack - XSS",
+            "Web Attack � Sql Injection": "Web Attack - Sql Injection",
+        })
+    )
+
+    chunk = chunk[chunk["Label"] != ""]
+
+    labels.update(chunk["Label"].tolist())
+
+labels = sorted(list(labels))
+
+print("\nUnique Labels Found:")
+print(labels)
+
+encoder.fit(labels)
 
 mapping = pd.DataFrame({
-    "Original Label": encoder.classes_,
-    "Encoded Value": range(len(encoder.classes_))
+    "Attack": encoder.classes_,
+    "Encoded": encoder.transform(encoder.classes_)
 })
 
-mapping.to_csv(mapping_file, index=False)
+mapping.to_csv(MAPPING_FILE, index=False)
 
-# -------- Pass 2: Encode and write --------
+print("\nEncoding Dataset...")
+
 first = True
 
-for chunk in pd.read_csv(input_file, chunksize=50000):
+for chunk in pd.read_csv(
+        INPUT_FILE,
+        chunksize=100000,
+        low_memory=False):
 
-    label_col = [c for c in chunk.columns if c.strip().lower() == "label"][0]
+    chunk.columns = chunk.columns.str.strip()
 
-    chunk[label_col] = encoder.transform(chunk[label_col])
+    chunk = chunk.dropna(subset=["Label"])
+
+    chunk["Label"] = (
+        chunk["Label"]
+        .astype(str)
+        .str.strip()
+        .replace({
+            "Web Attack ï¿½ Brute Force": "Web Attack - Brute Force",
+            "Web Attack ï¿½ XSS": "Web Attack - XSS",
+            "Web Attack ï¿½ Sql Injection": "Web Attack - Sql Injection",
+            "Web Attack � Brute Force": "Web Attack - Brute Force",
+            "Web Attack � XSS": "Web Attack - XSS",
+            "Web Attack �XSS": "Web Attack - XSS",
+            "Web Attack ï¿½XSS": "Web Attack - XSS",
+            "Web Attack � Sql Injection": "Web Attack - Sql Injection",
+        })
+    )
+
+    chunk["Label"] = encoder.transform(chunk["Label"])
 
     chunk.to_csv(
-        output_file,
+        OUTPUT_FILE,
         mode="w" if first else "a",
         header=first,
         index=False
@@ -45,6 +105,7 @@ for chunk in pd.read_csv(input_file, chunksize=50000):
 
     first = False
 
-print("Label encoding completed successfully!")
-print("Encoded dataset:", output_file)
-print("Mapping:", mapping_file)
+print("\nDone!")
+
+print(f"\nEncoded Dataset : {OUTPUT_FILE}")
+print(f"Label Mapping   : {MAPPING_FILE}")
