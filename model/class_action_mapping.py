@@ -95,10 +95,13 @@ CLASS_ACTION_MAP: Dict[str, Dict[str, Any]] = {
         "f1_score": 0.69,
     },
     "Web Attack - Sql Injection": {
-        "action": "block_ip",
-        "severity": "critical",
-        "threshold": 0.95,  # RF F1 0.00 -> conservative threshold
-        "f1_score": 0.00,
+        "action": "block_ip",       # what to do IF confirmed — same as other injection-class attacks
+        "severity": "critical",     # reflects real-world danger, unchanged by detection uncertainty
+        "threshold": float("inf"),  # unreachable by design — see note
+        "never_auto_fire": True,    # explicit flag in case get_action() checks this directly
+        "note": "Only ~4 test samples (~21 total labeled examples). Insufficient data to "
+                "trust the F1 estimate in either direction — always held_for_review, "
+                "regardless of confidence.",
     },
     "Web Attack - XSS": {
         "action": "sanitize_input",
