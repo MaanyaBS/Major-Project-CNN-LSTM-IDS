@@ -1,0 +1,77 @@
+======================================================================
+WEEK 7 - CNN-LSTM PREDICTION VALIDATION
+======================================================================
+
+Test samples: 808
+Accuracy: 0.122525
+Weighted F1: 0.204075
+Macro F1: 0.089373
+
+======================================================================
+CLASSIFICATION REPORT
+======================================================================
+                            precision    recall  f1-score   support
+
+                    BENIGN       0.00      0.00      0.00         0
+                       Bot       1.00      0.07      0.12       381
+                      DDoS       0.00      0.00      0.00         0
+             DoS GoldenEye       0.00      0.00      0.00         0
+                  DoS Hulk       0.00      0.00      0.00         0
+          DoS Slowhttptest       0.00      0.00      0.00         0
+             DoS slowloris       0.00      0.00      0.00         0
+               FTP-Patator       0.00      0.00      0.00         0
+                Heartbleed       1.00      0.67      0.80         3
+              Infiltration       0.00      0.00      0.00         0
+                  PortScan       0.00      0.00      0.00         0
+               SSH-Patator       0.00      0.00      0.00         0
+  Web Attack - Brute Force       0.96      0.24      0.39       288
+Web Attack - Sql Injection       0.00      0.00      0.00         5
+          Web Attack - XSS       0.50      0.02      0.03       131
+
+                  accuracy                           0.12       808
+                 macro avg       0.23      0.07      0.09       808
+              weighted avg       0.90      0.12      0.20       808
+
+
+======================================================================
+PER-CLASS CONFUSION STATISTICS
+======================================================================
+ Class_ID                      Class  TP  FP  FN  TN  Precision   Recall       F1  Support  Detection_Rate
+        0                     BENIGN   0 690   0 118   0.000000 0.000000 0.000000        0        0.000000
+        1                        Bot  25   0 356 427   1.000000 0.065617 0.123153      381        0.065617
+        2                       DDoS   0   0   0 808   0.000000 0.000000 0.000000        0        0.000000
+        3              DoS GoldenEye   0   1   0 807   0.000000 0.000000 0.000000        0        0.000000
+        4                   DoS Hulk   0   0   0 808   0.000000 0.000000 0.000000        0        0.000000
+        5           DoS Slowhttptest   0   0   0 808   0.000000 0.000000 0.000000        0        0.000000
+        6              DoS slowloris   0   1   0 807   0.000000 0.000000 0.000000        0        0.000000
+        7                FTP-Patator   0   4   0 804   0.000000 0.000000 0.000000        0        0.000000
+        8                 Heartbleed   2   0   1 805   1.000000 0.666667 0.800000        3        0.666667
+        9               Infiltration   0   0   0 808   0.000000 0.000000 0.000000        0        0.000000
+       10                   PortScan   0   8   0 800   0.000000 0.000000 0.000000        0        0.000000
+       11                SSH-Patator   0   0   0 808   0.000000 0.000000 0.000000        0        0.000000
+       12   Web Attack - Brute Force  70   3 218 517   0.958904 0.243056 0.387812      288        0.243056
+       13 Web Attack - Sql Injection   0   0   5 803   0.000000 0.000000 0.000000        5        0.000000
+       14           Web Attack - XSS   2   2 129 675   0.500000 0.015267 0.029630      131        0.015267
+
+======================================================================
+ATTACKS MISCLASSIFIED AS BENIGN
+======================================================================
+                    Attack  Samples  Predicted_as_BENIGN  BENIGN_Misclassification_Rate
+Web Attack - Sql Injection        5                    5                       1.000000
+          Web Attack - XSS      131                  125                       0.954198
+                       Bot      381                  345                       0.905512
+  Web Attack - Brute Force      288                  215                       0.746528
+             DoS GoldenEye        0                    0                       0.000000
+                      DDoS        0                    0                       0.000000
+             DoS slowloris        0                    0                       0.000000
+          DoS Slowhttptest        0                    0                       0.000000
+                  DoS Hulk        0                    0                       0.000000
+               FTP-Patator        0                    0                       0.000000
+                  PortScan        0                    0                       0.000000
+              Infiltration        0                    0                       0.000000
+                Heartbleed        3                    0                       0.000000
+               SSH-Patator        0                    0                       0.000000
+
+======================================================================
+WEEK 7 VALIDATION COMPLETED
+======================================================================
