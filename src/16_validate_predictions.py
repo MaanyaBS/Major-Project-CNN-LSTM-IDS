@@ -13,9 +13,9 @@ X_PATH = r"dataset\week6_edge_cases\X_edge.npy"
 Y_PATH = r"dataset\week6_edge_cases\y_edge.npy"
 MAPPING_PATH = r"output\label_mapping.csv"
 
-REPORT_PATH = r"model\results\week7_validation_report.txt"
-CLASS_CSV = r"output\week7_class_validation.csv"
-CM_CSV = r"output\week7_confusion_matrix.csv"
+REPORT_PATH = r"model\results\week7_edge_case_validation_report.txt"
+CLASS_CSV = r"output\week7_edge_case_class_validation.csv"
+CM_CSV = r"output\week7_edge_case_confusion_matrix.csv"
 
 print("=" * 70)
 print("WEEK 7 - CNN-LSTM PREDICTION VALIDATION")
