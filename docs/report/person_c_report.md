@@ -1,4 +1,4 @@
-# Person C — Explainability & Dashboard (Varshini D N)
+# Varshini D N — Explainability & Dashboard
 
 ## 1. SHAP Explainability Implementation
 
