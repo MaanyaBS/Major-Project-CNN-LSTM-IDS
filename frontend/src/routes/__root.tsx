@@ -86,7 +86,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     ],
     links: [
       { rel: "stylesheet", href: appCss },
-      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" },
@@ -205,12 +205,12 @@ function Footer() {
             <div className="heading-kicker">Resources</div>
             <div className="mt-4 flex flex-col gap-2 text-sm">
               <a
-                href="#"
-                onClick={(e) => e.preventDefault()}
+                href="https://github.com/MaanyaBS/Major-Project-CNN-LSTM-IDS"
+                target="_blank"
+                rel="noreferrer"
                 className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors w-fit"
               >
                 <Github className="h-4 w-4" /> GitHub Repository
-                <span className="text-[9px] font-mono uppercase tracking-widest text-warning ml-1">soon</span>
               </a>
               <a
                 href="#"
@@ -227,7 +227,7 @@ function Footer() {
         <div className="mt-10 pt-6 border-t border-border/40 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-muted-foreground">
           <div className="flex items-center gap-2">
             <div className="h-2 w-2 rounded-full bg-success animate-pulse" />
-            <span className="font-mono uppercase tracking-widest">System Online — Demo Mode</span>
+            <span className="font-mono uppercase tracking-widest">System Online — Live Model</span>
           </div>
           <div className="font-mono">© {new Date().getFullYear()} ThreatLens AI · Final Year Engineering Project</div>
         </div>
