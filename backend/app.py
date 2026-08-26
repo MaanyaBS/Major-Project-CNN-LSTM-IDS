@@ -18,6 +18,7 @@ MODEL_METRICS = {
 }
 
 _last_upload = {"rows": None, "count": 0}
+_stream = {"rows": None, "count": 0, "cursor": 0}
 
 app = Flask(__name__)
 CORS(app)
@@ -195,6 +196,60 @@ def explain_window():
         return jsonify({"error": f"Explanation failed: {e}"}), 500
     result["window"] = window
     return jsonify(result)
+
+
+@app.post("/api/stream/load")
+def stream_load():
+    if "file" not in request.files:
+        return jsonify({"error": "Attach a CSV file in the 'file' field"}), 400
+    file = request.files["file"]
+    try:
+        df = pd.read_csv(io.BytesIO(file.read()))
+    except Exception as e:
+        return jsonify({"error": f"Could not parse CSV: {e}"}), 400
+
+    missing = [c for c in FEATURE_COLS if c not in df.columns]
+    if missing:
+        return jsonify({"error": f"CSV is missing required columns: {missing}"}), 400
+
+    df = df.replace([np.inf, -np.inf], np.nan).dropna(subset=FEATURE_COLS)
+    if len(df) < SEQ_LEN:
+        return jsonify({"error": f"Need at least {SEQ_LEN} valid rows after cleaning"}), 400
+
+    X_raw = df[FEATURE_COLS].to_numpy(dtype="float32")
+    n_windows = len(X_raw) // SEQ_LEN
+    _stream["rows"] = X_raw[: n_windows * SEQ_LEN]
+    _stream["count"] = n_windows
+    _stream["cursor"] = 0
+    return jsonify({"total_windows": n_windows, "sequence_length": SEQ_LEN})
+
+
+@app.get("/api/stream/next")
+def stream_next():
+    rows = _stream.get("rows")
+    if rows is None:
+        return jsonify({"error": "No stream loaded — POST the CSV to /api/stream/load first"}), 409
+
+    cursor = _stream["cursor"]
+    if cursor >= _stream["count"]:
+        return jsonify({"done": True, "window": cursor, "total": _stream["count"]})
+
+    seq = rows[cursor * SEQ_LEN : (cursor + 1) * SEQ_LEN]
+    try:
+        probs = service.predict_matrix(seq)
+    except Exception as e:
+        return jsonify({"error": f"Inference failed: {e}"}), 500
+
+    result = service._build_result(probs[0])
+    result["window"] = cursor
+    _stream["cursor"] += 1
+    return jsonify(
+        {
+            "done": False,
+            "total": _stream["count"],
+            "result": result,
+        }
+    )
 
 
 def initialize():

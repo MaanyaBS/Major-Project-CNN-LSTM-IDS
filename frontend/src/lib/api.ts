@@ -14,6 +14,7 @@ export interface PredictionResult {
   probabilities: Record<string, number>;
   prevention: Prevention;
   low_confidence_class: boolean;
+  window?: number;
 }
 
 export interface CsvSummary {
@@ -105,4 +106,28 @@ export async function explainWindow(window: number): Promise<ExplainResponse> {
       body: JSON.stringify({ window }),
     })
   );
+}
+
+export interface StreamLoadResponse {
+  total_windows: number;
+  sequence_length: number;
+}
+
+export interface StreamNextResponse {
+  done: boolean;
+  total?: number;
+  window?: number;
+  result?: PredictionResult;
+}
+
+export async function streamLoad(file: File): Promise<StreamLoadResponse> {
+  const form = new FormData();
+  form.append("file", file);
+  return handle(
+    await fetch(`${API_BASE}/api/stream/load`, { method: "POST", body: form })
+  );
+}
+
+export async function streamNext(): Promise<StreamNextResponse> {
+  return handle(await fetch(`${API_BASE}/api/stream/next`, { method: "GET" }));
 }

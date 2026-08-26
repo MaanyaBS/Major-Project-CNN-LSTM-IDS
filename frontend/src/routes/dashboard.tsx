@@ -51,6 +51,7 @@ import {
   type HealthResponse,
   type PredictionResult,
 } from "@/lib/api";
+import { LiveFeed } from "@/components/LiveFeed";
 
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
@@ -101,6 +102,7 @@ function severityTone(severity: string): "danger" | "warning" | "muted" {
 }
 
 function Dashboard() {
+  const [mode, setMode] = useState<"batch" | "live">("batch");
   const [file, setFile] = useState<File | null>(null);
   const [dragOver, setDragOver] = useState(false);
   const [status, setStatus] = useState<"idle" | "analyzing" | "done">("idle");
@@ -208,7 +210,27 @@ function Dashboard() {
         </div>
       )}
 
-      <section
+      <div className="inline-flex rounded-xl glass p-1 gap-1 w-fit">
+        {(["batch", "live"] as const).map((m) => (
+          <button
+            key={m}
+            onClick={() => setMode(m)}
+            className={`relative px-5 py-2 rounded-lg text-xs font-bold uppercase tracking-widest transition-all ${
+              mode === m
+                ? "bg-primary text-primary-foreground shadow-[4px_4px_0px_#1e1e5a]"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            {m === "batch" ? "Batch Analysis" : "Live Feed"}
+          </button>
+        ))}
+      </div>
+
+      {mode === "live" ? (
+        <LiveFeed />
+      ) : (
+        <>
+        <section
         onDragOver={(e) => {
           e.preventDefault();
           setDragOver(true);
@@ -323,6 +345,8 @@ function Dashboard() {
       )}
 
       {!analysis && status !== "analyzing" && <EmptyState />}
+        </>
+      )}
     </div>
   );
 }
