@@ -120,7 +120,9 @@ def predict_csv():
     if missing:
         return jsonify({"error": f"CSV is missing required columns: {missing}"}), 400
 
+    original_rows = len(df)
     df = df.replace([np.inf, -np.inf], np.nan).dropna(subset=FEATURE_COLS)
+    rows_dropped = original_rows - len(df)
     if len(df) < SEQ_LEN:
         return jsonify({"error": f"Need at least {SEQ_LEN} valid rows after cleaning"}), 400
 
@@ -168,7 +170,7 @@ def predict_csv():
                 "auto_actions": auto,
                 "held_for_review": held,
                 "truncated": truncated,
-                "rows_dropped_invalid": int(request.content_length and 0) or None,
+                "rows_dropped_invalid": rows_dropped,
             },
             "timeline": timeline,
             "results": results[:200],

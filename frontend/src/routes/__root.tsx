@@ -161,7 +161,7 @@ function NavBar() {
 function Footer() {
   const stack = ["React", "TypeScript", "Flask", "TensorFlow", "Python", "SHAP"];
   return (
-    <footer className="mt-24 border-t border-border/40">
+    <footer className="relative mt-24 border-t border-border/40">
       <div className="absolute left-0 right-0 pointer-events-none">
         <div className="mx-auto max-w-7xl h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
       </div>

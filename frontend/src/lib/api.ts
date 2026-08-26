@@ -94,10 +94,6 @@ export async function analyzeCsv(file: File): Promise<CsvAnalysisResponse> {
   );
 }
 
-export async function explainSequence(): Promise<ExplainResponse> {
-  return handle(await fetch(`${API_BASE}/api/explain`, { method: "POST" }));
-}
-
 export async function explainWindow(window: number): Promise<ExplainResponse> {
   return handle(
     await fetch(`${API_BASE}/api/explain_window`, {

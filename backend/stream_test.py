@@ -91,8 +91,6 @@ def main():
 
     print("\nALL STREAM TESTS PASSED")
 
-    print("\nALL STREAM TESTS PASSED")
-
 
 if __name__ == "__main__":
     main()
