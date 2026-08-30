@@ -118,10 +118,10 @@ the 15 CICIDS classes to 9 operational categories:
 
 ### Low-Confidence Classes
 
-Five classes are flagged as `low_confidence_class: true` in every prediction response:
+Six classes are flagged as `low_confidence_class: true` in every prediction response:
 
 - Bot, Web Attack - Brute Force, Web Attack - XSS, Web Attack - Sql Injection,
-  Infiltration
+  Infiltration, Heartbleed
 
 These classes have poor-to-zero recall in the CNN-LSTM v2 model (see `PROJECT_STATUS_CURRENT.md`). The dashboard displays a warning badge for these predictions, and the prevention layer holds them for manual review rather than auto-acting.
 
