@@ -36,6 +36,7 @@ LOW_CONFIDENCE_CLASSES = {
     "Web Attack - XSS",
     "Web Attack - Sql Injection",
     "Infiltration",
+    "Heartbleed",
 }
 
 
