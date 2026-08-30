@@ -64,7 +64,21 @@ The large gap between weighted F1 (0.9864) and macro F1 (0.5857) is expected and
 
 ---
 
-## 5. Known Limitations (state these plainly — don't smooth them over)
+## 5. Training Behavior — Overfitting Check
+
+Plot: `model/results/cnn_lstm_v2_training_curves.png` (train vs. validation loss/accuracy across all 15 epochs, early-stopping restore point marked).
+
+Train loss/accuracy are smooth and monotonic throughout (loss 0.367 → 0.077, accuracy 0.62 → 0.87) — no surprises there. Validation loss/accuracy are noisy rather than smooth, with visible spikes at epochs 4, 9, and 15 (val_loss jumping to 0.77, 0.54, and 0.52 respectively), interspersed with genuinely good epochs (10 and 14 both dip below 0.32).
+
+There is a real, persistent gap between train and validation loss that never closes — by the final epoch, train loss is 0.077 while validation loss is still oscillating in the 0.3–0.6 range. That's a genuine sign of *some* overfitting. However, it isn't the classic runaway pattern (validation loss climbing steadily once the model starts memorizing) — it's oscillating within a band rather than trending upward. Combined with the size of the swings, this points more toward **validation volatility from extreme class imbalance in a small (10%) validation split** — classes like Heartbleed and Sql Injection have single-digit counts there, so a handful of misclassifications can swing the aggregate validation metric visibly — than toward the model badly memorizing the training set.
+
+Early stopping (`monitor=val_loss`, `patience=5`, `restore_best_weights=True`) worked as intended: it restored weights from **epoch 10** (val_loss 0.303), not epoch 15 where training actually stopped. Epoch 15 was one of the bad spike epochs (val_loss 0.52, val_accuracy 0.797) — the deployed checkpoint is genuinely the best epoch observed, not an arbitrary cutoff. Worth noting epoch 14 was comparably good (val_accuracy 0.879, the run's highest) — the two best epochs are close to each other, not a one-off fluke.
+
+**Bottom line:** mild generalization gap present, best explained by validation-set class imbalance rather than severe overfitting; early stopping and best-weight restoration behaved correctly.
+
+---
+
+## 6. Known Limitations (state these plainly — don't smooth them over)
 
 - **Bot, Web Attack - Brute Force, and Web Attack - XSS have poor recall**, despite three different class-weighting strategies being tried across v1/v2/v3 (uniform heavy weighting, uniform dampened weighting, targeted per-class boost). This mirrors the RF baseline's own weakest classes, which is the reason to believe it's a **feature-level limitation, not a training artifact**: these attacks are distinguished by behavior/payload content (e.g. request contents, timing of brute-force attempts) that flow-level statistical features (packet lengths, inter-arrival times, byte counts) don't capture. More epochs, different weighting, or more training time would not be expected to fix this without different/additional features.
 - **Web Attack - Sql Injection**: only 5 test examples. Any recall/precision number for this class is statistically noise, not a meaningful measurement. This is why the prevention policy hard-locks Sql Injection to `held_for_review` regardless of confidence (`model/class_action_mapping.py`) — the same reasoning applies to how the dashboard should treat this class: never present it as a confidently-detected class.
@@ -74,24 +88,17 @@ The large gap between weighted F1 (0.9864) and macro F1 (0.5857) is expected and
 
 ---
 
-## 6. Sequence Construction — Open Nuance, Not Silently Resolved
+## 7. Sequence Construction — Day-Boundary Question, Resolved
 
 Training built sequences **day-aware**: a 10-row sliding window was never allowed to span two different `source_day` capture sessions (Monday, Tuesday, ... Friday_DDoS), because two different capture days aren't temporally continuous, and a window spanning them would encode a relationship the model never actually saw in real traffic.
 
-**This doesn't map cleanly onto live dashboard inference**, and hasn't been tested or resolved — flagging it explicitly rather than assuming it's fine:
+This was originally flagged as an open question for live inference — whether a gap in a live traffic stream (sensor restart, reconnect, monitoring downtime) could cause the same problem when buffering the 10 most recent flows. **Resolved, not just accepted as a risk:** the live-feed replay was implemented as a *replay of a fully-uploaded static file* (`/api/stream/load` loads the entire CSV upfront, `/api/stream/next` serves windows from it in order), not a genuine continuous capture from a live sensor. There is no possibility of a mid-stream connection gap in this architecture, because the whole file already exists in memory before replay starts — the scenario this question was originally about doesn't apply to the system as actually built.
 
-- In live inference there's no explicit "day" boundary — you're presumably buffering the most recent 10 flows from one ongoing capture/session.
-- The closest analogous risk: if the traffic sensor has a gap (restart, reconnect, monitoring downtime), the 10 buffered flows could span across that gap the same way a day-boundary window would in training — an artificial temporal relationship the model was never trained to handle.
-- Options worth considering, not yet decided:
-  1. Treat it as negligible — a gap landing exactly inside a 10-flow buffer window may be rare enough in practice not to matter.
-  2. Track a session/capture-start marker (analogous to `source_day`) and reset the sequence buffer on any detected gap.
-  3. Accept and document it as a known limitation in the report, the same way the class-imbalance limitations above are documented, rather than solving it in the remaining time.
-
-Whichever way this goes, it should be a deliberate call, not a default.
+This would become relevant again only if a true live-sensor-capture mode is added later (out of current scope) — at that point, revisit the three options that were originally considered (treat as negligible / track a session marker and reset the buffer on a detected gap / document as a limitation) rather than assuming this resolution still holds.
 
 ---
 
-## 7. Loading and Running Inference
+## 8. Loading and Running Inference
 
 ```python
 import json
@@ -127,8 +134,9 @@ def predict(flow_rows):
     """
     flow_rows: 10 raw flow records (dicts keyed by FEATURE_COLS names, or
     anything indexable the same way), in FEATURE_COLS order, most-recent
-    last, drawn from the same underlying traffic stream (see Section 6 —
-    don't span a known capture gap without deciding how to handle it).
+    last, drawn from the same underlying traffic stream (see Section 7 —
+    only a concern for a true live-sensor-capture mode, not the current
+    replay-based implementation).
 
     Returns the predicted class, its confidence, and the full probability
     distribution over all 15 classes.

@@ -97,11 +97,11 @@ assumed either way.**
    model was trained on (packet lengths, IATs, byte counts, etc.)? If not, there's a
    whole feature-extraction step that doesn't exist yet. This is the single biggest
    unknown blocking real integration.
-2. **Day-boundary / sequence-gap handling in live inference** — training never let a
-   10-row sequence window span two different capture days. Live inference has no
-   equivalent "day" boundary, but an analogous risk exists if there's a gap in the live
-   traffic stream while buffering the 10 most recent flows. Three options are laid out
-   in `MODEL_INTERFACE.md` Section 6 — not yet decided.
+2. ~~Day-boundary / sequence-gap handling in live inference~~ — **resolved**. The
+   live-feed replay loads a complete CSV upfront and serves windows from it in order
+   (not a genuine continuous live-sensor capture), so a mid-stream connection gap can't
+   occur in the system as built. See `MODEL_INTERFACE.md` Section 7. Would need
+   revisiting only if a true live-sensor-capture mode is added later.
 3. **Prevention policy thresholds are RF-calibrated, not CNN-LSTM-calibrated** — a
    real recalibration pass against CNN-LSTM's actual per-class F1 scores hasn't been
    done. Flagged, not urgent.
