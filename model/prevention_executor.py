@@ -233,3 +233,58 @@ def revoke_action(action: str, target_ip: str) -> None:
     rule_name = _rule_name(action, target_ip)
     _remove_block_rule(rule_name)
     _log_execution({"action": action, "target_ip": target_ip, "revoked": True})
+
+
+def sweep_expired_rules() -> list:
+    """
+    Cleans up any temporary rule whose auto-expiry timer never got to
+    fire - the scenario that actually happens if the backend process
+    crashes or restarts between when a rule was added and when it was
+    due to expire (an in-process threading.Timer dies with the process,
+    it doesn't survive a restart).
+
+    Call this once at backend startup, before serving any predictions.
+    Safe to call any number of times - already-clean rules are simply
+    skipped. Returns the list of rule_names it actually removed.
+    """
+    if not EXECUTION_LOG_PATH.exists():
+        return []
+
+    latest_state = {}  # rule_name -> most recent log record for it
+    with open(EXECUTION_LOG_PATH, "r", encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                record = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            rule_name = record.get("rule_name")
+            if rule_name:
+                latest_state[rule_name] = record
+
+    now = datetime.now(timezone.utc)
+    swept = []
+
+    for rule_name, record in latest_state.items():
+        if record.get("revoked") or record.get("swept"):
+            continue  # already cleaned up
+        if not record.get("executed"):
+            continue  # was never actually created
+        duration = record.get("auto_expires_in_seconds")
+        if duration is None:
+            continue  # persistent rule - only revoke_action() should touch it
+
+        created_at = datetime.fromisoformat(record["timestamp"])
+        if now.timestamp() >= created_at.timestamp() + duration:
+            _remove_block_rule(rule_name)
+            _log_execution({
+                "action": record.get("action"), "target_ip": record.get("target_ip"),
+                "rule_name": rule_name, "swept": True,
+                "reason": "Expiry timer never fired (likely a process restart) - "
+                          "cleaned up by startup sweep instead.",
+            })
+            swept.append(rule_name)
+
+    return swept
