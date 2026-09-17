@@ -1,0 +1,68 @@
+==============================================================================
+CNN-LSTM v2 — FULL TEST SET EVALUATION RESULTS
+==============================================================================
+Generated : 2026-09-17 04:14 UTC
+Model     : model/artifacts/cnn_lstm_best_v2.keras
+Scaler    : model/artifacts/scaler_v2.pkl
+Test set  : model/rebuild_chronological_split.py output, full chronological
+            day+label stratified 80/20 split (CICIDS2017)
+Test size : 530,951 sequences, shape (530951, 10, 20)
+==============================================================================
+
+OVERALL METRICS
+------------------------------------------------------------------------------
+Accuracy          : 0.9842  (98.42%)
+Weighted F1-score : 0.9864  (98.64%)
+Macro F1-score    : 0.5857  (58.57%)
+
+Note: the large gap between weighted F1 and macro F1 is expected and
+documented — weighted F1 is dominated by BENIGN and large attack classes;
+macro F1 weights every class equally and exposes real weaknesses on rare,
+behavior-driven attack types (Bot, Web Attack - Brute Force/XSS). See
+model/MODEL_INTERFACE.md Section 6 (Known Limitations) for full detail.
+
+==============================================================================
+PER-CLASS CLASSIFICATION REPORT
+------------------------------------------------------------------------------
+                            precision    recall  f1-score   support
+
+                    BENIGN       0.99      0.99      0.99    439987
+                       Bot       0.05      0.07      0.06       381
+                      DDoS       1.00      0.98      0.99     25595
+             DoS GoldenEye       0.71      0.97      0.82      2058
+                  DoS Hulk       0.99      0.99      0.99     35038
+          DoS Slowhttptest       0.81      0.98      0.89      1046
+             DoS slowloris       0.85      0.63      0.72      1083
+               FTP-Patator       0.64      0.97      0.77      1219
+                Heartbleed       1.00      0.67      0.80         3
+              Infiltration       0.00      0.00      0.00         0
+                  PortScan       0.97      0.97      0.97     23378
+               SSH-Patator       0.58      0.76      0.66       739
+  Web Attack - Brute Force       0.08      0.24      0.12       288
+Web Attack - Sql Injection       0.00      0.00      0.00         5
+          Web Attack - XSS       0.00      0.02      0.01       131
+
+                  accuracy                           0.98    530951
+                 macro avg       0.58      0.62      0.59    530951
+              weighted avg       0.99      0.98      0.99    530951
+
+==============================================================================
+CONFUSION MATRIX
+------------------------------------------------------------------------------
+true\pred                         BENIGN         Bot        DDoS  DoS Golden    DoS Hulk  DoS Slowht  DoS slowlo  FTP-Patato  Heartbleed  Infiltrati    PortScan  SSH-Patato  Web Attack  Web Attack  Web Attack
+BENIGN                           434,475         477          51         755          71          16          96         634           0          58         664         412         759       1,026         493
+Bot                                  345          25           0           0           0           0           1           2           0           0           8           0           0           0           0
+DDoS                                 138           0      25,171           0         238          27           0          20           0           0           1           0           0           0           0
+DoS GoldenEye                         60           0           0       1,990           0           0           5           0           0           3           0           0           0           0           0
+DoS Hulk                             228           0          19          30      34,644         115           1           1           0           0           0           0           0           0           0
+DoS Slowhttptest                       0           0           0           0           0       1,027          19           0           0           0           0           0           0           0           0
+DoS slowloris                        278           0           0          31           0          88         685           1           0           0           0           0           0           0           0
+FTP-Patator                           11           0          15           0           5           0           0       1,188           0           0           0           0           0           0           0
+Heartbleed                             0           0           0           1           0           0           0           0           2           0           0           0           0           0           0
+Infiltration                           0           0           0           0           0           0           0           0           0           0           0           0           0           0           0
+PortScan                             631           4          16          13           5           0           0           6           0           0      22,700           0           1           1           1
+SSH-Patator                          165           0           0           0           0           0           0           0           0           0           1         562           0          11           0
+Web Attack - Brute Force             215           0           0           0           0           0           0           1           0           0           0           0          70           0           2
+Web Attack - Sql Injection             5           0           0           0           0           0           0           0           0           0           0           0           0           0           0
+Web Attack - XSS                     125           0           0           0           0           0           0           1           0           0           0           0           3           0           2
+==============================================================================
