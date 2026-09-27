@@ -336,6 +336,7 @@ def train(args, pkg, windows, out_dir, n_classes):
         print(f"\n=== Epoch {epoch + 1}/{args.epochs}  ({len(epoch_view['starts']):,} windows) ===")
         t0 = time.time()
         fit_hist = model.fit(ds, epochs=1, steps_per_epoch=steps, shuffle=False, verbose=1)
+        fit_seconds = time.time() - t0
         probs = predict_probs(model, X, val_fixed["starts"], args.seq_len, args.batch_size)
         scores = val_scores(val_fixed["labels"], probs)
         seconds = time.time() - t0
@@ -346,6 +347,7 @@ def train(args, pkg, windows, out_dir, n_classes):
         h["val_accuracy"].append(scores["val_accuracy"])
         h["val_macro_f1"].append(scores["val_macro_f1"])
         h["epoch_seconds"].append(seconds)
+        h.setdefault("fit_seconds", []).append(fit_seconds)
         h["windows"].append(int(len(epoch_view["starts"])))
         print(f"[+] loss={h['loss'][-1]:.4f}  val_loss={scores['val_loss']:.4f}  "
               f"val_acc={scores['val_accuracy']:.4f}  val_macro_f1={scores['val_macro_f1']:.4f}  "
@@ -372,10 +374,14 @@ def train(args, pkg, windows, out_dir, n_classes):
             break
 
     h = state["history"]
-    if h["epoch_seconds"]:
-        per_1k = h["epoch_seconds"][-1] / max(h["windows"][-1], 1) * 1000
-        print(f"\n[+] Speed: {per_1k:.2f} s per 1,000 windows "
-              f"(~{per_1k * 1500 / 60:.0f} min per 1.5M-window epoch)")
+    if h.get("fit_seconds"):
+        if h["windows"][-1] < 50_000:
+            print("\n[+] Speed: this epoch was too small to estimate a full run (start-up cost "
+                  "dominates). Use the progress-bar ETA during the first full-size epoch.")
+        else:
+            per_1k = h["fit_seconds"][-1] / h["windows"][-1] * 1000
+            print(f"\n[+] Speed: {per_1k:.3f} s of training per 1,000 windows "
+                  f"(~{per_1k * 1500 / 60:.1f} min per 1.5M-window epoch, plus validation)")
     print(f"[+] Best epoch: {state['best_epoch']} ({args.monitor}={state['best_metric']:.4f})")
     return best_path
 
