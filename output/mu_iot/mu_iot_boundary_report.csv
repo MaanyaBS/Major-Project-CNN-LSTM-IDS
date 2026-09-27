@@ -1,0 +1,13 @@
+group,file_number,filename,next_filename,rows,first_fpt,last_fpt,next_first_fpt,fpt_gap_seconds,current_categories,next_categories,category_match,current_labels,next_labels,label_match,classification
+TCP_SYN,0,TCP_SYN_0.csv,,4410277,1718041923.413769,1718041983.413769,,,DDoS,,,attack,,,LAST_IN_GROUP
+bonesi_udp,0,bonesi_udp_0.csv,bonesi_udp_1.csv,1552265,1718125905.740215,1718125965.740078,1718125965.740306,0.00022792816162109375,DDoS,DDoS,True,attack,attack,True,REVIEW_GAP
+bonesi_udp,1,bonesi_udp_1.csv,bonesi_udp_2.csv,989813,1718125965.740306,1718126025.739696,1718126025.752237,0.012541055679321289,DDoS,DDoS,True,attack,attack,True,REVIEW_GAP
+bonesi_udp,2,bonesi_udp_2.csv,,2609290,1718126025.752237,1718126085.74009,,,DDoS,,,attack,,,LAST_IN_GROUP
+botnet_udp,3,botnet_udp_3.csv,botnet_udp_4.csv,298,1718477632.834087,1718477692.51198,1718477692.834099,0.32211899757385254,DDoS,DDoS,True,attack,attack,True,REVIEW_GAP
+botnet_udp,4,botnet_udp_4.csv,botnet_udp_5.csv,278,1718477692.834099,1718477752.343437,1718477752.83409,0.49065303802490234,DDoS,DDoS,True,attack,attack,True,REVIEW_GAP
+botnet_udp,5,botnet_udp_5.csv,,335,1718477752.83409,1718477800.191958,,,DDoS,,,attack,,,LAST_IN_GROUP
+hping3_udp,6,hping3_udp_6.csv,hping3_udp_7.csv,462128,1718117945.235745,1718118005.234109,1718118005.237263,0.0031540393829345703,DDoS,DDoS,True,attack,attack,True,REVIEW_GAP
+hping3_udp,7,hping3_udp_7.csv,hping3_udp_8.csv,213255,1718118005.237263,1718118065.235402,1718118065.235927,0.0005249977111816406,DDoS,DDoS,True,attack,attack,True,REVIEW_GAP
+hping3_udp,8,hping3_udp_8.csv,hping3_udp_9.csv,327302,1718118065.235927,1718118125.230051,1718118125.36892,0.138869047164917,DDoS,DDoS,True,attack,attack,True,REVIEW_GAP
+hping3_udp,9,hping3_udp_9.csv,hping3_udp_10.csv,690081,1718118125.36892,1718118185.234739,1718118185.238694,0.003954887390136719,DDoS,DDoS,True,attack,attack,True,REVIEW_GAP
+hping3_udp,10,hping3_udp_10.csv,,973671,1718118185.238694,1718118245.231332,,,DDoS,,,attack,,,LAST_IN_GROUP

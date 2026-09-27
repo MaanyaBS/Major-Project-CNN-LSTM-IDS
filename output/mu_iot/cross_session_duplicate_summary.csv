@@ -1,0 +1,5 @@
+metric,value
+total_rows_checked,24171263
+duplicate_feature_rows,0
+same_session_duplicates,0
+cross_session_duplicates,0

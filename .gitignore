@@ -23,3 +23,14 @@ dataset/
 Thumbs.db
 
 desktop.ini
+# Local Python environments
+tf_eval/
+.venv/
+env/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Generated MU-IoT temporary data
+dataset/processed/mu_iot/handoff_v2/_temp/
