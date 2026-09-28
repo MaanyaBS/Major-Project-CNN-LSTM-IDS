@@ -435,72 +435,47 @@ def create_candidate_blocks(split_regions):
 
 def select_blocks(candidates):
     """
-    Select whole blocks only.
+    Select complete contiguous blocks using PER-CLASS caps while
+    explicitly spreading selection across sessions and timelines.
 
     Rules:
-        train        <= 500k
-        val          <= 100k
-        test_within  <= 150k
+        train        <= 500k per category
+        val          <= 100k per category
+        test_within  <= 150k per category
         each heldout session <= 200k
 
-    Also guarantees all seven categories are represented.
+    Selection is whole-block only. No random row-level sampling.
+
+    Strategy:
+        - For train/val/test_within, selection is performed
+          independently for every (split, category).
+        - Sessions are visited round-robin so as many sessions
+          as possible contribute blocks.
+        - Within every session, timeline bins are visited
+          round-robin so selected blocks are distributed across
+          the session timeline.
+        - A deterministic seed is used only to vary the order
+          of eligible sessions/bins.
+        - Final package order is restored to canonical row order.
     """
 
-    print("\n[4/9] Selecting complete blocks...")
-
-    # Sort deterministically by canonical row position.
-    candidates = sorted(
-        candidates,
-        key=lambda x: (x["start"], x["end"], x["block_id"]),
+    print(
+        "\n[4/9] Selecting complete blocks with "
+        "per-class caps + session/timeline spreading..."
     )
 
-    selected = []
-    selected_ids = set()
+    SEED = 42
+    TIMELINE_BINS = 20
 
-    split_counts = {
-        "train": 0,
-        "val": 0,
-        "test_within": 0,
-        "test_heldout": 0,
-    }
-
-    heldout_counts = {}
-
-    def allowed(block):
-        split = block["split"]
-        n = block["nrows"]
-
-        if split == "test_heldout":
-            used = heldout_counts.get(block["session"], 0)
-            return used + n <= HELDOUT_SESSION_CAP
-
-        return split_counts[split] + n <= CAPS[split]
-
-    def add(block):
-        if block["block_id"] in selected_ids:
-            return False
-
-        if not allowed(block):
-            return False
-
-        selected.append(block)
-        selected_ids.add(block["block_id"])
-
-        split = block["split"]
-        n = block["nrows"]
-
-        split_counts[split] += n
-
-        if split == "test_heldout":
-            heldout_counts[block["session"]] = (
-                heldout_counts.get(block["session"], 0) + n
-            )
-
-        return True
-
-    # --------------------------------------------------------
-    # First guarantee all seven categories.
-    # --------------------------------------------------------
+    # Canonical candidate order.
+    candidates = sorted(
+        candidates,
+        key=lambda b: (
+            b["start"],
+            b["end"],
+            b["block_id"],
+        ),
+    )
 
     categories = sorted(
         {b["category"] for b in candidates}
@@ -512,24 +487,368 @@ def select_blocks(candidates):
             f"expected 7."
         )
 
+    selected = []
+    selected_ids = set()
+
+    # --------------------------------------------------------
+    # Per-class accounting.
+    # --------------------------------------------------------
+
+    class_counts = {
+        (split, category): 0
+        for split in CAPS
+        for category in categories
+    }
+
+    heldout_counts = {
+        s: 0
+        for s in HELDOUT
+    }
+
+    def allowed(block):
+        split = block["split"]
+        category = block["category"]
+        n = block["nrows"]
+
+        if split == "test_heldout":
+            used = heldout_counts.get(
+                block["session"],
+                0,
+            )
+
+            return (
+                used + n
+                <= HELDOUT_SESSION_CAP
+            )
+
+        used = class_counts[
+            (split, category)
+        ]
+
+        return (
+            used + n
+            <= CAPS[split]
+        )
+
+    def add(block):
+        bid = block["block_id"]
+
+        if bid in selected_ids:
+            return False
+
+        if not allowed(block):
+            return False
+
+        selected.append(block)
+        selected_ids.add(bid)
+
+        split = block["split"]
+        category = block["category"]
+        n = block["nrows"]
+
+        if split == "test_heldout":
+            heldout_counts[
+                block["session"]
+            ] += n
+        else:
+            class_counts[
+                (split, category)
+            ] += n
+
+        return True
+
+    # --------------------------------------------------------
+    # Timeline-bin helper.
+    #
+    # The bin is calculated relative to the COMPLETE session,
+    # not relative to the split. Therefore train/val/test blocks
+    # can collectively cover the complete session timeline.
+    # --------------------------------------------------------
+
+    session_end = {}
+
+    for b in candidates:
+        s = b["session"]
+
+        if (
+            s not in session_end
+            or b["end"] > session_end[s]
+        ):
+            session_end[s] = b["end"]
+
+    def timeline_bin(block):
+        s = block["session"]
+        end = session_end[s]
+
+        if end <= 0:
+            return 0
+
+        fraction = (
+            block["start"] / end
+        )
+
+        value = int(
+            fraction * TIMELINE_BINS
+        )
+
+        return min(
+            TIMELINE_BINS - 1,
+            max(0, value),
+        )
+
+    # --------------------------------------------------------
+    # Build lookup:
+    #
+    # (split, category, session) -> timeline bins -> blocks
+    # --------------------------------------------------------
+
+    grouped = {}
+
+    for b in candidates:
+
+        key = (
+            b["split"],
+            b["category"],
+            b["session"],
+        )
+
+        if key not in grouped:
+            grouped[key] = {
+                i: []
+                for i in range(TIMELINE_BINS)
+            }
+
+        grouped[key][
+            timeline_bin(b)
+        ].append(b)
+
+    for key in grouped:
+        for bin_id in grouped[key]:
+            grouped[key][bin_id].sort(
+                key=lambda b: (
+                    b["start"],
+                    b["end"],
+                    b["block_id"],
+                )
+            )
+
+    # --------------------------------------------------------
+    # Deterministic helper to create a session order.
+    #
+    # We shuffle the session order, but selection itself remains
+    # deterministic because the seed is fixed.
+    # --------------------------------------------------------
+
+    def session_order(sessions, salt):
+        local_rng = np.random.default_rng(
+            SEED + salt
+        )
+
+        result = list(sessions)
+        local_rng.shuffle(result)
+
+        return result
+
+    # --------------------------------------------------------
+    # Select one split/category combination.
+    #
+    # Phase A:
+    #   one block from as many sessions as possible.
+    #
+    # Phase B:
+    #   continue round-robin over sessions and timeline bins.
+    #
+    # This is the key difference from the previous selector.
+    # --------------------------------------------------------
+
+    def select_split_category(split, category):
+
+        cap = CAPS[split]
+
+        sessions = sorted({
+            b["session"]
+            for b in candidates
+            if (
+                b["split"] == split
+                and b["category"] == category
+            )
+        })
+
+        if not sessions:
+            return
+
+        sessions = session_order(
+            sessions,
+            (
+                abs(hash(split)) % 1000
+                + abs(hash(category)) % 100
+            ),
+        )
+
+        # Each session gets its own rotating timeline-bin pointer.
+        bin_order = {}
+        bin_pointer = {}
+
+        for session in sessions:
+
+            available_bins = [
+                i
+                for i in range(TIMELINE_BINS)
+                if grouped.get(
+                    (split, category, session),
+                    {}
+                ).get(i, [])
+            ]
+
+            local_rng = np.random.default_rng(
+                SEED
+                + 1000
+                + len(session)
+                + sum(
+                    ord(c)
+                    for c in session
+                )
+            )
+
+            local_rng.shuffle(
+                available_bins
+            )
+
+            bin_order[session] = available_bins
+            bin_pointer[session] = 0
+
+        # ----------------------------------------------------
+        # Phase A: session coverage.
+        #
+        # Give every session one opportunity before returning
+        # to a session that already contributed.
+        # ----------------------------------------------------
+
+        progress = True
+
+        while progress:
+
+            progress = False
+
+            for session in sessions:
+
+                if class_counts[
+                    (split, category)
+                ] >= cap:
+                    return
+
+                bins = bin_order[session]
+
+                if not bins:
+                    continue
+
+                # Find the next non-empty timeline bin.
+                found = None
+
+                for _ in range(len(bins)):
+
+                    idx = (
+                        bin_pointer[session]
+                        % len(bins)
+                    )
+
+                    bin_id = bins[idx]
+
+                    bin_pointer[session] += 1
+
+                    blocks = grouped[
+                        (split, category, session)
+                    ][bin_id]
+
+                    if blocks:
+                        found = blocks
+                        break
+
+                if found is None:
+                    continue
+
+                # Take the earliest remaining block in this
+                # timeline bin.
+                for block in found:
+
+                    if add(block):
+                        progress = True
+                        break
+
+        # ----------------------------------------------------
+        # Phase B: continued session/timeline round-robin.
+        # ----------------------------------------------------
+
+        progress = True
+
+        while progress:
+
+            progress = False
+
+            for session in sessions:
+
+                if class_counts[
+                    (split, category)
+                ] >= cap:
+                    return
+
+                bins = bin_order[session]
+
+                if not bins:
+                    continue
+
+                # Rotate through bins for this session.
+                for _ in range(len(bins)):
+
+                    idx = (
+                        bin_pointer[session]
+                        % len(bins)
+                    )
+
+                    bin_id = bins[idx]
+
+                    bin_pointer[session] += 1
+
+                    blocks = grouped[
+                        (split, category, session)
+                    ][bin_id]
+
+                    for block in blocks:
+
+                        if add(block):
+                            progress = True
+                            break
+
+                    if progress:
+                        break
+
+    # --------------------------------------------------------
+    # Ensure every category has representation.
+    # --------------------------------------------------------
+
     for category in categories:
 
         options = [
-            b for b in candidates
+            b
+            for b in candidates
             if b["category"] == category
         ]
 
         added = False
 
-        # Prefer train, then val, then test_within, then heldout.
         for preferred_split in [
             "train",
             "val",
             "test_within",
             "test_heldout",
         ]:
+
             for b in options:
-                if b["split"] == preferred_split and add(b):
+
+                if b["split"] != preferred_split:
+                    continue
+
+                if add(b):
                     added = True
                     break
 
@@ -538,94 +857,243 @@ def select_blocks(candidates):
 
         if not added:
             fail(
-                f"Could not select a complete block for category "
-                f"{category} without violating caps."
+                f"Could not select a complete block for "
+                f"category {category}."
             )
 
     # --------------------------------------------------------
-    # Fill each split deterministically.
+    # Main selection.
+    #
+    # Each split/category is handled independently, preventing
+    # early sessions from consuming another session's quota.
     # --------------------------------------------------------
 
-    for split in [
+    split_category_order = [
         "train",
         "val",
         "test_within",
-        "test_heldout",
-    ]:
+    ]
 
-        for b in candidates:
-            if b["split"] != split:
-                continue
+    for split in split_category_order:
 
-            add(b)
+        for category in categories:
 
-    # Sort selected blocks by canonical row_id.
+            select_split_category(
+                split,
+                category,
+            )
+
+    # --------------------------------------------------------
+    # Held-out selection.
+    #
+    # Each held-out session has its own independent cap.
+    # Timeline spreading is performed across the entire
+    # held-out session.
+    # --------------------------------------------------------
+
+    for session in HELDOUT:
+
+        session_blocks = [
+            b
+            for b in candidates
+            if (
+                b["split"] == "test_heldout"
+                and b["session"] == session
+            )
+        ]
+
+        if not session_blocks:
+            fail(
+                f"No candidate blocks found for "
+                f"held-out session {session}."
+            )
+
+        bins = {
+            i: []
+            for i in range(TIMELINE_BINS)
+        }
+
+        for b in session_blocks:
+            bins[
+                timeline_bin(b)
+            ].append(b)
+
+        for bin_id in bins:
+            bins[bin_id].sort(
+                key=lambda b: (
+                    b["start"],
+                    b["end"],
+                    b["block_id"],
+                )
+            )
+
+        available_bins = [
+            i
+            for i in range(TIMELINE_BINS)
+            if bins[i]
+        ]
+
+        local_rng = np.random.default_rng(
+            SEED
+            + 5000
+            + sum(ord(c) for c in session)
+        )
+
+        local_rng.shuffle(
+            available_bins
+        )
+
+        pointer = 0
+
+        # Round-robin over timeline bins.
+        progress = True
+
+        while progress:
+
+            progress = False
+
+            if (
+                heldout_counts[session]
+                >= HELDOUT_SESSION_CAP
+            ):
+                break
+
+            for bin_id in available_bins:
+
+                if (
+                    heldout_counts[session]
+                    >= HELDOUT_SESSION_CAP
+                ):
+                    break
+
+                blocks = bins[bin_id]
+
+                while pointer < len(blocks):
+
+                    block = blocks[pointer]
+                    pointer += 1
+
+                    if add(block):
+                        progress = True
+                        break
+
+                if progress:
+                    break
+
+    # --------------------------------------------------------
+    # Final deterministic canonical ordering.
+    # --------------------------------------------------------
+
     selected.sort(
-        key=lambda x: (x["start"], x["end"], x["block_id"])
+        key=lambda b: (
+            b["start"],
+            b["end"],
+            b["block_id"],
+        )
     )
 
     # Assign package-order positions.
     package_cursor = 0
 
     for b in selected:
+
         b["package_start"] = package_cursor
-        b["package_end"] = package_cursor + b["nrows"]
+
+        b["package_end"] = (
+            package_cursor
+            + b["nrows"]
+        )
+
         package_cursor += b["nrows"]
 
-    print(f"[OK] Selected blocks: {len(selected):,}")
-    print(f"[OK] Selected rows: {package_cursor:,}")
+    # --------------------------------------------------------
+    # Report counts.
+    # --------------------------------------------------------
 
-    print("\nSelected split totals:")
+    print(
+        "\n[OK] Selected blocks:",
+        f"{len(selected):,}",
+    )
+
+    print("\nPer-class split counts:")
 
     for split in [
         "train",
         "val",
         "test_within",
-        "test_heldout",
     ]:
-        n = sum(
-            b["nrows"]
-            for b in selected
-            if b["split"] == split
-        )
-        print(f"  {split:<14}: {n:>12,}")
 
-    # Explicit cap checks.
-    for split, cap in CAPS.items():
-        n = sum(
-            b["nrows"]
-            for b in selected
-            if b["split"] == split
-        )
+        print(f"\n  {split}:")
 
-        if n > cap:
-            fail(
-                f"{split} cap exceeded: {n:,} > {cap:,}"
+        for category in categories:
+
+            n = class_counts[
+                (split, category)
+            ]
+
+            print(
+                f"    {category:<20}: "
+                f"{n:>10,}"
             )
+
+    print("\nHeld-out session counts:")
 
     for session in HELDOUT:
-        n = sum(
-            b["nrows"]
-            for b in selected
-            if b["session"] == session
+
+        n = heldout_counts[session]
+
+        print(
+            f"  {session:<18}: "
+            f"{n:>10,}"
         )
 
+    # --------------------------------------------------------
+    # Explicit cap validation.
+    # --------------------------------------------------------
+
+    for split in CAPS:
+
+        for category in categories:
+
+            n = class_counts[
+                (split, category)
+            ]
+
+            if n > CAPS[split]:
+
+                fail(
+                    f"{split}/{category} cap exceeded: "
+                    f"{n:,} > {CAPS[split]:,}"
+                )
+
+    for session in HELDOUT:
+
+        n = heldout_counts[session]
+
         if n > HELDOUT_SESSION_CAP:
+
             fail(
-                f"Heldout session cap exceeded for {session}: "
-                f"{n:,} > {HELDOUT_SESSION_CAP:,}"
+                f"Held-out session {session} cap exceeded: "
+                f"{n:,} > "
+                f"{HELDOUT_SESSION_CAP:,}"
             )
 
-    # Seven-class check.
+    # Seven-class coverage.
     selected_categories = {
         b["category"]
         for b in selected
     }
 
-    if len(selected_categories) != 7:
+    if selected_categories != set(categories):
+
         fail(
             "Selected package does not contain all 7 categories."
         )
+
+    print(
+        "\n[OK] Per-class caps, session coverage, "
+        "and timeline-spread selection complete."
+    )
 
     return selected
 
@@ -1253,20 +1721,40 @@ def validate_package(
         )
 
     # 15. Full package cap validation.
+    # Train/val/test_within caps are PER CATEGORY.
+    # Held-out cap is PER HELD-OUT SESSION.
     if not pilot:
 
-        for split, cap in CAPS.items():
-            n = int(
-                np.sum(
-                    split_id == SPLITS[split]
-                )
-            )
+        category_names = {
+            int(v): k
+            for k, v in label_mapping.items()
+        }
 
-            if n > cap:
-                fail(
-                    f"Validation: {split} cap exceeded: "
-                    f"{n:,} > {cap:,}"
+        for split, cap in CAPS.items():
+
+            split_mask = split_id == SPLITS[split]
+
+            for category_id_value in sorted(
+                expected_category_ids
+            ):
+
+                n = int(
+                    np.sum(
+                        split_mask
+                        & (category_id == category_id_value)
+                    )
                 )
+
+                if n > cap:
+                    category_name = category_names.get(
+                        int(category_id_value),
+                        str(category_id_value),
+                    )
+
+                    fail(
+                        f"Validation: {split}/{category_name} "
+                        f"cap exceeded: {n:,} > {cap:,}"
+                    )
 
         for s in HELDOUT:
             n = int(
