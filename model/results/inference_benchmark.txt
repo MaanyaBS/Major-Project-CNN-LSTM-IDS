@@ -1,0 +1,43 @@
+======================================================================
+CNN-LSTM INFERENCE SPEED ON CPU
+======================================================================
+Generated : 2026-09-30T15:02:19+00:00
+CPU       : AMD Ryzen 3 5300U with Radeon Graphics (8 logical cores)
+Power     : battery
+Software  : Python 3.13.2, TensorFlow 2.21.0, Keras 3.15.0, GPU disabled
+Method    : 20 warm-up calls discarded before every latency series;
+            throughput is the median of 3 runs with model.predict.
+
+----------------------------------------------------------------------
+CICIDS2017 CNN-LSTM (v2)   model/artifacts/cnn_lstm_best_v2.keras
+----------------------------------------------------------------------
+Input window   : 10 flows x 20 features -> 15 classes
+Parameters     : 83,919
+File size      : 1.01 MB
+Compute dtype  : float32
+Load time      : 0.67 s (first load in a fresh process)
+Inputs         : real test windows from datasets/verify_run_ruthwik/X_test_seq.npy
+
+Latency, one window per call (ms)       median      p95      p99   calls
+  backend path (scale + model.predict)     80.77   102.85   131.47     300
+    of which scaling (pandas + scaler)      1.10     1.83     2.37     300
+  model.predict                            83.47   109.22   125.73     300
+  model.predict_on_batch                    1.88     2.50     2.64     300
+  model(x) direct call                     25.93    35.34    48.86     300
+
+Throughput (windows/s, 16,384 windows per run)
+  batch 1 (backend path, one call per window)           12
+  batch 32                                          10,482
+  batch 256                                         44,150
+  batch 2048                                        52,985
+
+Check: the backend path gave the same class as the direct model call on 300/300 windows.
+
+MU-IoT CNN-LSTM: not measured (file not found: model/artifacts/mu_iot/best.keras, model/artifacts/mu_iot/scaler_38.pkl)
+
+How to read windows/s as flows/s
+  Non-overlapping windows (backend predict_matrix() cuts rows into blocks):
+      flows/s = windows/s x window length
+  Sliding windows, one new window per arriving flow (how training and
+  evaluation windows were built):
+      flows/s = windows/s

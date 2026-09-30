@@ -1,0 +1,82 @@
+{
+  "environment": {
+    "generated": "2026-09-30T15:02:19+00:00",
+    "cpu": "AMD Ryzen 3 5300U with Radeon Graphics",
+    "logical_cores": 8,
+    "power": "battery",
+    "python": "3.13.2",
+    "tensorflow": "2.21.0",
+    "keras": "3.15.0"
+  },
+  "results": [
+    {
+      "name": "cicids",
+      "title": "CICIDS2017 CNN-LSTM (v2)",
+      "model": "model/artifacts/cnn_lstm_best_v2.keras",
+      "seq_len": 10,
+      "n_features": 20,
+      "n_classes": 15,
+      "parameters": 83919,
+      "file_size_mb": 1.0103111267089844,
+      "dtype_policies": [
+        "float32"
+      ],
+      "load_seconds": 0.6669494000088889,
+      "input_source": "real test windows from datasets/verify_run_ruthwik/X_test_seq.npy",
+      "throughput_windows": 16384,
+      "latency_ms": {
+        "backend path (scale + model.predict)": {
+          "median": 80.76535000000001,
+          "p95": 102.85003500000002,
+          "p99": 131.469047,
+          "mean": 82.98286333333334,
+          "calls": 300
+        },
+        "  of which scaling (pandas + scaler)": {
+          "median": 1.0968,
+          "p95": 1.83281,
+          "p99": 2.367566,
+          "mean": 1.1993193333333332,
+          "calls": 300
+        },
+        "model.predict": {
+          "median": 83.4708,
+          "p95": 109.22301,
+          "p99": 125.728214,
+          "mean": 85.84070033333333,
+          "calls": 300
+        },
+        "model.predict_on_batch": {
+          "median": 1.8829500000000001,
+          "p95": 2.4996199999999997,
+          "p99": 2.6440010000000003,
+          "mean": 1.9536656666666665,
+          "calls": 300
+        },
+        "model(x) direct call": {
+          "median": 25.93475,
+          "p95": 35.34351,
+          "p99": 48.86133799999999,
+          "mean": 27.108871999999998,
+          "calls": 300
+        }
+      },
+      "throughput_windows_per_s": {
+        "1 (backend path, one call per window)": 12.38154728481954,
+        "32": 10481.69209719385,
+        "256": 44150.312627867024,
+        "2048": 52984.50145121481
+      },
+      "backend_agreement": [
+        300,
+        300
+      ]
+    }
+  ],
+  "skipped": [
+    {
+      "model": "mu_iot",
+      "reason": "file not found: model/artifacts/mu_iot/best.keras, model/artifacts/mu_iot/scaler_38.pkl"
+    }
+  ]
+}
