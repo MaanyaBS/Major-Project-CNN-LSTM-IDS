@@ -1,0 +1,10 @@
+
+test_within
+  all windows  n= 586,631  acc=0.9672  macroF1=0.9372  normal_false_alarm=0.0921
+  unseen only  n= 528,967  acc=0.9640  macroF1=0.9361  normal_false_alarm=0.0932
+  unseen-only recall: DDoS=0.956, Injection=0.999, MiTM=0.985, Password_Hacking=0.999, Scan=0.988, Spyware=0.764, normal=0.907
+
+test_heldout
+  all windows  n= 731,358  acc=0.6416  macroF1=0.6469
+  unseen only  n= 686,566  acc=0.6801  macroF1=0.6763
+  unseen-only recall: DDoS=0.406, Injection=0.882, Password_Hacking=0.998, Scan=0.441

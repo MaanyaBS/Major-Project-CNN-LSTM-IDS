@@ -1,0 +1,46 @@
+==============================================================================
+CNN-LSTM MU-IoT - TEST_HELDOUT EVALUATION
+==============================================================================
+Generated : 2026-09-29 17:21 UTC
+Windows   : 731,358  (sequence length 20, 38 features)
+Classes   : DDoS, Injection, Password_Hacking, Scan
+==============================================================================
+
+OVERALL METRICS (macro/weighted F1 over the classes present in this track)
+------------------------------------------------------------------------------
+Accuracy          : 0.6416
+Weighted F1-score : 0.6220
+Macro F1-score    : 0.6469
+Attacks classified as normal (missed attacks)  : 0.0008
+
+PER-CLASS CLASSIFICATION REPORT
+------------------------------------------------------------------------------
+                  precision    recall  f1-score   support
+
+            DDoS       0.73      0.32      0.45    199620
+       Injection       0.96      0.88      0.92    132498
+Password_Hacking       0.67      1.00      0.80    199620
+            Scan       0.40      0.45      0.42    199620
+
+       micro avg       0.64      0.64      0.64    731358
+       macro avg       0.69      0.66      0.65    731358
+    weighted avg       0.67      0.64      0.62    731358
+
+PER-SESSION ACCURACY
+------------------------------------------------------------------------------
+MU_SESSION_013         Password_Hacking   windows=  199,620  accuracy=0.9982
+MU_SESSION_021         Scan               windows=  199,620  accuracy=0.4461
+MU_SESSION_026         Injection          windows=  132,498  accuracy=0.8823
+MU_SESSION_031         DDoS               windows=  199,620  accuracy=0.3209
+
+CONFUSION MATRIX (rows = true, columns = predicted, all classes)
+------------------------------------------------------------------------------
+true\pred                   DDoS   Injection        MiTM  Password_H        Scan     Spyware      normal
+DDoS                      64,056           5           0         149     135,327           9          74
+Injection                     18     116,907           7      15,128          28           9         401
+MiTM                           0           0           0           0           0           0           0
+Password_Hacking              11           1           0     199,255         353           0           0
+Scan                      23,327       5,282          66      81,731      89,049          33         132
+Spyware                        0           0           0           0           0           0           0
+normal                         0           0           0           0           0           0           0
+==============================================================================
