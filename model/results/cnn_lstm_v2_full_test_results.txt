@@ -1,9 +1,9 @@
 ==============================================================================
 CNN-LSTM v2 — FULL TEST SET EVALUATION RESULTS
 ==============================================================================
-Generated : 2026-09-17 04:14 UTC
+Generated : 2026-09-30 05:10 UTC
 Model     : model/artifacts/cnn_lstm_best_v2.keras
-Scaler    : model/artifacts/scaler_v2.pkl
+Scaler    : model/artifacts/scaler_v2.pkl (applied when the test sequences were built)
 Test set  : model/rebuild_chronological_split.py output, full chronological
             day+label stratified 80/20 split (CICIDS2017)
 Test size : 530,951 sequences, shape (530951, 10, 20)
