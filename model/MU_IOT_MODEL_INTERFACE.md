@@ -187,15 +187,49 @@ in; `python model/benchmark_inference.py` reproduces it):
 
 ---
 
-## 7. Prevention — Not Yet Wired for MU-IoT
+## 7. Prevention Policy
 
-`model/class_action_mapping.py` is calibrated for the **CICIDS2017** classes
-only. **Do not pass MU-IoT predictions to its `get_action()` yet.** Most
-MU-IoT class names are unknown to it and fall back to review, but `DDoS`
-exists in both datasets: an MU-IoT `DDoS` prediction would silently inherit
-the CICIDS2017 auto-block threshold, which was calibrated on a different
-model's accuracy. An MU-IoT-specific policy is the next piece of work; until
-then, show MU-IoT predictions as detections only.
+`model/class_action_mapping.py` holds one policy per dataset. For MU-IoT
+predictions, **always pass `dataset="mu_iot"`**:
+
+```python
+from class_action_mapping import get_action
+prevention = get_action(result["predicted_class"], result["confidence"], dataset="mu_iot")
+```
+
+Without it, `get_action()` uses the CICIDS2017 policy, and `DDoS` exists in
+both datasets: an MU-IoT `DDoS` prediction would get the CICIDS2017
+threshold (0.55 instead of 0.84). An unknown `dataset` value raises
+`ValueError` instead of guessing.
+
+| Class | Action | Severity | Auto-acts at confidence ≥ | Evidence |
+|---|---|---|---|---|
+| normal | no_action | low | never acts | — |
+| Injection | block_ip | high | 0.63 | held-out F1 0.918 |
+| Password_Hacking | block_ip | high | 0.71 | held-out F1 0.804 |
+| DDoS | block_ip | critical | 0.84 | held-out F1 0.446 |
+| Scan | block_ip | medium | 0.84 | held-out F1 0.420 |
+| MiTM | isolate_host | high | never (always review) | no held-out recording |
+| Spyware | isolate_host | high | never (always review) | no held-out recording; main false-alarm source |
+
+How the thresholds were set:
+
+- **Same rule as CICIDS2017.** Each threshold is the CICIDS2017 F1 → threshold
+  curve evaluated at the class's F1 (less reliable class, higher threshold).
+- **Held-out F1, not within-recording F1.** Scores on recordings seen in
+  training overstated every class that could be checked (Scan 0.994 → 0.420
+  on an unseen recording), so only held-out scores are used.
+- **No held-out evidence, no automatic action.** MiTM and Spyware have no
+  held-out recording, so they always go to review. Spyware also absorbs most
+  false alarms (6.2% of normal test windows are predicted as Spyware).
+- All automatic MU-IoT actions are `block_ip`, which the execution engine
+  (`prevention_executor.py`) performs for real within its safety limits.
+
+The thresholds come from test-set F1, as the CICIDS2017 ones do: there is no
+separate calibration set for behaviour on unseen recordings. What the policy
+actually does on the test windows is measured by
+`model/evaluate_prevention_policy.py --dataset mu_iot` (run in Colab, where the
+data is).
 
 ---
 

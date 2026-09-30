@@ -1,0 +1,189 @@
+{
+  "dataset": "cicids2017",
+  "model": "model/artifacts/cnn_lstm_best_v2.keras",
+  "tracks": {
+    "test": {
+      "windows": 530951,
+      "accuracy": 0.9841604969196781,
+      "benign": {
+        "windows": 439987,
+        "auto_action": 1451,
+        "held_for_review": 4061,
+        "no_action": 434475
+      },
+      "attack": {
+        "windows": 90964,
+        "auto_action": 87859,
+        "held_for_review": 904,
+        "no_action": 2201
+      },
+      "benign_auto_executable": 1451,
+      "auto_decisions": {
+        "total": 89310,
+        "on_predicted_attack": 87489,
+        "on_other_attack": 370,
+        "on_benign": 1451
+      },
+      "per_true_class": {
+        "BENIGN": {
+          "windows": 439987,
+          "auto_action": 1451,
+          "held_for_review": 4061,
+          "no_action": 434475
+        },
+        "Bot": {
+          "windows": 381,
+          "auto_action": 5,
+          "held_for_review": 31,
+          "no_action": 345
+        },
+        "DDoS": {
+          "windows": 25595,
+          "auto_action": 25178,
+          "held_for_review": 279,
+          "no_action": 138
+        },
+        "DoS GoldenEye": {
+          "windows": 2058,
+          "auto_action": 1952,
+          "held_for_review": 46,
+          "no_action": 60
+        },
+        "DoS Hulk": {
+          "windows": 35038,
+          "auto_action": 34643,
+          "held_for_review": 167,
+          "no_action": 228
+        },
+        "DoS Slowhttptest": {
+          "windows": 1046,
+          "auto_action": 1029,
+          "held_for_review": 17,
+          "no_action": 0
+        },
+        "DoS slowloris": {
+          "windows": 1083,
+          "auto_action": 754,
+          "held_for_review": 51,
+          "no_action": 278
+        },
+        "FTP-Patator": {
+          "windows": 1219,
+          "auto_action": 1179,
+          "held_for_review": 29,
+          "no_action": 11
+        },
+        "Heartbleed": {
+          "windows": 3,
+          "auto_action": 0,
+          "held_for_review": 3,
+          "no_action": 0
+        },
+        "PortScan": {
+          "windows": 23378,
+          "auto_action": 22577,
+          "held_for_review": 170,
+          "no_action": 631
+        },
+        "SSH-Patator": {
+          "windows": 739,
+          "auto_action": 542,
+          "held_for_review": 32,
+          "no_action": 165
+        },
+        "Web Attack - Brute Force": {
+          "windows": 288,
+          "auto_action": 0,
+          "held_for_review": 73,
+          "no_action": 215
+        },
+        "Web Attack - Sql Injection": {
+          "windows": 5,
+          "auto_action": 0,
+          "held_for_review": 0,
+          "no_action": 5
+        },
+        "Web Attack - XSS": {
+          "windows": 131,
+          "auto_action": 0,
+          "held_for_review": 6,
+          "no_action": 125
+        }
+      },
+      "auto_by_predicted_class": {
+        "Bot": {
+          "action": "isolate_host",
+          "threshold": 0.94,
+          "auto_action": 17,
+          "on_predicted_attack": 0,
+          "on_other_attack": 0,
+          "on_benign": 17
+        },
+        "DDoS": {
+          "action": "block_ip",
+          "threshold": 0.55,
+          "auto_action": 25083,
+          "on_predicted_attack": 25015,
+          "on_other_attack": 24,
+          "on_benign": 44
+        },
+        "DoS GoldenEye": {
+          "action": "rate_limit",
+          "threshold": 0.7,
+          "auto_action": 2495,
+          "on_predicted_attack": 1948,
+          "on_other_attack": 62,
+          "on_benign": 485
+        },
+        "DoS Hulk": {
+          "action": "rate_limit",
+          "threshold": 0.55,
+          "auto_action": 34767,
+          "on_predicted_attack": 34594,
+          "on_other_attack": 136,
+          "on_benign": 37
+        },
+        "DoS Slowhttptest": {
+          "action": "drop_connection",
+          "threshold": 0.65,
+          "auto_action": 1145,
+          "on_predicted_attack": 1018,
+          "on_other_attack": 117,
+          "on_benign": 10
+        },
+        "DoS slowloris": {
+          "action": "drop_connection",
+          "threshold": 0.75,
+          "auto_action": 711,
+          "on_predicted_attack": 656,
+          "on_other_attack": 15,
+          "on_benign": 40
+        },
+        "FTP-Patator": {
+          "action": "block_ip",
+          "threshold": 0.72,
+          "auto_action": 1387,
+          "on_predicted_attack": 1163,
+          "on_other_attack": 11,
+          "on_benign": 213
+        },
+        "PortScan": {
+          "action": "block_ip",
+          "threshold": 0.6,
+          "auto_action": 23092,
+          "on_predicted_attack": 22553,
+          "on_other_attack": 5,
+          "on_benign": 534
+        },
+        "SSH-Patator": {
+          "action": "block_ip",
+          "threshold": 0.78,
+          "auto_action": 613,
+          "on_predicted_attack": 542,
+          "on_other_attack": 0,
+          "on_benign": 71
+        }
+      }
+    }
+  }
+}

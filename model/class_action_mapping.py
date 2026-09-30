@@ -5,9 +5,16 @@ Module  : Class-to-Action Mapping & Prevention Policy
 Author  : Person B (Model Development)
 ==========================================================
 Maps predicted intrusion classes to automated prevention actions,
-severity levels, and confidence thresholds calibrated against
-CNN-LSTM v2 per-class F1-scores (full 530,951-row chronological
-test set — see model/MODEL_INTERFACE.md).
+severity levels, and confidence thresholds, one policy per dataset:
+
+    cicids2017  CNN-LSTM v2 per-class F1-scores (full 530,951-row
+                chronological test set — see model/MODEL_INTERFACE.md)
+    mu_iot      MU-IoT CNN-LSTM per-class F1-scores on held-out
+                recordings (see model/MU_IOT_MODEL_INTERFACE.md)
+
+get_action(predicted_class, confidence) uses the CICIDS2017 policy;
+pass dataset="mu_iot" for MU-IoT predictions. The two models share the
+class name "DDoS", so the dataset must be explicit, never guessed.
 """
 
 from typing import Dict, Any
@@ -135,20 +142,106 @@ CLASS_ACTION_MAP: Dict[str, Dict[str, Any]] = {
 }
 
 
-def get_action(predicted_class: str, confidence: float) -> Dict[str, str]:
+# Map of the 7 MU-IoT classes (normal + 6 attack categories)
+#
+# Same F1 -> threshold curve as the CICIDS2017 map above (thresholds are
+# that curve interpolated at each class's F1, rounded to 2 decimals), but
+# applied to the F1 on HELD-OUT recordings (test_heldout in
+# model/results/mu_iot/mu_iot_metrics.json): whole recordings the model
+# never saw in training. Scores on recordings seen in training overstated
+# every class that could be checked (DDoS 0.980 -> 0.446, Scan 0.994 ->
+# 0.420, Password_Hacking 0.990 -> 0.804, Injection 0.978 -> 0.918).
+#
+# A class with no held-out recording has no evidence of how it does on
+# unseen traffic, so it is hard-locked to held_for_review (MiTM, Spyware).
+# Actions match the nearest CICIDS2017 class (DDoS -> DDoS, Scan ->
+# PortScan, Password_Hacking -> FTP/SSH-Patator).
+MU_IOT_CLASS_ACTION_MAP: Dict[str, Dict[str, Any]] = {
+    "normal": {
+        "action": "no_action",
+        "severity": "low",
+        "threshold": 0.50,
+        "f1_score": 0.9093,
+        "f1_source": "test_within",  # no held-out normal recording
+    },
+    "Injection": {
+        "action": "block_ip",
+        "severity": "high",
+        "threshold": 0.63,  # held-out F1 0.9180 (XSS recording)
+        "f1_score": 0.9180,
+        "f1_source": "test_heldout",
+    },
+    "Password_Hacking": {
+        "action": "block_ip",
+        "severity": "high",
+        "threshold": 0.71,  # held-out F1 0.8036 (MQTT dictionary attack)
+        "f1_score": 0.8036,
+        "f1_source": "test_heldout",
+    },
+    "DDoS": {
+        "action": "block_ip",
+        "severity": "critical",
+        "threshold": 0.84,  # held-out F1 0.4463 (hping3 flood, mostly called Scan)
+        "f1_score": 0.4463,
+        "f1_source": "test_heldout",
+    },
+    "Scan": {
+        "action": "block_ip",
+        "severity": "medium",
+        "threshold": 0.84,  # held-out F1 0.4197 (vulnerability scan)
+        "f1_score": 0.4197,
+        "f1_source": "test_heldout",
+    },
+    "MiTM": {
+        "action": "isolate_host",
+        "severity": "high",
+        "threshold": float("inf"),  # unreachable by design — see note
+        "never_auto_fire": True,
+        "f1_score": 0.9630,
+        "f1_source": "test_within",
+        "note": "No held-out recording, so no evidence of performance on unseen traffic; "
+                "within-recording F1 overstated every class that could be checked. Only "
+                "3,954 test windows from two recordings. Always held_for_review.",
+    },
+    "Spyware": {
+        "action": "isolate_host",
+        "severity": "high",
+        "threshold": float("inf"),  # unreachable by design — see note
+        "never_auto_fire": True,
+        "f1_score": 0.7466,
+        "f1_source": "test_within",
+        "note": "Main false-alarm source: 6.2% of normal test windows are predicted as "
+                "Spyware (quiet keylogger exfiltration resembles background traffic). "
+                "One recording, no held-out evidence. Always held_for_review.",
+    },
+}
+
+POLICIES: Dict[str, Dict[str, Dict[str, Any]]] = {
+    "cicids2017": CLASS_ACTION_MAP,
+    "mu_iot": MU_IOT_CLASS_ACTION_MAP,
+}
+
+
+def get_action(predicted_class: str, confidence: float, dataset: str = "cicids2017") -> Dict[str, str]:
     """
-    Looks up the predicted class in CLASS_ACTION_MAP and determines
-    the automated response, severity level, and execution status.
+    Looks up the predicted class in the dataset's policy map and
+    determines the automated response, severity level, and execution
+    status.
 
     Status logic:
-        - 'no_action_needed' if predicted_class is BENIGN or action is 'no_action'
+        - 'no_action_needed' if the class's action is 'no_action' (BENIGN / normal)
         - 'auto_action' if confidence >= threshold and action != 'no_action'
-        - 'held_for_review' if confidence < threshold (for non-BENIGN attacks)
+        - 'held_for_review' if confidence < threshold (for attack classes)
+
+    dataset: "cicids2017" (default) or "mu_iot". An unknown dataset
+    raises ValueError rather than silently applying the wrong policy.
 
     Returns:
         Dict with keys: 'action', 'severity', 'status'
     """
-    policy = CLASS_ACTION_MAP.get(predicted_class)
+    if dataset not in POLICIES:
+        raise ValueError(f"Unknown dataset {dataset!r}; expected one of {sorted(POLICIES)}")
+    policy = POLICIES[dataset].get(predicted_class)
 
     if not policy:
         # Fallback policy for unexpected/unknown class

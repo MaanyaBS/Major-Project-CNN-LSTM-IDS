@@ -1,0 +1,60 @@
+==============================================================================
+PREVENTION POLICY ON THE TEST SET - CICIDS2017
+==============================================================================
+Generated : 2026-09-30 16:08 UTC
+Model     : model/artifacts/cnn_lstm_best_v2.keras
+Windows   : all test windows from datasets/verify_run_ruthwik
+Policy    : class_action_mapping.get_action(dataset="cicids2017")
+
+Every window's predicted class and confidence go through the policy; the
+decision is then compared with the window's true label. Measured only,
+never used to tune the thresholds.
+
+------------------------------------------------------------------------------
+TEST
+------------------------------------------------------------------------------
+Windows : 530,951   (model accuracy on them: 0.9842)
+
+BENIGN TRAFFIC (439,987 windows)
+  no action                     434,475 ( 98.75%)
+  sent to review                  4,061 (  0.92%)   false alerts a person dismisses
+  automatic action                1,451 (  0.33%)   false automatic actions
+    of which a real firewall action  1,451
+
+ATTACK TRAFFIC (90,964 windows)
+  automatic action               87,859 ( 96.59%)
+  sent to review                    904 (  0.99%)
+  no action (called BENIGN)       2,201 (  2.42%)   missed
+
+AUTOMATIC ACTIONS (89,310 decisions)
+  on the predicted attack        87,489 ( 97.96%)
+  on a different attack             370 (  0.41%)   attacker still acted on; action type may differ
+  on BENIGN traffic               1,451 (  1.62%)   collateral
+
+PER TRUE CLASS                       windows        auto      review   no action
+  BENIGN                              439,987       0.33%       0.92%      98.75%
+  Bot                                     381       1.31%       8.14%      90.55%
+  DDoS                                 25,595      98.37%       1.09%       0.54%
+  DoS GoldenEye                         2,058      94.85%       2.24%       2.92%
+  DoS Hulk                             35,038      98.87%       0.48%       0.65%
+  DoS Slowhttptest                      1,046      98.37%       1.63%       0.00%
+  DoS slowloris                         1,083      69.62%       4.71%      25.67%
+  FTP-Patator                           1,219      96.72%       2.38%       0.90%
+  Heartbleed                                3       0.00%     100.00%       0.00%
+  PortScan                             23,378      96.57%       0.73%       2.70%
+  SSH-Patator                             739      73.34%       4.33%      22.33%
+  Web Attack - Brute Force                288       0.00%      25.35%      74.65%
+  Web Attack - Sql Injection                5       0.00%       0.00%     100.00%
+  Web Attack - XSS                        131       0.00%       4.58%      95.42%
+
+AUTOMATIC ACTIONS BY PREDICTED CLASS
+  class                      action           thresh      auto   correct  other atk    BENIGN
+  Bot                        isolate_host       0.94        17         0          0        17
+  DDoS                       block_ip           0.55    25,083    25,015         24        44
+  DoS GoldenEye              rate_limit         0.70     2,495     1,948         62       485
+  DoS Hulk                   rate_limit         0.55    34,767    34,594        136        37
+  DoS Slowhttptest           drop_connection    0.65     1,145     1,018        117        10
+  DoS slowloris              drop_connection    0.75       711       656         15        40
+  FTP-Patator                block_ip           0.72     1,387     1,163         11       213
+  PortScan                   block_ip           0.60    23,092    22,553          5       534
+  SSH-Patator                block_ip           0.78       613       542          0        71

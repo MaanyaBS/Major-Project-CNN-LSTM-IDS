@@ -13,11 +13,14 @@ import contextlib
 import json
 import math
 import os
+import re
 import sys
 import tempfile
 import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+
+import numpy as np
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import class_action_mapping as cam  # noqa: E402
@@ -27,7 +30,17 @@ REPO = Path(__file__).resolve().parent.parent
 ACTIONS = {"no_action", "block_ip", "isolate_host", "rate_limit", "drop_connection",
            "terminate_session", "sanitize_input"}
 SEVERITIES = {"low", "medium", "high", "critical"}
-DATA_STARVED = {"Web Attack - Sql Injection", "Heartbleed", "Infiltration"}
+LABEL_MAPPINGS = {"cicids2017": REPO / "model" / "artifacts" / "label_mapping_v2.json",
+                  "mu_iot": REPO / "model" / "artifacts" / "mu_iot" / "label_mapping.json"}
+BENIGN_NAME = {"cicids2017": "BENIGN", "mu_iot": "normal"}
+REVIEW_ONLY = {"cicids2017": {"Web Attack - Sql Injection", "Heartbleed", "Infiltration"},  # too few test rows
+               "mu_iot": {"MiTM", "Spyware"}}                                            # no held-out evidence
+
+
+def acting_entries(dataset):
+    """(name, policy) for attack classes that can auto-act (finite threshold)."""
+    return [(n, p) for n, p in cam.POLICIES[dataset].items()
+            if p["action"] != "no_action" and not math.isinf(p["threshold"])]
 
 
 class _NoRealNetsh:
@@ -85,52 +98,104 @@ def ago(seconds):
 # ----------------------------------------------------------------------
 
 def test_policy_covers_exactly_the_model_classes():
-    with open(REPO / "model" / "artifacts" / "label_mapping_v2.json") as f:
-        model_classes = set(json.load(f))
-    assert set(cam.CLASS_ACTION_MAP) == model_classes, \
-        f"policy/model class mismatch: {set(cam.CLASS_ACTION_MAP) ^ model_classes}"
+    assert set(cam.POLICIES) == set(LABEL_MAPPINGS)
+    for dataset, path in LABEL_MAPPINGS.items():
+        with open(path) as f:
+            model_classes = set(json.load(f))
+        policy = set(cam.POLICIES[dataset])
+        assert policy == model_classes, f"{dataset}: policy/model class mismatch: {policy ^ model_classes}"
 
 
 def test_every_policy_entry_is_complete_and_valid():
+    for dataset, policy in cam.POLICIES.items():
+        for name, p in policy.items():
+            assert p["action"] in ACTIONS, f"{dataset}/{name}: unknown action {p['action']}"
+            assert p["severity"] in SEVERITIES, f"{dataset}/{name}: unknown severity {p['severity']}"
+            t = p["threshold"]
+            assert math.isinf(t) or 0 < t <= 1, f"{dataset}/{name}: threshold {t} out of range"
+
+
+def test_policy_f1_matches_committed_results():
+    metrics = json.loads((REPO / "model" / "results" / "mu_iot" / "mu_iot_metrics.json").read_text())
+    for name, p in cam.MU_IOT_CLASS_ACTION_MAP.items():
+        measured = round(metrics[p["f1_source"]]["per_class"][name]["f1"], 4)
+        assert p["f1_score"] == measured, f"mu_iot/{name}: policy F1 {p['f1_score']} vs results {measured}"
+    # The committed CICIDS2017 report prints F1 to 2 decimals.
+    report = (REPO / "model" / "results" / "cnn_lstm_v2_full_test_results.txt").read_text(encoding="utf-8")
     for name, p in cam.CLASS_ACTION_MAP.items():
-        assert p["action"] in ACTIONS, f"{name}: unknown action {p['action']}"
-        assert p["severity"] in SEVERITIES, f"{name}: unknown severity {p['severity']}"
-        t = p["threshold"]
-        assert math.isinf(t) or 0 < t <= 1, f"{name}: threshold {t} out of range"
+        if "f1_score" not in p:
+            continue
+        m = re.search(rf"^\s*{re.escape(name)}\s+[\d.]+\s+[\d.]+\s+([\d.]+)\s+\d+\s*$", report, re.M)
+        assert m, f"cicids2017/{name}: not found in the results report"
+        assert float(m.group(1)) == round(p["f1_score"], 2), f"cicids2017/{name}: policy F1 {p['f1_score']} vs report {m.group(1)}"
 
 
 def test_benign_never_triggers_an_action():
-    for conf in (0.0, 0.5, 0.999, 1.0):
-        assert cam.get_action("BENIGN", conf)["status"] == "no_action_needed"
+    for dataset, benign in BENIGN_NAME.items():
+        for conf in (0.0, 0.5, 0.999, 1.0):
+            assert cam.get_action(benign, conf, dataset)["status"] == "no_action_needed", f"{dataset}/{benign}"
 
 
 def test_threshold_boundary_is_inclusive():
-    for name, p in cam.CLASS_ACTION_MAP.items():
-        t = p["threshold"]
-        if name == "BENIGN" or math.isinf(t):
-            continue
-        assert cam.get_action(name, t)["status"] == "auto_action", f"{name} at its threshold"
-        assert cam.get_action(name, t - 1e-6)["status"] == "held_for_review", f"{name} just below"
+    for dataset in cam.POLICIES:
+        for name, p in acting_entries(dataset):
+            t = p["threshold"]
+            assert cam.get_action(name, t, dataset)["status"] == "auto_action", f"{dataset}/{name} at its threshold"
+            assert cam.get_action(name, t - 1e-6, dataset)["status"] == "held_for_review", f"{dataset}/{name} just below"
 
 
-def test_data_starved_classes_never_auto_act():
-    for name in DATA_STARVED:
-        p = cam.CLASS_ACTION_MAP[name]
-        assert math.isinf(p["threshold"]) and p.get("never_auto_fire"), f"{name} not hard-locked"
-        assert cam.get_action(name, 1.0)["status"] == "held_for_review"
+def test_review_only_classes_never_auto_act():
+    for dataset, names in REVIEW_ONLY.items():
+        locked = {n for n, p in cam.POLICIES[dataset].items() if math.isinf(p["threshold"])}
+        assert locked == names, f"{dataset}: hard-locked {sorted(locked)}, expected {sorted(names)}"
+        for name in names:
+            assert cam.POLICIES[dataset][name].get("never_auto_fire"), f"{dataset}/{name} not flagged"
+            assert cam.get_action(name, 1.0, dataset)["status"] == "held_for_review", f"{dataset}/{name}"
 
 
 def test_less_reliable_classes_need_more_confidence():
-    finite = [(p["f1_score"], p["threshold"], n) for n, p in cam.CLASS_ACTION_MAP.items()
-              if n != "BENIGN" and not math.isinf(p["threshold"])]
+    # One F1 -> threshold rule across both datasets.
+    finite = [(p["f1_score"], p["threshold"], f"{d}/{n}") for d in cam.POLICIES for n, p in acting_entries(d)]
     finite.sort(key=lambda x: -x[0])
     for (f_hi, t_hi, n_hi), (f_lo, t_lo, n_lo) in zip(finite, finite[1:]):
         assert t_lo >= t_hi, f"{n_lo} (F1 {f_lo}) has a lower threshold than {n_hi} (F1 {f_hi})"
 
 
+def test_mu_iot_thresholds_follow_the_cicids_curve():
+    f1s, ths = zip(*sorted((p["f1_score"], p["threshold"]) for _, p in acting_entries("cicids2017")))
+    for name, p in acting_entries("mu_iot"):
+        expected = round(float(np.interp(p["f1_score"], f1s, ths)), 2)
+        assert p["threshold"] == expected, f"mu_iot/{name}: threshold {p['threshold']}, curve gives {expected}"
+
+
+def test_mu_iot_auto_actions_rest_on_held_out_evidence():
+    for name, p in acting_entries("mu_iot"):
+        assert p["f1_source"] == "test_heldout", f"mu_iot/{name} can auto-act on {p['f1_source']} evidence"
+        assert p["action"] in pe.ACTION_DURATIONS, f"mu_iot/{name}: {p['action']} is not really executable"
+
+
+def test_datasets_are_kept_apart():
+    # "DDoS" exists in both: each dataset must use its own threshold (0.55 vs 0.84).
+    assert cam.get_action("DDoS", 0.60)["status"] == "auto_action"
+    assert cam.get_action("DDoS", 0.60, dataset="mu_iot")["status"] == "held_for_review"
+    assert cam.get_action("Scan", 0.99, dataset="mu_iot")["status"] == "auto_action"
+    assert cam.get_action("Scan", 0.99)["action"] == "alert_only"                       # unknown to CICIDS2017
+    assert cam.get_action("PortScan", 0.99, dataset="mu_iot")["action"] == "alert_only"  # unknown to MU-IoT
+
+
+def test_unknown_dataset_is_an_error():
+    for bad in ("mu-iot", "MU_IOT", "cicids", "", None):
+        try:
+            cam.get_action("DDoS", 0.99, dataset=bad)
+        except ValueError:
+            continue
+        raise AssertionError(f"dataset={bad!r} was accepted")
+
+
 def test_unknown_class_goes_to_review():
-    r = cam.get_action("Not A Real Class", 1.0)
-    assert r == {"action": "alert_only", "severity": "medium", "status": "held_for_review"}
+    for dataset in cam.POLICIES:
+        r = cam.get_action("Not A Real Class", 1.0, dataset)
+        assert r == {"action": "alert_only", "severity": "medium", "status": "held_for_review"}, dataset
 
 
 # ----------------------------------------------------------------------
