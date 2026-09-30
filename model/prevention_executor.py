@@ -75,6 +75,9 @@ def check_safe_to_execute(target_ip: str) -> None:
             "This is the default - flip it explicitly to enable real actions."
         )
 
+    if not isinstance(target_ip, str):
+        raise ExecutionNotPermitted(f"Target must be an IP address string, got {type(target_ip).__name__}.")
+
     if target_ip in NEVER_BLOCK:
         raise ExecutionNotPermitted(f"{target_ip} is on the permanent deny-list.")
 
@@ -168,6 +171,12 @@ def _remove_block_rule(rule_name: str) -> None:
         # Non-fatal if already gone - deletion is best-effort cleanup.
 
 
+def _expire_rule(rule_name: str, action: str, target_ip: str) -> None:
+    """Timer callback: remove a temporary rule and record that it expired on schedule."""
+    _remove_block_rule(rule_name)
+    _log_execution({"action": action, "target_ip": target_ip, "rule_name": rule_name, "expired": True})
+
+
 def execute_action(action: str, target_ip: str, predicted_class: str, confidence: float) -> dict:
     """
     Attempts to REALLY execute a prevention action, subject to the
@@ -221,7 +230,7 @@ def execute_action(action: str, target_ip: str, predicted_class: str, confidence
     _log_execution({**base_event, **outcome})
 
     if duration is not None:
-        timer = threading.Timer(duration, _remove_block_rule, args=(rule_name,))
+        timer = threading.Timer(duration, _expire_rule, args=(rule_name, action, target_ip))
         timer.daemon = True
         timer.start()
 
@@ -232,7 +241,7 @@ def revoke_action(action: str, target_ip: str) -> None:
     """Manually reverse a persistent (non-expiring) action, e.g. after human review."""
     rule_name = _rule_name(action, target_ip)
     _remove_block_rule(rule_name)
-    _log_execution({"action": action, "target_ip": target_ip, "revoked": True})
+    _log_execution({"action": action, "target_ip": target_ip, "rule_name": rule_name, "revoked": True})
 
 
 def sweep_expired_rules() -> list:
@@ -268,7 +277,7 @@ def sweep_expired_rules() -> list:
     swept = []
 
     for rule_name, record in latest_state.items():
-        if record.get("revoked") or record.get("swept"):
+        if record.get("revoked") or record.get("swept") or record.get("expired"):
             continue  # already cleaned up
         if not record.get("executed"):
             continue  # was never actually created

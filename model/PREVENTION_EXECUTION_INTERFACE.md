@@ -121,6 +121,12 @@ call directly from a request handler without wrapping every call site in a
 - `sweep_expired_rules()` tested against 4 synthetic scenarios (expired /
   not-yet-expired / persistent / already-revoked) — correct in all four, and
   confirmed idempotent (safe to call repeatedly).
+- Committed tests: `python model/test_prevention.py` (17 tests, no real
+  firewall access — OS calls are replaced with recorders). They cover the
+  policy (thresholds, review-only classes, fallback) and every refusal path,
+  including adversarial targets such as `192.0.2.10,8.8.8.8` (netsh list
+  syntax), CIDR ranges, IPv6 and non-string input. Run them after any change
+  to the engine or the policy.
 
 Every attempt — refused, failed, or genuinely executed — is logged to
 `model/results/prevention_execution_log.jsonl`, kept separate from the
