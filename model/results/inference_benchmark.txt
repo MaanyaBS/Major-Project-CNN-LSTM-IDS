@@ -1,12 +1,15 @@
 ======================================================================
 CNN-LSTM INFERENCE SPEED ON CPU
 ======================================================================
-Generated : 2026-09-30T15:02:19+00:00
+Generated : 2026-09-30T15:44:42+00:00
 CPU       : AMD Ryzen 3 5300U with Radeon Graphics (8 logical cores)
-Power     : battery
+Power     : plugged in
 Software  : Python 3.13.2, TensorFlow 2.21.0, Keras 3.15.0, GPU disabled
 Method    : 20 warm-up calls discarded before every latency series;
-            throughput is the median of 3 runs with model.predict.
+            throughput is the median of 5 runs with model.predict.
+Caution   : laptop CPUs change clock speed with power, heat and background work,
+            so the same run repeated later can differ, by up to about 2x at large
+            batch sizes. Compare numbers within one report, not across reports.
 
 ----------------------------------------------------------------------
 CICIDS2017 CNN-LSTM (v2)   model/artifacts/cnn_lstm_best_v2.keras
@@ -15,25 +18,48 @@ Input window   : 10 flows x 20 features -> 15 classes
 Parameters     : 83,919
 File size      : 1.01 MB
 Compute dtype  : float32
-Load time      : 0.67 s (first load in a fresh process)
+Load time      : 0.35 s (keras.models.load_model)
 Inputs         : real test windows from datasets/verify_run_ruthwik/X_test_seq.npy
 
 Latency, one window per call (ms)       median      p95      p99   calls
-  backend path (scale + model.predict)     80.77   102.85   131.47     300
-    of which scaling (pandas + scaler)      1.10     1.83     2.37     300
-  model.predict                            83.47   109.22   125.73     300
-  model.predict_on_batch                    1.88     2.50     2.64     300
-  model(x) direct call                     25.93    35.34    48.86     300
+  backend path (scale + model.predict)     66.71    83.47    96.23     300
+    of which scaling (pandas + scaler)      0.86     1.17     1.43     300
+  model.predict                            67.22   102.87   143.66     300
+  model.predict_on_batch                    1.48     1.94     2.13     300
+  model(x) direct call                     20.52    28.95    34.54     300
 
-Throughput (windows/s, 16,384 windows per run)
-  batch 1 (backend path, one call per window)           12
-  batch 32                                          10,482
-  batch 256                                         44,150
-  batch 2048                                        52,985
+Throughput (windows/s, 16,384 windows per run)      median             range
+  batch 1 (backend path, one call per window)           15                 -
+  batch 32                                          13,490   12,790 - 13,818
+  batch 256                                         56,860   50,158 - 59,102
+  batch 2048                                        70,729   68,524 - 72,335
 
 Check: the backend path gave the same class as the direct model call on 300/300 windows.
 
-MU-IoT CNN-LSTM: not measured (file not found: model/artifacts/mu_iot/best.keras, model/artifacts/mu_iot/scaler_38.pkl)
+----------------------------------------------------------------------
+MU-IoT CNN-LSTM   model/artifacts/mu_iot/best.keras
+----------------------------------------------------------------------
+Input window   : 20 flows x 38 features -> 7 classes
+Parameters     : 86,855
+File size      : 1.72 MB
+Compute dtype  : float32, mixed_float16
+Load time      : 0.18 s (keras.models.load_model)
+Inputs         : random windows of the model's input shape
+
+Latency, one window per call (ms)       median      p95      p99   calls
+  backend path (scale + model.predict)     66.98    88.00   110.99     300
+    of which scaling (pandas + scaler)      0.79     1.01     1.30     300
+  model.predict                            66.20    89.22   106.01     300
+  model.predict_on_batch                    1.60     2.23     2.42     300
+  model(x) direct call                     28.02    32.64    45.88     300
+
+Throughput (windows/s, 16,384 windows per run)      median             range
+  batch 1 (backend path, one call per window)           15                 -
+  batch 32                                           7,248     7,160 - 7,342
+  batch 256                                         15,512   14,654 - 15,883
+  batch 2048                                        21,907   20,216 - 22,196
+
+Check: the backend path gave the same class as the direct model call on 300/300 windows.
 
 How to read windows/s as flows/s
   Non-overlapping windows (backend predict_matrix() cuts rows into blocks):

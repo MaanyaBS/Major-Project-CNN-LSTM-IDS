@@ -35,3 +35,7 @@ __pycache__/
 
 # Generated MU-IoT temporary data
 dataset/processed/mu_iot/handoff_v2/_temp/
+
+# MU-IoT training-resume files (best.keras is the model; these are only for --resume)
+model/artifacts/mu_iot/last.keras
+model/artifacts/mu_iot/state.json

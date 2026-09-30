@@ -1,0 +1,9 @@
+{
+  "DDoS": 0,
+  "Injection": 1,
+  "MiTM": 2,
+  "Password_Hacking": 3,
+  "Scan": 4,
+  "Spyware": 5,
+  "normal": 6
+}

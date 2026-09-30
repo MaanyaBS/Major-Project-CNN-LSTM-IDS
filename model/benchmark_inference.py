@@ -60,7 +60,7 @@ MODELS = {
     },
 }
 THROUGHPUT_BATCHES = (32, 256, 2048)
-THROUGHPUT_RUNS = 3
+THROUGHPUT_RUNS = 5
 WARMUP_CALLS = 20
 
 
@@ -175,8 +175,9 @@ def benchmark(name, cfg, latency_calls, throughput_windows, seed):
     agree = int(np.sum(np.argmax(backend_probs, axis=1) == np.argmax(np.concatenate(direct_probs), axis=1)))
 
     X_tp = X[:throughput_windows]
+    backend_median = 1000.0 / latency["backend path (scale + model.predict)"]["median"]
     throughput = {"1 (backend path, one call per window)":
-                  1000.0 / latency["backend path (scale + model.predict)"]["median"]}
+                  {"median": backend_median, "min": None, "max": None}}
     for batch in THROUGHPUT_BATCHES:
         model.predict(X_tp[:batch * 2], batch_size=batch, verbose=0)  # warm-up
         runs = []
@@ -184,7 +185,8 @@ def benchmark(name, cfg, latency_calls, throughput_windows, seed):
             t0 = time.perf_counter()
             model.predict(X_tp, batch_size=batch, verbose=0)
             runs.append(len(X_tp) / (time.perf_counter() - t0))
-        throughput[str(batch)] = float(np.median(runs))
+        throughput[str(batch)] = {"median": float(np.median(runs)),
+                                  "min": float(min(runs)), "max": float(max(runs))}
 
     return {
         "name": name, "title": cfg["title"], "model": cfg["model"],
@@ -212,6 +214,9 @@ def format_report(env, results, skipped):
         f"Keras {env['keras']}, GPU disabled",
         f"Method    : {WARMUP_CALLS} warm-up calls discarded before every latency series;",
         f"            throughput is the median of {THROUGHPUT_RUNS} runs with model.predict.",
+        "Caution   : laptop CPUs change clock speed with power, heat and background work,",
+        "            so the same run repeated later can differ, by up to about 2x at large",
+        "            batch sizes. Compare numbers within one report, not across reports.",
         "",
     ]
     for r in results:
@@ -223,16 +228,18 @@ def format_report(env, results, skipped):
             f"Parameters     : {r['parameters']:,}",
             f"File size      : {r['file_size_mb']:.2f} MB",
             f"Compute dtype  : {', '.join(r['dtype_policies'])}",
-            f"Load time      : {r['load_seconds']:.2f} s (first load in a fresh process)",
+            f"Load time      : {r['load_seconds']:.2f} s (keras.models.load_model)",
             f"Inputs         : {r['input_source']}",
             "",
             f"Latency, one window per call (ms)       median      p95      p99   calls",
         ]
         for label, s in r["latency_ms"].items():
             lines.append(f"  {label:<38}{s['median']:>8.2f} {s['p95']:>8.2f} {s['p99']:>8.2f} {s['calls']:>7}")
-        lines += ["", f"Throughput (windows/s, {r['throughput_windows']:,} windows per run)"]
-        for batch, wps in r["throughput_windows_per_s"].items():
-            lines.append(f"  batch {batch:<40}{wps:>10,.0f}")
+        lines += ["", f"Throughput (windows/s, {r['throughput_windows']:,} windows per run)"
+                      f"{'median':>12}{'range':>18}"]
+        for batch, t in r["throughput_windows_per_s"].items():
+            spread = f"{t['min']:,.0f} - {t['max']:,.0f}" if t["min"] is not None else "-"
+            lines.append(f"  batch {batch:<40}{t['median']:>10,.0f}{spread:>18}")
         agree, total = r["backend_agreement"]
         lines += ["", f"Check: the backend path gave the same class as the direct model call on "
                       f"{agree}/{total} windows.", ""]
