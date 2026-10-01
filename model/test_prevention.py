@@ -33,12 +33,19 @@ SEVERITIES = {"low", "medium", "high", "critical"}
 LABEL_MAPPINGS = {"cicids2017": REPO / "model" / "artifacts" / "label_mapping_v2.json",
                   "mu_iot": REPO / "model" / "artifacts" / "mu_iot" / "label_mapping.json"}
 BENIGN_NAME = {"cicids2017": "BENIGN", "mu_iot": "normal"}
-REVIEW_ONLY = {"cicids2017": {"Web Attack - Sql Injection", "Heartbleed", "Infiltration"},  # too few test rows
+REVIEW_ONLY = {"cicids2017": {"Web Attack - Sql Injection", "Heartbleed", "Infiltration",  # too few test rows
+                              "Bot", "Web Attack - Brute Force", "Web Attack - XSS"},    # F1 below 0.15
                "mu_iot": {"MiTM", "Spyware"}}                                            # no held-out evidence
 
 
 def acting_entries(dataset):
-    """(name, policy) for attack classes that can auto-act (finite threshold)."""
+    """(name, policy) for attack classes that can auto-act."""
+    return [(n, p) for n, p in cam.POLICIES[dataset].items()
+            if p["action"] != "no_action" and not p.get("never_auto_fire")]
+
+
+def curve_entries(dataset):
+    """(name, policy) for attack classes with a finite threshold: the F1 -> threshold calibration points."""
     return [(n, p) for n, p in cam.POLICIES[dataset].items()
             if p["action"] != "no_action" and not math.isinf(p["threshold"])]
 
@@ -146,23 +153,25 @@ def test_threshold_boundary_is_inclusive():
 
 def test_review_only_classes_never_auto_act():
     for dataset, names in REVIEW_ONLY.items():
-        locked = {n for n, p in cam.POLICIES[dataset].items() if math.isinf(p["threshold"])}
-        assert locked == names, f"{dataset}: hard-locked {sorted(locked)}, expected {sorted(names)}"
+        locked = {n for n, p in cam.POLICIES[dataset].items() if p.get("never_auto_fire")}
+        assert locked == names, f"{dataset}: locked {sorted(locked)}, expected {sorted(names)}"
+        unflagged_inf = {n for n, p in cam.POLICIES[dataset].items()
+                         if math.isinf(p["threshold"]) and not p.get("never_auto_fire")}
+        assert not unflagged_inf, f"{dataset}: infinite threshold without the flag: {sorted(unflagged_inf)}"
         for name in names:
-            assert cam.POLICIES[dataset][name].get("never_auto_fire"), f"{dataset}/{name} not flagged"
             assert cam.get_action(name, 1.0, dataset)["status"] == "held_for_review", f"{dataset}/{name}"
 
 
 def test_less_reliable_classes_need_more_confidence():
     # One F1 -> threshold rule across both datasets.
-    finite = [(p["f1_score"], p["threshold"], f"{d}/{n}") for d in cam.POLICIES for n, p in acting_entries(d)]
+    finite = [(p["f1_score"], p["threshold"], f"{d}/{n}") for d in cam.POLICIES for n, p in curve_entries(d)]
     finite.sort(key=lambda x: -x[0])
     for (f_hi, t_hi, n_hi), (f_lo, t_lo, n_lo) in zip(finite, finite[1:]):
         assert t_lo >= t_hi, f"{n_lo} (F1 {f_lo}) has a lower threshold than {n_hi} (F1 {f_hi})"
 
 
 def test_mu_iot_thresholds_follow_the_cicids_curve():
-    f1s, ths = zip(*sorted((p["f1_score"], p["threshold"]) for _, p in acting_entries("cicids2017")))
+    f1s, ths = zip(*sorted((p["f1_score"], p["threshold"]) for _, p in curve_entries("cicids2017")))
     for name, p in acting_entries("mu_iot"):
         expected = round(float(np.interp(p["f1_score"], f1s, ths)), 2)
         assert p["threshold"] == expected, f"mu_iot/{name}: threshold {p['threshold']}, curve gives {expected}"

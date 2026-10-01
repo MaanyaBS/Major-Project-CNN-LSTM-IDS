@@ -7,8 +7,8 @@
       "accuracy": 0.9841604969196781,
       "benign": {
         "windows": 439987,
-        "auto_action": 1451,
-        "held_for_review": 4061,
+        "auto_action": 1434,
+        "held_for_review": 4078,
         "no_action": 434475
       },
       "attack": {
@@ -17,18 +17,18 @@
         "held_for_review": 904,
         "no_action": 2201
       },
-      "benign_auto_executable": 1451,
+      "benign_auto_executable": 1434,
       "auto_decisions": {
-        "total": 89310,
+        "total": 89293,
         "on_predicted_attack": 87489,
         "on_other_attack": 370,
-        "on_benign": 1451
+        "on_benign": 1434
       },
       "per_true_class": {
         "BENIGN": {
           "windows": 439987,
-          "auto_action": 1451,
-          "held_for_review": 4061,
+          "auto_action": 1434,
+          "held_for_review": 4078,
           "no_action": 434475
         },
         "Bot": {
@@ -111,14 +111,6 @@
         }
       },
       "auto_by_predicted_class": {
-        "Bot": {
-          "action": "isolate_host",
-          "threshold": 0.94,
-          "auto_action": 17,
-          "on_predicted_attack": 0,
-          "on_other_attack": 0,
-          "on_benign": 17
-        },
         "DDoS": {
           "action": "block_ip",
           "threshold": 0.55,

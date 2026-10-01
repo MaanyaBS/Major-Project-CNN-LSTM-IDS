@@ -62,10 +62,12 @@ concept (escaping request content), which a network-level IDS/IPS
 structurally cannot do. Keeping this one recommendation-only is the correct
 call, not a shortcut — say so explicitly in the report too.
 
-Three classes (Sql Injection, Heartbleed, Infiltration) are hard-locked to
-`held_for_review` in `class_action_mapping.py` regardless of confidence, so
-they will never reach `auto_action` and never trigger real execution at all
-— that's correct, unrelated to this module. The MU-IoT policy does the same
+Six classes are locked to `held_for_review` in `class_action_mapping.py`
+regardless of confidence (`never_auto_fire`), so they never reach
+`auto_action` and never trigger real execution: Sql Injection, Heartbleed
+and Infiltration (too few test rows to trust any score), and Bot, Web
+Attack - Brute Force and Web Attack - XSS (F1 below 0.15; all 17 automatic
+Bot actions on the test set hit benign traffic before the lock). The MU-IoT policy does the same
 for MiTM and Spyware; its automatic actions are all `block_ip` (see
 `model/MU_IOT_MODEL_INTERFACE.md`, Section 7).
 

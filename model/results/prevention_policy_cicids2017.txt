@@ -1,7 +1,7 @@
 ==============================================================================
 PREVENTION POLICY ON THE TEST SET - CICIDS2017
 ==============================================================================
-Generated : 2026-09-30 16:08 UTC
+Generated : 2026-10-01 01:27 UTC
 Model     : model/artifacts/cnn_lstm_best_v2.keras
 Windows   : all test windows from datasets/verify_run_ruthwik
 Policy    : class_action_mapping.get_action(dataset="cicids2017")
@@ -17,22 +17,22 @@ Windows : 530,951   (model accuracy on them: 0.9842)
 
 BENIGN TRAFFIC (439,987 windows)
   no action                     434,475 ( 98.75%)
-  sent to review                  4,061 (  0.92%)   false alerts a person dismisses
-  automatic action                1,451 (  0.33%)   false automatic actions
-    of which a real firewall action  1,451
+  sent to review                  4,078 (  0.93%)   false alerts a person dismisses
+  automatic action                1,434 (  0.33%)   false automatic actions
+    of which a real firewall action  1,434
 
 ATTACK TRAFFIC (90,964 windows)
   automatic action               87,859 ( 96.59%)
   sent to review                    904 (  0.99%)
   no action (called BENIGN)       2,201 (  2.42%)   missed
 
-AUTOMATIC ACTIONS (89,310 decisions)
-  on the predicted attack        87,489 ( 97.96%)
+AUTOMATIC ACTIONS (89,293 decisions)
+  on the predicted attack        87,489 ( 97.98%)
   on a different attack             370 (  0.41%)   attacker still acted on; action type may differ
-  on BENIGN traffic               1,451 (  1.62%)   collateral
+  on BENIGN traffic               1,434 (  1.61%)   collateral
 
 PER TRUE CLASS                       windows        auto      review   no action
-  BENIGN                              439,987       0.33%       0.92%      98.75%
+  BENIGN                              439,987       0.33%       0.93%      98.75%
   Bot                                     381       1.31%       8.14%      90.55%
   DDoS                                 25,595      98.37%       1.09%       0.54%
   DoS GoldenEye                         2,058      94.85%       2.24%       2.92%
@@ -49,7 +49,6 @@ PER TRUE CLASS                       windows        auto      review   no action
 
 AUTOMATIC ACTIONS BY PREDICTED CLASS
   class                      action           thresh      auto   correct  other atk    BENIGN
-  Bot                        isolate_host       0.94        17         0          0        17
   DDoS                       block_ip           0.55    25,083    25,015         24        44
   DoS GoldenEye              rate_limit         0.70     2,495     1,948         62       485
   DoS Hulk                   rate_limit         0.55    34,767    34,594        136        37

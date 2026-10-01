@@ -27,16 +27,19 @@ from typing import Dict, Any
 #   Higher F1 (high reliability) -> Lower threshold (less conservative)
 #   Lower F1 (low reliability)   -> Higher threshold (more conservative)
 #
-# Two distinct reasons a class can be hard-locked to held_for_review
-# (threshold=inf) regardless of confidence — kept separate deliberately:
+# Two distinct reasons a class is locked to held_for_review regardless
+# of confidence (never_auto_fire) — kept separate deliberately:
 #   1. Insufficient test data to trust ANY F1 estimate either way
 #      (Heartbleed: 3 test rows, Web Attack - Sql Injection: 5 test rows,
 #      Infiltration: 0 test rows — a known window-boundary artifact, not
-#      a real absence of the attack).
+#      a real absence of the attack). No F1, so threshold=inf.
 #   2. Real, well-supported, measured poor reliability (Bot, Web Attack -
 #      Brute Force, Web Attack - XSS all have 131-381 test rows and still
-#      score near-zero F1) — these get very high (not infinite) thresholds,
-#      since the model DOES sometimes get them right, just rarely.
+#      score F1 below 0.15). High confidence does not make these right:
+#      on the full test set, all 17 automatic Bot actions at confidence
+#      >= 0.94 hit BENIGN traffic (model/results/prevention_policy_cicids2017.txt).
+#      They keep their curve thresholds (the F1 -> threshold calibration
+#      points the MU-IoT policy is read from) but never act on them.
 CLASS_ACTION_MAP: Dict[str, Dict[str, Any]] = {
     "BENIGN": {
         "action": "no_action",
@@ -97,18 +100,21 @@ CLASS_ACTION_MAP: Dict[str, Dict[str, Any]] = {
         "severity": "high",
         "threshold": 0.92,  # CNN-LSTM F1 0.1249 -> real, measured weakness
         "f1_score": 0.1249,
+        "never_auto_fire": True,  # see reason 2 above
     },
     "Bot": {
         "action": "isolate_host",
         "severity": "high",
         "threshold": 0.94,  # CNN-LSTM F1 0.0564 -> real, measured weakness
         "f1_score": 0.0564,
+        "never_auto_fire": True,  # see reason 2 above
     },
     "Web Attack - XSS": {
         "action": "sanitize_input",
         "severity": "high",
         "threshold": 0.97,  # CNN-LSTM F1 0.0064 -> real, measured weakness
         "f1_score": 0.0064,
+        "never_auto_fire": True,  # see reason 2 above
     },
     "Heartbleed": {
         "action": "terminate_session",
@@ -230,6 +236,7 @@ def get_action(predicted_class: str, confidence: float, dataset: str = "cicids20
 
     Status logic:
         - 'no_action_needed' if the class's action is 'no_action' (BENIGN / normal)
+        - 'held_for_review' if the class is flagged never_auto_fire
         - 'auto_action' if confidence >= threshold and action != 'no_action'
         - 'held_for_review' if confidence < threshold (for attack classes)
 
@@ -257,6 +264,8 @@ def get_action(predicted_class: str, confidence: float, dataset: str = "cicids20
 
     if predicted_class == "BENIGN" or action == "no_action":
         status = "no_action_needed"
+    elif policy.get("never_auto_fire"):
+        status = "held_for_review"
     elif confidence >= threshold:
         status = "auto_action"
     else:
