@@ -1,0 +1,78 @@
+==============================================================================
+PREVENTION POLICY ON THE TEST SET - MU_IOT
+==============================================================================
+Generated : 2026-10-01 02:13 UTC
+Model     : model/artifacts/mu_iot/best.keras
+Windows   : all test windows from /content/drive/MyDrive/Major_Project/handoff_v3
+Policy    : class_action_mapping.get_action(dataset="mu_iot")
+
+Every window's predicted class and confidence go through the policy; the
+decision is then compared with the window's true label. Measured only,
+never used to tune the thresholds.
+
+------------------------------------------------------------------------------
+TEST_WITHIN
+------------------------------------------------------------------------------
+Windows : 586,631   (model accuracy on them: 0.9672)
+
+NORMAL TRAFFIC (84,729 windows)
+  no action                      76,927 ( 90.79%)
+  sent to review                  6,450 (  7.61%)   false alerts a person dismisses
+  automatic action                1,352 (  1.60%)   false automatic actions
+    of which a real firewall action  1,352
+
+ATTACK TRAFFIC (501,902 windows)
+  automatic action              472,095 ( 94.06%)
+  sent to review                 22,271 (  4.44%)
+  no action (called normal)       7,536 (  1.50%)   missed
+
+AUTOMATIC ACTIONS (473,447 decisions)
+  on the predicted attack       469,602 ( 99.19%)
+  on a different attack           2,493 (  0.53%)   attacker still acted on; action type may differ
+  on normal traffic               1,352 (  0.29%)   collateral
+
+PER TRUE CLASS                       windows        auto      review   no action
+  DDoS                                149,566      97.16%       1.15%       1.69%
+  Injection                            35,340      99.95%       0.04%       0.01%
+  MiTM                                  3,954       0.00%      98.58%       1.42%
+  Password_Hacking                    148,851      99.90%       0.08%       0.02%
+  Scan                                143,875      99.22%       0.70%       0.08%
+  Spyware                              20,316       0.01%      76.37%      23.62%
+  normal                               84,729       1.60%       7.61%      90.79%
+
+AUTOMATIC ACTIONS BY PREDICTED CLASS
+  class                      action           thresh      auto   correct  other atk    normal
+  DDoS                       block_ip           0.84   144,476   144,031        289       156
+  Injection                  block_ip           0.63    36,424    35,312        227       885
+  Password_Hacking           block_ip           0.71   150,840   148,662      1,882       296
+  Scan                       block_ip           0.84   141,707   141,597         95        15
+
+------------------------------------------------------------------------------
+TEST_HELDOUT
+------------------------------------------------------------------------------
+Windows : 731,358   (model accuracy on them: 0.6416)
+
+NORMAL TRAFFIC: none in this track
+
+ATTACK TRAFFIC (731,358 windows)
+  automatic action              690,651 ( 94.43%)
+  sent to review                 40,100 (  5.48%)
+  no action (called normal)         607 (  0.08%)   missed
+
+AUTOMATIC ACTIONS (690,651 decisions)
+  on the predicted attack       449,191 ( 65.04%)
+  on a different attack         241,460 ( 34.96%)   attacker still acted on; action type may differ
+  on normal traffic                   0 (  0.00%)   collateral
+
+PER TRUE CLASS                       windows        auto      review   no action
+  DDoS                                199,620      89.95%      10.01%       0.04%
+  Injection                           132,498      97.63%       2.07%       0.30%
+  Password_Hacking                    199,620      99.85%       0.15%       0.00%
+  Scan                                199,620      91.38%       8.55%       0.07%
+
+AUTOMATIC ACTIONS BY PREDICTED CLASS
+  class                      action           thresh      auto   correct  other atk    normal
+  DDoS                       block_ip           0.84    72,871    54,027     18,844         0
+  Injection                  block_ip           0.63   121,212   116,048      5,164         0
+  Password_Hacking           block_ip           0.71   290,885   199,112     91,773         0
+  Scan                       block_ip           0.84   205,683    80,004    125,679         0

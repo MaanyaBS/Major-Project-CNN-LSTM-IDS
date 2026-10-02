@@ -146,9 +146,11 @@ appears in training (`mu_iot_unseen_only_rescore.txt`):
   `mu_iot_test_heldout_results.txt`). These are still flagged as attacks,
   but the named type, and so the recommended action, can be wrong.
 - **Normal vs Spyware is the main false-alarm source.** Most of the 9.3%
-  false alarms are normal traffic called Spyware. Quiet keylogger
-  exfiltration looks like ordinary background traffic (Spyware F1 0.747).
-  A Spyware alert on its own should be treated as a lead for review.
+  false alarms are normal traffic called Spyware. SHAP shows these false
+  alarms are driven by the same features as real Spyware detections
+  (similarity 0.87) and are confident (mean P 0.76), so no threshold
+  separates them (`model/results/mu_iot/FINDINGS.md`). A Spyware alert on its
+  own should be treated as a lead for review.
 - **Single-recording classes.** Normal and Spyware each come from one
   recording, so their test scores come from the same recording as their
   training data and are optimistic. MiTM has only 3,954 test windows.
@@ -226,10 +228,17 @@ How the thresholds were set:
   (`prevention_executor.py`) performs for real within its safety limits.
 
 The thresholds come from test-set F1, as the CICIDS2017 ones do: there is no
-separate calibration set for behaviour on unseen recordings. What the policy
-actually does on the test windows is measured by
-`model/evaluate_prevention_policy.py --dataset mu_iot` (run in Colab, where the
-data is).
+separate calibration set for behaviour on unseen recordings.
+
+Measured on every test window (`model/results/mu_iot/prevention_policy_mu_iot.txt`):
+
+- Held-out recordings: 94.4% of attack windows are blocked automatically and
+  0.08% are missed. When the model misnames an unfamiliar attack, the action is
+  still `block_ip`, so the source is blocked either way.
+- Normal traffic: **1.6% of normal windows would trigger an automatic block**,
+  mostly through Injection predictions. That is five times the CICIDS2017 rate
+  (0.33%) and the policy's main remaining risk, so keep real execution limited
+  to the TEST-NET demo scope.
 
 ---
 
