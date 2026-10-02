@@ -52,6 +52,33 @@ under different labels. Share of test items that appear in training with a
 A single flow often cannot identify the attack; a sequence of 20 almost always
 can. This is direct evidence for the sequence-based (CNN-LSTM) design.
 
+## Baseline: single-row random forest vs the CNN-LSTM
+
+The same random forest as the CICIDS2017 baseline (100 trees, seed 42),
+trained on all 2,171,995 training rows and scored on the last row of each
+CNN-LSTM test window: identical examples and labels
+(`mu_iot_random_forest_results.txt`, `model/baseline_mu_iot_rf.py`). The
+CNN-LSTM reproduced its committed scores in the same run, and the unseen-only
+counts matched the committed re-score exactly.
+
+| Unseen-only windows | Random forest | CNN-LSTM |
+|---|---|---|
+| test_within accuracy / macro F1 | 0.904 / 0.816 | 0.964 / 0.936 |
+| test_heldout accuracy / macro F1 | 0.407 / 0.404 | 0.680 / 0.676 |
+| Normal flagged as attack (within) | 17.2% | 9.3% |
+| Attacks called normal (held-out) | 2.5% | 0.09% |
+
+- **Here the sequence model earns its place**, unlike on CICIDS2017, where a
+  single-flow random forest beats it (`../chronological_random_forest_results.txt`).
+  This matches the ambiguity finding above: MU-IoT single rows repeat under
+  different labels, so a single-row model cannot separate them.
+- The gap is largest where it matters: on unseen recordings (macro F1 0.68 vs
+  0.40), on normal traffic (half the false alarms), and on Spyware (F1 0.75
+  vs 0.26).
+- Per held-out recording, the forest is better only on the vulnerability scan
+  (0.50 vs 0.45 accuracy); it gets almost none of the hping3 flood right
+  (0.0002 vs 0.32) and only 36% of the dictionary attack (CNN-LSTM 99.8%).
+
 ## False alarms
 
 The 9.3% false-alarm rate is a genuine model error, not a data artefact (98.6%
@@ -146,3 +173,5 @@ for TCP scans). Exact definitions are in the MU-IoT paper.
   test window (`model/evaluate_prevention_policy.py --dataset mu_iot`).
 - `mu_iot_shap_report.txt`, `mu_iot_shap_values.json`, `mu_iot_shap_*.png` —
   the SHAP analysis (`model/explain_mu_iot.py`).
+- `mu_iot_random_forest_results.txt` / `.json` — the single-row random forest
+  baseline on identical examples (`model/baseline_mu_iot_rf.py`).

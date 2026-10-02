@@ -134,6 +134,12 @@ appears in training (`mu_iot_unseen_only_rescore.txt`):
 
 "—" means the class has no held-out recording.
 
+**Baseline on the same examples.** A single-row random forest scores far
+lower: unseen-only macro F1 0.816 within and 0.404 held-out (CNN-LSTM 0.936
+and 0.676), with nearly twice the false alarms on normal traffic (17.2% vs
+9.3%). On MU-IoT, unlike CICIDS2017, the sequence model clearly outperforms
+the single-flow baseline (`model/results/mu_iot/FINDINGS.md`).
+
 ---
 
 ## 5. Known Limitations (state these plainly)
