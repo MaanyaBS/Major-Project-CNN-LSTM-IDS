@@ -66,17 +66,35 @@ The large gap between weighted F1 (0.9864) and macro F1 (0.5857) is expected and
 
 ---
 
-## 5. Training Behavior — Overfitting Check
+## 5. Training Behavior
 
-Plot: `model/results/cnn_lstm_v2_training_curves.png` (train vs. validation loss/accuracy across all 15 epochs, early-stopping restore point marked).
+**Three versions, same architecture, different class weights** (`model/results/cnn_lstm_versions_comparison.txt`, each checkpoint scored on the full test set):
 
-Train loss/accuracy are smooth and monotonic throughout (loss 0.367 → 0.077, accuracy 0.62 → 0.87) — no surprises there. Validation loss/accuracy are noisy rather than smooth, with visible spikes at epochs 4, 9, and 15 (val_loss jumping to 0.77, 0.54, and 0.52 respectively), interspersed with genuinely good epochs (10 and 14 both dip below 0.32).
+| Version | Class weights | Test accuracy | Macro F1 |
+|---|---|---|---|
+| v1 | balanced, capped at 50 | 0.8831 | 0.4276 |
+| **v2 (deployed)** | **square root of balanced, no cap** | **0.9842** | **0.5857** |
+| v3 | 3× boost on Bot, Brute Force, XSS (code not preserved) | 0.9470 | 0.4811 |
 
-There is a real, persistent gap between train and validation loss that never closes — by the final epoch, train loss is 0.077 while validation loss is still oscillating in the 0.3–0.6 range. That's a genuine sign of *some* overfitting. However, it isn't the classic runaway pattern (validation loss climbing steadily once the model starts memorizing) — it's oscillating within a band rather than trending upward. Combined with the size of the swings, this points more toward **validation volatility from extreme class imbalance in a small (10%) validation split** — classes like Heartbleed and Sql Injection have single-digit counts there, so a handful of misclassifications can swing the aggregate validation metric visibly — than toward the model badly memorizing the training set.
+The capped weights of v1 pushed BENIGN traffic into rare classes; the targeted boost of v3 made the overall result worse. v2 is the best of the three on every measure.
 
-Early stopping (`monitor=val_loss`, `patience=5`, `restore_best_weights=True`) worked as intended: it restored weights from **epoch 10** (val_loss 0.303), not epoch 15 where training actually stopped. Epoch 15 was one of the bad spike epochs (val_loss 0.52, val_accuracy 0.797) — the deployed checkpoint is genuinely the best epoch observed, not an arbitrary cutoff. Worth noting epoch 14 was comparably good (val_accuracy 0.879, the run's highest) — the two best epochs are close to each other, not a one-off fluke.
+**The deployed v2 run** (`model/results/cnn_lstm_v2_training_curves.png`, `cnn_lstm_v2_training_history.json`; settings in `model/train_cnn_lstm.py` defaults): batch 512, 10% stratified validation split, early stopping on validation loss with patience 5 and best-weight restoration.
 
-**Bottom line:** mild generalization gap present, best explained by validation-set class imbalance rather than severe overfitting; early stopping and best-weight restoration behaved correctly.
+| Epoch | Train loss | Val loss | Val accuracy |
+|---|---|---|---|
+| **1 (restored)** | 0.1798 | **0.1525** | **0.9539** |
+| 2 | 0.1072 | 0.3387 | 0.8386 |
+| 3 | 0.0844 | 0.2021 | 0.9313 |
+| 4 | 0.0704 | 0.2457 | 0.9346 |
+| 5 | 0.0642 | 0.2792 | 0.9123 |
+| 6 | 0.0612 | 0.1588 | 0.9559 |
+
+- The lowest validation loss came in the **first epoch**; training stopped after epoch 6 and restored the epoch-1 weights.
+- Training loss kept falling (0.180 → 0.061) while validation loss did not improve: further epochs fitted the training windows without generalising better, and early stopping prevented that from reaching the deployed model.
+- Validation loss is noisy (0.15–0.34) because rare classes have single-digit counts in a 10% split, so a few mistakes move the aggregate visibly.
+- One training epoch is a short run. Whether a lower learning rate would extract more from more epochs has not been tested.
+
+*Correction:* an earlier version of this section analysed a 15-epoch run (best epoch 10, val_loss 0.303) as v2's training. That history belongs to v1; it is kept as `model/results/cnn_lstm_v1_training_curves.png`. The original training cells are in `notebooks/v2_training_cells.txt`.
 
 ---
 

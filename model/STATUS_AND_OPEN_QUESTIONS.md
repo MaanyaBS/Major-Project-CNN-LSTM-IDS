@@ -16,7 +16,7 @@ Trained and evaluated on a 100,000-row stratified sample of the cleaned CICIDS20
 ### CNN-LSTM Architecture & Pipeline
 Modular deep learning pipeline implemented and verified end-to-end:
 1. `model/load_data.py`: Chunk-based loading, filtering malformed rows (68 cols), infinity/NaN cleaning, label sanitisation.
-2. `model/cnn_lstm_architecture.py`: Hybrid CNN-LSTM Keras model (`Conv1D` + `BN` + `MaxPool` → `Conv1D` + `BN` + `MaxPool` → `LSTM` → `Dropout` → `Dense`).
+2. `model/cnn_lstm_architecture.py`: Hybrid CNN-LSTM Keras model (`Conv1D` + `BN` + `MaxPool` → `Conv1D` + `BN` + `MaxPool` → `LSTM` → `Dense` → `Dense`; no Dropout, matching the deployed model).
 3. `model/sequence_reshaping.py`: Sliding-window transformer converting 2D tabular flow data `(samples, features)` into 3D temporal sequences `(samples, sequence_length, features)`.
 4. `model/evaluate_model.py`: Automated evaluation module outputting text classification reports (`cnn_lstm_results.txt`) and confusion matrix heatmaps (`cnn_lstm_confusion_matrix.png`).
 

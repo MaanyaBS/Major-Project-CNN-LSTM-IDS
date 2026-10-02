@@ -15,7 +15,6 @@ from tensorflow.keras.layers import (
     MaxPooling1D,
     LSTM,
     Dense,
-    Dropout,
     BatchNormalization,
 )
 from tensorflow.keras.models import Sequential
@@ -25,9 +24,10 @@ def build_cnn_lstm_model(input_shape, num_classes):
     """
     Build a hybrid CNN-LSTM Sequential model.
 
-    Architecture:
-        Conv1D(64) -> BN -> MaxPool -> Conv1D(128) -> BN -> MaxPool
-        -> LSTM(64) -> Dropout -> Dense(64) -> Dropout -> Dense(softmax)
+    Architecture (identical to the deployed model/artifacts/cnn_lstm_best_v2.keras
+    and to build_model() in train_cnn_lstm.py; no Dropout):
+        Conv1D(64, valid) -> BN -> MaxPool -> Conv1D(128, same) -> BN -> MaxPool
+        -> LSTM(64) -> Dense(64) -> Dense(softmax)
 
     Args:
         input_shape : tuple  – (sequence_length, num_features)
@@ -40,7 +40,7 @@ def build_cnn_lstm_model(input_shape, num_classes):
     model = Sequential([
         # --- CNN Feature Extraction Block 1 ---
         Conv1D(filters=64, kernel_size=3, activation='relu',
-               padding='same', input_shape=input_shape),
+               input_shape=input_shape),
         BatchNormalization(),
         MaxPooling1D(pool_size=2),
 
@@ -52,11 +52,9 @@ def build_cnn_lstm_model(input_shape, num_classes):
 
         # --- LSTM Temporal Learning ---
         LSTM(64, return_sequences=False),
-        Dropout(0.3),
 
         # --- Fully Connected Classifier ---
         Dense(64, activation='relu'),
-        Dropout(0.3),
         Dense(num_classes, activation='softmax'),
     ])
 

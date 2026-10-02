@@ -26,15 +26,18 @@ they develop across the window.
 | Layer | CICIDS2017 model | MU-IoT model |
 |---|---|---|
 | Input | 10 flows × 20 features | 20 flows × 38 features |
-| Conv1D, 64 filters, kernel 3, ReLU → BatchNorm → MaxPool(2) | yes | yes |
+| Conv1D, 64 filters, kernel 3, ReLU, no padding → BatchNorm → MaxPool(2) | yes | yes |
 | Conv1D, 128 filters, kernel 3, ReLU, same padding → BatchNorm → MaxPool(2) | yes | yes |
-| LSTM, 64 units | yes, then Dropout 0.3 | yes |
-| Dense, 64, ReLU | yes, then Dropout 0.3 | yes |
+| LSTM, 64 units | yes | yes |
+| Dense, 64, ReLU | yes | yes |
 | Dense softmax | 15 classes | 7 classes |
 | Parameters | 83,919 | 86,855 |
 | Precision | float32 | mixed float16 (output float32) |
 
-Both use Adam and sparse categorical cross-entropy.
+Both use Adam and sparse categorical cross-entropy, and neither uses
+dropout. The deployed CICIDS2017 model was checked layer by layer against
+`model/cnn_lstm_architecture.py` and `model/train_cnn_lstm.py`: with its
+weights loaded, both definitions give identical predictions.
 
 ---
 
@@ -74,17 +77,25 @@ is fitted on training rows only. The test set has 530,951 windows.
 ## 4. Training
 
 **CICIDS2017.** Benign traffic is 83% of the test set, so three
-class-weighting schemes were tried. v1 used balanced weights capped at 50
-and pushed benign traffic into rare classes. v2 used square-root-dampened
-balanced weights and is the deployed model. v3 added a 3× boost to the three
-weakest classes and made macro F1 worse. Training used a 10% stratified
-validation split, batch 512 and early stopping on validation loss
-(patience 5): it ran 15 epochs and kept epoch 10.
+class-weighting schemes were trained with the same architecture and scored
+on the same test set (`model/results/cnn_lstm_versions_comparison.txt`):
 
-*Reproducibility note:* the committed `model/train_cnn_lstm.py` implements
-the v1 weighting. The v2 run was done in Colab and its exact weighting code
-is not yet in the repository; the trained v2 model itself is committed and
-its evaluation is reproducible (`model/evaluate_model.py`).
+| Version | Class weights | Test accuracy | Macro F1 |
+|---|---|---|---|
+| v1 | balanced, capped at 50 | 0.8831 | 0.4276 |
+| **v2 (deployed)** | **square root of balanced, no cap** | **0.9842** | **0.5857** |
+| v3 | 3× boost on the three weakest classes | 0.9470 | 0.4811 |
+
+v1's capped weights pushed benign traffic into rare classes, and v3's
+targeted boost made the overall result worse. v2 trained with a 10%
+stratified validation split, batch 512 and early stopping on validation
+loss (patience 5). Its lowest validation loss came in the first epoch
+(0.153, validation accuracy 0.954); training stopped after epoch 6 and
+restored the epoch-1 weights (`cnn_lstm_v2_training_curves.png`).
+`model/train_cnn_lstm.py` reproduces these settings by default
+(`--class-weights sqrt`), from the original training cell
+(`notebooks/v2_training_cells.txt`); a GPU retrain gives a close, not
+bit-identical, model. v3's training code was not preserved.
 
 **MU-IoT.** Each epoch draws a fresh sample of up to 300,000 training
 windows per class, with square-root-balanced class weights capped at 10.
@@ -319,7 +330,8 @@ the evaluated model was kept.
 - Prevention runs only against TEST-NET addresses; thresholds are calibrated
   on test-set F1.
 - The live feed replays recorded traffic; nothing is captured from a network.
-- The v2 CICIDS2017 weighting code is not yet committed (Section 4).
+- The deployed CICIDS2017 model kept its first-epoch weights; longer or
+  slower training has not been explored.
 
 ---
 

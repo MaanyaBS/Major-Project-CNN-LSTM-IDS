@@ -6,8 +6,18 @@ Author  : Person B (Model Development)
 ==========================================================
 Trains the CNN-LSTM architecture (model/cnn_lstm_architecture.py) on the
 day-aware chronological sequences produced by
-model/rebuild_chronological_split.py, with capped balanced class weights,
-early stopping, and best-checkpoint saving.
+model/rebuild_chronological_split.py, with class weights, early stopping,
+and best-checkpoint saving.
+
+Class weights (--class-weights):
+    sqrt     square root of 'balanced' weights, no cap - the deployed v2
+             model (model/artifacts/cnn_lstm_best_v2.keras); the default
+    capped   'balanced' weights capped at --class-weight-cap - the earlier
+             v1 run, kept for comparison
+
+The v2 settings here are the ones in the original Colab training cell
+(notebooks/v2_training_cells.txt, cells 168-169). GPU training is not
+bit-for-bit deterministic, so a retrain gives a close, not identical, model.
 """
 
 import os
@@ -37,13 +47,26 @@ def build_model(seq_length=10, n_features=20, n_classes=15):
     return model
 
 
+def class_weights(y, mode='sqrt', cap=50):
+    """'balanced' class weights, square-rooted (v2) or capped (v1)."""
+    classes = np.unique(y)
+    raw_weights = compute_class_weight('balanced', classes=classes, y=y)
+    if mode == 'sqrt':
+        weights = np.sqrt(raw_weights)
+    elif mode == 'capped':
+        weights = np.clip(raw_weights, None, cap)
+    else:
+        raise ValueError(f"Unknown class-weight mode {mode!r}; expected 'sqrt' or 'capped'")
+    return dict(zip(classes.astype(int), weights))
+
+
 def train(sequences_dir, checkpoint_path, history_path, epochs=25, batch_size=512,
-          val_split=0.1, class_weight_cap=50, patience=5, seed=42):
+          val_split=0.1, class_weights_mode='sqrt', class_weight_cap=50, patience=5, seed=42):
     """
     Loads X_train_seq.npy / y_train_seq.npy from sequences_dir, holds out a
-    stratified validation split, trains with capped 'balanced' class
-    weights and early stopping (monitor val_loss), and saves the best
-    checkpoint plus training history.
+    stratified validation split, trains with class weights and early
+    stopping (monitor val_loss), and saves the best checkpoint plus
+    training history.
     """
     X_train_seq = np.load(os.path.join(sequences_dir, 'X_train_seq.npy'))
     y_train_seq = np.load(os.path.join(sequences_dir, 'y_train_seq.npy'))
@@ -52,13 +75,11 @@ def train(sequences_dir, checkpoint_path, history_path, epochs=25, batch_size=51
         X_train_seq, y_train_seq, test_size=val_split, stratify=y_train_seq, random_state=seed
     )
 
-    # Class weights capped to avoid instability from classes with single-digit
-    # sample counts (e.g. Heartbleed=8, Sql Injection=16 total) — uncapped
-    # 'balanced' weighting would assign these weights in the thousands
-    classes = np.unique(y_tr)
-    raw_weights = compute_class_weight('balanced', classes=classes, y=y_tr)
-    capped_weights = np.clip(raw_weights, None, class_weight_cap)
-    class_weight_dict = dict(zip(classes.astype(int), capped_weights))
+    # Uncapped 'balanced' weighting would give classes with single-digit
+    # counts (Heartbleed, Sql Injection) weights in the thousands. v1 capped
+    # them at 50, which still pushed BENIGN into rare classes (test macro F1
+    # 0.43); v2 takes the square root instead (test macro F1 0.59).
+    class_weight_dict = class_weights(y_tr, class_weights_mode, class_weight_cap)
 
     model = build_model(seq_length=X_train_seq.shape[1], n_features=X_train_seq.shape[2])
 
@@ -104,7 +125,9 @@ def main():
     parser.add_argument("--epochs", type=int, default=25, help="Max training epochs (default: 25).")
     parser.add_argument("--batch-size", type=int, default=512, help="Training batch size (default: 512).")
     parser.add_argument("--val-split", type=float, default=0.1, help="Stratified validation split fraction (default: 0.1).")
-    parser.add_argument("--class-weight-cap", type=float, default=50, help="Cap on 'balanced' class weights (default: 50).")
+    parser.add_argument("--class-weights", choices=["sqrt", "capped"], default="sqrt",
+                        help="sqrt = deployed v2 model (default); capped = earlier v1 run.")
+    parser.add_argument("--class-weight-cap", type=float, default=50, help="Cap for --class-weights capped (default: 50).")
     parser.add_argument("--patience", type=int, default=5, help="Early stopping patience on val_loss (default: 5).")
     parser.add_argument("--seed", type=int, default=42, help="Random seed for the validation split (default: 42).")
     args = parser.parse_args()
@@ -121,7 +144,8 @@ def main():
     model, history = train(
         args.sequences_dir, args.checkpoint, args.history,
         epochs=args.epochs, batch_size=args.batch_size, val_split=args.val_split,
-        class_weight_cap=args.class_weight_cap, patience=args.patience, seed=args.seed,
+        class_weights_mode=args.class_weights, class_weight_cap=args.class_weight_cap,
+        patience=args.patience, seed=args.seed,
     )
 
     print(f"[+] Best val_loss: {min(history.history['val_loss']):.4f}")
