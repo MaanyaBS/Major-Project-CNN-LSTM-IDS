@@ -1,4 +1,4 @@
-# PERSON A — MU-IoT DATA PIPELINE HANDOFF
+﻿# PERSON A — MU-IoT DATA PIPELINE HANDOFF
 
 ## Project
 
@@ -10,19 +10,20 @@ with IoT-based Data Collection and Cloud Deployment
 # 1. Dataset
 
 Dataset:
+
 MU-IoT
 
-Cleaned dataset:
+Canonical cleaned dataset:
 
 D:\Major_Project\dataset\processed\mu_iot\mu_iot_cleaned.csv
 
-Total rows:
+Total cleaned rows:
 
 24,171,263
 
-Original cleaned feature count:
+Cleaned columns:
 
-118 columns
+118
 
 Target:
 
@@ -32,403 +33,411 @@ Metadata:
 
 capture_session
 
+Raw files:
+
+40 CSV files
+
+Capture sessions:
+
+32
+
 ---
 
-# 2. Final Feature Selection
+# 2. Final V3 Handoff
+
+Final handoff directory:
+
+D:\Major_Project\dataset\processed\mu_iot\handoff_v3
+
+Final selected rows:
+
+3,936,753
+
+Final feature count:
+
+38
+
+Final feature matrix:
+
+(3,936,753, 38)
+
+Datatype:
+
+float32
+
+The final V3 handoff is constructed from the canonical cleaned dataset.
+
+row_id represents the zero-based physical row position in:
+
+D:\Major_Project\dataset\processed\mu_iot\mu_iot_cleaned.csv
+
+---
+
+# 3. Final Feature Selection
 
 Feature-selection basis:
 
 2024 IEEE Access MU-IoT paper
 Table 8 — AverageRanking
 
-Final selected features:
+The initial Table 8 feature set contained 48 ranked features.
 
-1. FPC
-2. RTSP_ML
-3. FPT
-4. RTSP_MUL
-5. ECE_FC
-6. DNS_RCUL
-7. FD
-8. DNS_QTUL
-9. RTSP_MM
-10. DNS_RCL
-11. DNSQTL
-12. URG_FC
-13. MQTT_MTUL
-14. HTTP_SCL
-15. ECN_M
-16. MQTT_MTL
-17. DSCP_S
-18. ECN_S
-19. TPackets
-20. LPT
-21. TCPWS_Mode
-22. PLM
-23. DSCP_M
-24. TCPWS_Mean
-25. BJitter
-26. BThroughput
-27. HL_Mode
-28. TCPWS_Sum
-29. MGA_UL
-30. FAMax
-31. FH_M
-32. DSCP_UV
-33. SDuration
-34. FlowR
-35. MGA_L
-36. PacketsPS
-37. FIMin
-38. ECN_C
-39. FAMean
-40. RCount
-
-Final feature count:
-
-40
-
-Configuration:
-
-D:\Major_Project\config\mu_iot_feature_sets.json
-
-Configuration key:
+Coverage/non-constant validation produced:
 
 paper_top48_coverage95_nonconstant
 
----
+with 40 features.
 
-# 3. Feature Quality Processing
+The following two features were then removed:
 
-The original Table 8 list contained 48 available ranked
-features.
+FPT
+LPT
 
-Coverage/non-constant validation was performed.
+Final configuration key:
 
-Features removed because of insufficient coverage:
-
-DNS_RCM
-RTSP_SETUPC
-DNS_QTM
-HTTPOptC
-HTTP_SCM
-HTTPPutC
-HTTPPostC
-
-ECN_UV was also removed because it was constant.
+paper_top48_coverage95_nonconstant_38
 
 Final feature count:
 
-40
-
-No remaining constant features.
-
-No remaining NaN values.
-
-No remaining infinite values.
+38
 
 ---
 
-# 4. Temporal Split
+# 4. Final 38 Features
 
-Random row-level splitting was NOT used for the final experiment.
+1. FPC
+2. RTSP_ML
+3. RTSP_MUL
+4. ECE_FC
+5. DNS_RCUL
+6. FD
+7. DNS_QTUL
+8. RTSP_MM
+9. DNS_RCL
+10. DNSQTL
+11. URG_FC
+12. MQTT_MTUL
+13. HTTP_SCL
+14. ECN_M
+15. MQTT_MTL
+16. DSCP_S
+17. ECN_S
+18. TPackets
+19. TCPWS_Mode
+20. PLM
+21. DSCP_M
+22. TCPWS_Mean
+23. BJitter
+24. BThroughput
+25. HL_Mode
+26. TCPWS_Sum
+27. MGA_UL
+28. FAMax
+29. FH_M
+30. DSCP_UV
+31. SDuration
+32. FlowR
+33. MGA_L
+34. PacketsPS
+35. FIMin
+36. ECN_C
+37. FAMean
+38. RCount
 
-Final split method:
+FPT and LPT are intentionally absent.
 
-Within each capture session:
+Feature metadata:
 
-70% → Training
-15% → Validation
-15% → Test
+D:\Major_Project\dataset\processed\mu_iot\handoff_v3\feature_list_38.json
 
-Rows remain chronological.
+---
 
-Output:
+# 5. Final Split Strategy
 
-D:\Major_Project\dataset\processed\mu_iot\mu_iot_temporal_split_assignment.csv
+Random row-level splitting was NOT used for the final V3 handoff.
 
-Final row counts:
+Four complete capture sessions were reserved exclusively for:
 
-Training:
-16,919,867
+test_heldout
+
+Held-out sessions:
+
+MU_SESSION_013
+MU_SESSION_021
+MU_SESSION_026
+MU_SESSION_031
+
+The remaining sessions were divided chronologically within each session into approximately:
+
+70% → train
+15% → validation
+15% → test_within
+
+Final split names:
+
+train
+val
+test_within
+test_heldout
+
+Held-out sessions never appear in train, validation, or test_within.
+
+---
+
+# 6. Block Selection
+
+The final V3 handoff uses complete temporal blocks.
+
+Block rules:
+
+- Preferred block size: 10,000 rows
+- Minimum accepted block size: 20 rows
+- Partial blocks are not used
+- Blocks remain within one capture session
+- Blocks remain within one split
+- Blocks remain within one category
+- Selected blocks do not overlap
+- Row IDs are consecutive within selected blocks
+
+The final package contains the block manifest:
+
+D:\Major_Project\dataset\processed\mu_iot\handoff_v3\block_manifest.csv
+
+---
+
+# 7. Final Class Counts
+
+| Split | Class | Rows |
+|---|---|---:|
+| train | DDoS | 496,750 |
+| train | Injection | 165,355 |
+| train | MiTM | 18,623 |
+| train | Password_Hacking | 500,000 |
+| train | Scan | 500,000 |
+| train | Spyware | 95,071 |
+| train | normal | 396,196 |
+| val | DDoS | 99,261 |
+| val | Injection | 35,433 |
+| val | MiTM | 3,991 |
+| val | Password_Hacking | 100,000 |
+| val | Scan | 100,000 |
+| val | Spyware | 20,373 |
+| val | normal | 84,899 |
+| test_within | DDoS | 149,984 |
+| test_within | Injection | 35,435 |
+| test_within | MiTM | 3,992 |
+| test_within | Password_Hacking | 149,174 |
+| test_within | Scan | 144,179 |
+| test_within | Spyware | 20,373 |
+| test_within | normal | 84,900 |
+| test_heldout | DDoS | 200,000 |
+| test_heldout | Injection | 132,764 |
+| test_heldout | MiTM | 0 |
+| test_heldout | Password_Hacking | 200,000 |
+| test_heldout | Scan | 200,000 |
+| test_heldout | Spyware | 0 |
+| test_heldout | normal | 0 |
+
+Split totals:
+
+Train:
+
+2,171,995
 
 Validation:
-3,625,675
 
-Testing:
-3,625,721
+443,957
 
-Total:
-24,171,263
+Test within:
 
----
+588,037
 
-# 5. Classes
+Test held-out:
 
-Seven categories are present:
+732,764
 
-DDoS
-Injection
-MiTM
-Password_Hacking
-Scan
-Spyware
-normal
+Grand total:
 
-All seven classes are represented in the training data.
+3,936,753
+
+Class-specific caps were applied during handoff construction.
 
 ---
 
-# 6. Scaling
+# 8. Scaling
 
 Scaler:
 
 StandardScaler
 
-The scaler was fitted ONLY on chronological training rows.
+The scaler was fitted using training rows only.
 
-Validation and test data were transformed using the
-same training-fitted scaler.
+Validation and test rows were not used to fit the scaler.
 
-Scaler:
+Training rows used for scaler fitting:
 
-D:\Major_Project\dataset\processed\mu_iot\scaler_temporal_paper_top48_coverage95_nonconstant.pkl
+2,171,995
 
-Feature configuration:
+Final scaler:
 
-D:\Major_Project\dataset\processed\mu_iot\temporal_paper_top48_coverage95_nonconstant_features.json
+D:\Major_Project\dataset\processed\mu_iot\handoff_v3\scaler_38.pkl
 
-Training rows used to fit scaler:
-
-16,919,867
-
-Features:
-
-40
-
-Missing values:
-
-0
-
-Infinite values:
-
-0
+This prevents evaluation data from influencing the normalization parameters.
 
 ---
 
-# 7. Scaled Memmap
+# 9. CNN-LSTM Sequence Representation
 
-Scaled data is stored as a NumPy float32 memory-mapped file.
-
-Path:
-
-D:\Major_Project\dataset\processed\mu_iot\temporal_training_data\mu_iot_scaled_40features_float32.dat
-
-Shape:
-
-(24,171,263, 40)
-
-Datatype:
-
-float32
-
-Approximate size:
-
-3.60 GB
-
-The complete dataset does NOT need to be loaded into RAM.
-
----
-
-# 8. Temporal Sequence Representation
-
-Sequence length:
+Final sequence length:
 
 20
 
 Features per timestep:
 
-40
-
-Therefore:
-
-X shape:
-
-(batch_size, 20, 40)
-
-Example:
-
-(128, 20, 40)
-
-Each sequence consists of 20 consecutive records.
-
-Sequences are prevented from crossing:
-
-- capture-session boundaries
-- train/validation/test boundaries
-
----
-
-# 9. Sequence Counts
-
-Training:
-
-16,919,259 sequences
-
-Validation:
-
-3,625,067 sequences
-
-Testing:
-
-3,625,113 sequences
-
----
-
-# 10. Sequence Loader
-
-Loader:
-
-D:\Major_Project\scripts\mu_iot_stream_sequence_loader.py
-
-The loader:
-
-- reads the scaled memmap
-- generates temporal sequences
-- uses 20 consecutive records
-- returns 40 features per timestep
-- supports train/validation/test
-- avoids loading the entire feature matrix into RAM
-- checks sequence boundaries
-- checks consecutive row IDs
-- checks NaN/Inf
-- verifies sequence shape
-
-Validation result:
-
-STREAMING SEQUENCE LOADER TEST PASSED
-
----
-
-# 11. Verified Batch
-
-Batch size:
-
-128
-
-X:
-
-(128, 20, 40)
-
-y:
-
-(128,)
-
-Validation:
-
-PASS
-
----
-
-# 12. Integrity Checks
-
-Train:
-
-PASS
-
-Validation:
-
-PASS
-
-Test:
-
-PASS
-
-NaN/Inf:
-
-PASS
-
-Shape:
-
-PASS
-
-Consecutive rows:
-
-PASS
-
-Session boundary:
-
-PASS
-
-Split boundary:
-
-PASS
-
----
-
-# 13. Important Instructions for Person B
-
-DO NOT:
-
-1. Use the old random training subset as the final temporal experiment.
-
-2. Fit another scaler on validation or test data.
-
-3. Randomly shuffle the complete raw dataset before creating temporal sequences.
-
-4. Allow sequences to cross capture-session boundaries.
-
-5. Allow sequences to cross train/validation/test boundaries.
-
-6. Re-select a different feature set without team agreement.
-
-7. Load the complete 3.6 GB memmap into RAM unnecessarily.
-
----
-
-# 14. CNN-LSTM Input
+38
 
 Final model input:
 
-20 timesteps × 40 features
+(20, 38)
 
-Input shape:
+Therefore, the batch input shape is:
 
-(20, 40)
+(batch_size, 20, 38)
 
-Batch shape:
+Example:
 
-(batch_size, 20, 40)
+(128, 20, 38)
 
-Expected architecture concept:
+Sequences must not cross:
 
-Input
-↓
-1D CNN
-↓
-LSTM
-↓
-Dense
-↓
-Softmax
-↓
-7-class prediction
+- capture-session boundaries
+- split boundaries
+- category/block boundaries where the handoff metadata defines separate blocks
 
 ---
 
-# 15. Person A Status
+# 10. Handoff Metadata
 
-DATA LOADING                     COMPLETE
-DATA CLEANING                   COMPLETE
-FEATURE VALIDATION              COMPLETE
-FEATURE SELECTION               COMPLETE
-TEMPORAL SPLIT                  COMPLETE
-TRAINING SCALER                 COMPLETE
-SCALED MEMMAP                   COMPLETE
-SEQUENCE SANITY TEST            COMPLETE
-STREAMING SEQUENCE LOADER       COMPLETE
-INTEGRITY VALIDATION             COMPLETE
+The final V3 handoff contains:
 
-PERSON A DATA PIPELINE:
+README.md
+class_counts_by_split.csv
+block_manifest.csv
+session_regions.json
+split_regions.json
+feature_list_38.json
+label_mapping.json
+scaler_38.pkl
 
-COMPLETE AND READY FOR MODEL TRAINING
+Important metadata paths:
+
+D:\Major_Project\dataset\processed\mu_iot\handoff_v3\class_counts_by_split.csv
+
+D:\Major_Project\dataset\processed\mu_iot\handoff_v3\block_manifest.csv
+
+D:\Major_Project\dataset\processed\mu_iot\handoff_v3\session_regions.json
+
+D:\Major_Project\dataset\processed\mu_iot\handoff_v3\split_regions.json
+
+D:\Major_Project\dataset\processed\mu_iot\handoff_v3\feature_list_38.json
+
+D:\Major_Project\dataset\processed\mu_iot\handoff_v3\label_mapping.json
+
+D:\Major_Project\dataset\processed\mu_iot\handoff_v3\scaler_38.pkl
+
+Large NumPy arrays are not intended to be committed to Git.
+
+---
+
+# 11. Important Instructions for Person B
+
+DO NOT:
+
+1. Use the old 40-feature temporal pipeline as the final V3 experiment.
+
+2. Use FPT or LPT.
+
+3. Fit another scaler using validation or test data.
+
+4. Randomly shuffle the complete cleaned dataset before temporal sequence construction.
+
+5. Allow sequences to cross capture-session boundaries.
+
+6. Allow sequences to cross train/validation/test boundaries.
+
+7. Re-select a different feature set without team agreement.
+
+8. Treat the four held-out sessions as training or validation data.
+
+9. Assume every class must be represented in test_heldout; the held-out recording composition determines its class counts.
+
+10. Load the complete feature array into RAM unnecessarily.
+
+---
+
+# 12. Data-Quality Notes
+
+## Slowloris
+
+The following two raw files contain exactly identical content:
+
+Botnet_Slowloris.csv
+Slowloris.csv
+
+Both contain:
+
+150,577 rows
+124 columns
+
+A complete dataframe comparison returned True.
+
+Neither file contains a timestamp/date/time column.
+
+Therefore, the CSV contents alone cannot establish that the two files represent independently distinguishable captures.
+
+The established 40-file to 32-session mapping is retained, with this provenance limitation documented.
+
+## DNS Amplification
+
+MU_SESSION_002 corresponds to:
+
+Botnet_DNS_amplification.csv
+
+Raw size:
+
+4,243 rows
+124 columns
+
+Category:
+
+DDoS
+
+The small representation of this recording in the final evaluation is therefore attributable to the small original recording size.
+
+---
+
+# 13. Final Status
+
+DATA LOADING                  COMPLETE
+DATA CLEANING                 COMPLETE
+SESSION MAPPING               COMPLETE
+FEATURE VALIDATION            COMPLETE
+38-FEATURE SELECTION          COMPLETE
+TEMPORAL BLOCK SELECTION      COMPLETE
+TRAIN/VAL/TEST SPLIT          COMPLETE
+HELD-OUT SESSION SPLIT        COMPLETE
+TRAIN-ONLY SCALING            COMPLETE
+V3 HANDOFF VALIDATION         COMPLETE
+CLASS COUNT VALIDATION        COMPLETE
+METADATA GENERATION            COMPLETE
+
+PERSON A MU-IoT DATA HANDOFF:
+
+COMPLETE AND READY FOR MODEL INTEGRATION
+
+Final representation:
+
+3,936,753 rows
+38 features
+20 timesteps
+Input shape: (20, 38)
