@@ -1,0 +1,751 @@
+===== CELL 158 (run #None) =====
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.utils.class_weight import compute_class_weight
+from tensorflow import keras
+from tensorflow.keras import layers, callbacks
+import time
+
+# 1. Carve a validation set out of train (stratified) — test stays fully untouched
+X_tr, X_val, y_tr, y_val = train_test_split(
+    X_train_seq, y_train_seq, test_size=0.1, stratify=y_train_seq, random_state=42
+)
+print("Train:", X_tr.shape, " Val:", X_val.shape)
+
+# 2. Class weights — balanced, but capped to avoid instability from classes
+# with single-digit sample counts (Heartbleed=8, Sql Injection=16). Uncapped
+# balanced weighting would give these classes weights in the thousands, which
+# can destabilize training without meaningfully helping — the model genuinely
+# can't learn a robust boundary from 8 examples no matter how it's weighted.
+classes = np.unique(y_tr)
+raw_weights = compute_class_weight('balanced', classes=classes, y=y_tr)
+capped_weights = np.clip(raw_weights, None, 50)
+class_weight_dict = dict(zip(classes.astype(int), capped_weights))
+print("Class weights (capped at 50):", class_weight_dict)
+
+# 3. Model — same architecture verified earlier this session (83,919 params)
+model = keras.Sequential([
+    layers.Conv1D(64, 3, activation='relu', input_shape=(10, 20)),
+    layers.BatchNormalization(),
+    layers.MaxPooling1D(2),
+    layers.Conv1D(128, 3, activation='relu', padding='same'),
+    layers.BatchNormalization(),
+    layers.MaxPooling1D(2),
+    layers.LSTM(64),
+    layers.Dense(64, activation='relu'),
+    layers.Dense(15, activation='softmax')
+])
+model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+model.summary()
+
+# 4. Timed sanity run — 2 epochs, to get a real per-epoch estimate before committing further
+start = time.time()
+history = model.fit(
+    X_tr, y_tr,
+    validation_data=(X_val, y_val),
+    epochs=2,
+    batch_size=512,
+    class_weight=class_weight_dict,
+    verbose=1
+)
+elapsed = time.time() - start
+print(f"\n2 epochs took {elapsed:.1f}s ({elapsed/2:.1f}s/epoch on full {len(X_tr):,}-sequence train set)")
+----- key output lines (0) -----
+
+
+===== CELL 160 (run #None) =====
+from google.colab import drive
+drive.mount('/content/drive')
+
+import shutil, glob, os, time
+import pandas as pd, numpy as np
+from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import train_test_split
+from sklearn.utils.class_weight import compute_class_weight
+from tensorflow import keras
+from tensorflow.keras import layers
+import tensorflow as tf
+
+print("GPU available:", tf.config.list_physical_devices('GPU'))
+
+# Re-copy small source files locally
+FULL_PATH = glob.glob('/content/drive/MyDrive/**/cicids2017_cleaned_with_day.csv', recursive=True)[0]
+LABEL_PATH = '/content/drive/MyDrive/Major_Project_Dataset/output/label_mapping.csv'
+shutil.copy(FULL_PATH, '/content/cicids2017_cleaned_with_day.csv')
+shutil.copy(LABEL_PATH, '/content/label_mapping.csv')
+print("Source files re-copied locally.")
+
+# Rebuild
+full_df = pd.read_csv('/content/cicids2017_cleaned_with_day.csv')
+full_df['Label'] = full_df['Label'].str.replace('\ufffd', '-', regex=False)
+
+feature_cols = ['Destination Port', 'Total Length of Fwd Packets', 'Total Length of Bwd Packets',
+    'Fwd Packet Length Max', 'Fwd Packet Length Mean', 'Bwd Packet Length Max',
+    'Bwd Packet Length Mean', 'Bwd Packet Length Std', 'Flow IAT Max', 'Fwd IAT Std',
+    'Max Packet Length', 'Packet Length Mean', 'Packet Length Std', 'Packet Length Variance',
+    'Average Packet Size', 'Avg Fwd Segment Size', 'Avg Bwd Segment Size',
+    'Subflow Fwd Packets', 'Subflow Fwd Bytes', 'Subflow Bwd Bytes']
+
+df = full_df[feature_cols + ['source_day', 'Label']].copy()
+df = df.reset_index(drop=False).rename(columns={'index': 'orig_idx'})
+
+train_parts, test_parts = [], []
+for (day, label), group in df.groupby(['source_day', 'Label'], sort=False):
+    g = group.sort_values('orig_idx')
+    split = int(len(g) * 0.8)
+    train_parts.append(g.iloc[:split])
+    test_parts.append(g.iloc[split:])
+
+train_df = pd.concat(train_parts).sort_values(['source_day', 'orig_idx']).reset_index(drop=True)
+test_df  = pd.concat(test_parts).sort_values(['source_day', 'orig_idx']).reset_index(drop=True)
+
+scaler = StandardScaler()
+train_df[feature_cols] = scaler.fit_transform(train_df[feature_cols])
+test_df[feature_cols]  = scaler.transform(test_df[feature_cols])
+
+label_mapping = pd.read_csv('/content/label_mapping.csv')
+label_mapping['Attack'] = label_mapping['Attack'].str.replace('\ufffd', '-', regex=False)
+label_to_int = dict(zip(label_mapping['Attack'], label_mapping['Encoded']))
+train_df['Label'] = train_df['Label'].map(label_to_int)
+test_df['Label']  = test_df['Label'].map(label_to_int)
+print("Unmapped check:", train_df['Label'].isna().sum(), test_df['Label'].isna().sum())
+
+def create_sequences_day_aware(X_df, y_df, feature_cols, label_col, seq_length=10, day_col='source_day'):
+    X_parts, y_parts = [], []
+    for day, group in X_df.groupby(day_col, sort=False):
+        idx = group.index
+        X_day = group[feature_cols].values.astype('float32')
+        y_day = y_df.loc[idx, label_col].values
+        n = len(X_day)
+        if n < seq_length:
+            continue
+        windows = np.lib.stride_tricks.sliding_window_view(X_day, window_shape=seq_length, axis=0)
+        windows = windows.transpose(0, 2, 1)
+        labels = y_day[seq_length - 1:]
+        X_parts.append(windows)
+        y_parts.append(labels)
+    return np.concatenate(X_parts, axis=0), np.concatenate(y_parts, axis=0)
+
+X_train_seq, y_train_seq = create_sequences_day_aware(train_df, train_df[['Label']], feature_cols, 'Label')
+X_test_seq,  y_test_seq  = create_sequences_day_aware(test_df,  test_df[['Label']],  feature_cols, 'Label')
+print("Train:", X_train_seq.shape, " Test:", X_test_seq.shape)
+
+SAVE_DIR = '/content/sequences_stratified'
+os.makedirs(SAVE_DIR, exist_ok=True)
+np.save(f"{SAVE_DIR}/X_train_seq.npy", X_train_seq)
+np.save(f"{SAVE_DIR}/y_train_seq.npy", y_train_seq)
+np.save(f"{SAVE_DIR}/X_test_seq.npy", X_test_seq)
+np.save(f"{SAVE_DIR}/y_test_seq.npy", y_test_seq)
+print("Saved locally.")
+
+# Straight into the timed sanity training run
+X_tr, X_val, y_tr, y_val = train_test_split(
+    X_train_seq, y_train_seq, test_size=0.1, stratify=y_train_seq, random_state=42
+)
+
+classes = np.unique(y_tr)
+raw_weights = compute_class_weight('balanced', classes=classes, y=y_tr)
+capped_weights = np.clip(raw_weights, None, 50)
+class_weight_dict = dict(zip(classes.astype(int), capped_weights))
+
+model = keras.Sequential([
+    layers.Conv1D(64, 3, activation='relu', input_shape=(10, 20)),
+    layers.BatchNormalization(),
+    layers.MaxPooling1D(2),
+    layers.Conv1D(128, 3, activation='relu', padding='same'),
+    layers.BatchNormalization(),
+    layers.MaxPooling1D(2),
+    layers.LSTM(64),
+    layers.Dense(64, activation='relu'),
+    layers.Dense(15, activation='softmax')
+])
+model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+
+start = time.time()
+history = model.fit(
+    X_tr, y_tr,
+    validation_data=(X_val, y_val),
+    epochs=2,
+    batch_size=512,
+    class_weight=class_weight_dict,
+    verbose=1
+)
+elapsed = time.time() - start
+print(f"\n2 epochs took {elapsed:.1f}s ({elapsed/2:.1f}s/epoch)")
+----- key output lines (5) -----
+Saved locally.
+Epoch 1/2
+[1m3734/3734[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m56s[0m 12ms/step - accuracy: 0.6195 - loss: 0.3646 - val_accuracy: 0.7840 - val_loss: 0.5892
+Epoch 2/2
+[1m3734/3734[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m43s[0m 12ms/step - accuracy: 0.7407 - loss: 0.2139 - val_accuracy: 0.7405 - val_loss: 0.6957
+
+===== CELL 161 (run #None) =====
+from tensorflow.keras import callbacks
+import pickle
+
+checkpoint_path = '/content/drive/MyDrive/Major_Project_Dataset/models/cnn_lstm_best.keras'
+
+model = keras.Sequential([
+    layers.Conv1D(64, 3, activation='relu', input_shape=(10, 20)),
+    layers.BatchNormalization(),
+    layers.MaxPooling1D(2),
+    layers.Conv1D(128, 3, activation='relu', padding='same'),
+    layers.BatchNormalization(),
+    layers.MaxPooling1D(2),
+    layers.LSTM(64),
+    layers.Dense(64, activation='relu'),
+    layers.Dense(15, activation='softmax')
+])
+model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+
+cb = [
+    callbacks.ModelCheckpoint(checkpoint_path, monitor='val_loss', save_best_only=True, verbose=1),
+    callbacks.EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True, verbose=1)
+]
+
+start = time.time()
+history = model.fit(
+    X_tr, y_tr,
+    validation_data=(X_val, y_val),
+    epochs=25,
+    batch_size=512,
+    class_weight=class_weight_dict,
+    callbacks=cb,
+    verbose=1
+)
+elapsed = time.time() - start
+print(f"\nTotal training time: {elapsed/60:.1f} minutes over {len(history.history['loss'])} epochs")
+
+# Save training history for the report (loss/accuracy curves)
+with open('/content/drive/MyDrive/Major_Project_Dataset/models/training_history.pkl', 'wb') as f:
+    pickle.dump(history.history, f)
+print("History saved.")
+----- key output lines (0) -----
+
+
+===== CELL 162 (run #None) =====
+from google.colab import drive
+drive.mount('/content/drive')
+
+import shutil, glob, os, time, pickle
+import pandas as pd, numpy as np
+from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import train_test_split
+from sklearn.utils.class_weight import compute_class_weight
+from tensorflow import keras
+from tensorflow.keras import layers, callbacks
+import tensorflow as tf
+
+print("GPU available:", tf.config.list_physical_devices('GPU'))
+
+FULL_PATH = glob.glob('/content/drive/MyDrive/**/cicids2017_cleaned_with_day.csv', recursive=True)[0]
+LABEL_PATH = '/content/drive/MyDrive/Major_Project_Dataset/output/label_mapping.csv'
+shutil.copy(FULL_PATH, '/content/cicids2017_cleaned_with_day.csv')
+shutil.copy(LABEL_PATH, '/content/label_mapping.csv')
+
+full_df = pd.read_csv('/content/cicids2017_cleaned_with_day.csv')
+full_df['Label'] = full_df['Label'].str.replace('\ufffd', '-', regex=False)
+
+feature_cols = ['Destination Port', 'Total Length of Fwd Packets', 'Total Length of Bwd Packets',
+    'Fwd Packet Length Max', 'Fwd Packet Length Mean', 'Bwd Packet Length Max',
+    'Bwd Packet Length Mean', 'Bwd Packet Length Std', 'Flow IAT Max', 'Fwd IAT Std',
+    'Max Packet Length', 'Packet Length Mean', 'Packet Length Std', 'Packet Length Variance',
+    'Average Packet Size', 'Avg Fwd Segment Size', 'Avg Bwd Segment Size',
+    'Subflow Fwd Packets', 'Subflow Fwd Bytes', 'Subflow Bwd Bytes']
+
+df = full_df[feature_cols + ['source_day', 'Label']].copy()
+df = df.reset_index(drop=False).rename(columns={'index': 'orig_idx'})
+
+train_parts, test_parts = [], []
+for (day, label), group in df.groupby(['source_day', 'Label'], sort=False):
+    g = group.sort_values('orig_idx')
+    split = int(len(g) * 0.8)
+    train_parts.append(g.iloc[:split])
+    test_parts.append(g.iloc[split:])
+
+train_df = pd.concat(train_parts).sort_values(['source_day', 'orig_idx']).reset_index(drop=True)
+test_df  = pd.concat(test_parts).sort_values(['source_day', 'orig_idx']).reset_index(drop=True)
+
+scaler = StandardScaler()
+train_df[feature_cols] = scaler.fit_transform(train_df[feature_cols])
+test_df[feature_cols]  = scaler.transform(test_df[feature_cols])
+
+label_mapping = pd.read_csv('/content/label_mapping.csv')
+label_mapping['Attack'] = label_mapping['Attack'].str.replace('\ufffd', '-', regex=False)
+label_to_int = dict(zip(label_mapping['Attack'], label_mapping['Encoded']))
+train_df['Label'] = train_df['Label'].map(label_to_int)
+test_df['Label']  = test_df['Label'].map(label_to_int)
+print("Unmapped check:", train_df['Label'].isna().sum(), test_df['Label'].isna().sum())
+
+def create_sequences_day_aware(X_df, y_df, feature_cols, label_col, seq_length=10, day_col='source_day'):
+    X_parts, y_parts = [], []
+    for day, group in X_df.groupby(day_col, sort=False):
+        idx = group.index
+        X_day = group[feature_cols].values.astype('float32')
+        y_day = y_df.loc[idx, label_col].values
+        n = len(X_day)
+        if n < seq_length:
+            continue
+        windows = np.lib.stride_tricks.sliding_window_view(X_day, window_shape=seq_length, axis=0)
+        windows = windows.transpose(0, 2, 1)
+        labels = y_day[seq_length - 1:]
+        X_parts.append(windows)
+        y_parts.append(labels)
+    return np.concatenate(X_parts, axis=0), np.concatenate(y_parts, axis=0)
+
+X_train_seq, y_train_seq = create_sequences_day_aware(train_df, train_df[['Label']], feature_cols, 'Label')
+X_test_seq,  y_test_seq  = create_sequences_day_aware(test_df,  test_df[['Label']],  feature_cols, 'Label')
+print("Train:", X_train_seq.shape, " Test:", X_test_seq.shape)
+
+SAVE_DIR = '/content/sequences_stratified'
+os.makedirs(SAVE_DIR, exist_ok=True)
+np.save(f"{SAVE_DIR}/X_train_seq.npy", X_train_seq)
+np.save(f"{SAVE_DIR}/y_train_seq.npy", y_train_seq)
+np.save(f"{SAVE_DIR}/X_test_seq.npy", X_test_seq)
+np.save(f"{SAVE_DIR}/y_test_seq.npy", y_test_seq)
+print("Saved locally.")
+
+X_tr, X_val, y_tr, y_val = train_test_split(
+    X_train_seq, y_train_seq, test_size=0.1, stratify=y_train_seq, random_state=42
+)
+
+classes = np.unique(y_tr)
+raw_weights = compute_class_weight('balanced', classes=classes, y=y_tr)
+capped_weights = np.clip(raw_weights, None, 50)
+class_weight_dict = dict(zip(classes.astype(int), capped_weights))
+
+model = keras.Sequential([
+    layers.Conv1D(64, 3, activation='relu', input_shape=(10, 20)),
+    layers.BatchNormalization(),
+    layers.MaxPooling1D(2),
+    layers.Conv1D(128, 3, activation='relu', padding='same'),
+    layers.BatchNormalization(),
+    layers.MaxPooling1D(2),
+    layers.LSTM(64),
+    layers.Dense(64, activation='relu'),
+    layers.Dense(15, activation='softmax')
+])
+model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+
+checkpoint_path = '/content/drive/MyDrive/Major_Project_Dataset/models/cnn_lstm_best.keras'
+os.makedirs(os.path.dirname(checkpoint_path), exist_ok=True)
+cb = [
+    callbacks.ModelCheckpoint(checkpoint_path, monitor='val_loss', save_best_only=True, verbose=1),
+    callbacks.EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True, verbose=1)
+]
+
+start = time.time()
+history = model.fit(
+    X_tr, y_tr,
+    validation_data=(X_val, y_val),
+    epochs=25,
+    batch_size=512,
+    class_weight=class_weight_dict,
+    callbacks=cb,
+    verbose=1
+)
+elapsed = time.time() - start
+print(f"\nTotal training time: {elapsed/60:.1f} minutes over {len(history.history['loss'])} epochs")
+
+with open('/content/drive/MyDrive/Major_Project_Dataset/models/training_history.pkl', 'wb') as f:
+    pickle.dump(history.history, f)
+print("History saved.")
+----- key output lines (48) -----
+Saved locally.
+Epoch 1/25
+Epoch 1: val_loss improved from None to 0.58875, saving model to /content/drive/MyDrive/Major_Project_Dataset/models/cnn_lstm_best.keras
+[1m3734/3734[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m50s[0m 11ms/step - accuracy: 0.6237 - loss: 0.3665 - val_accuracy: 0.7667 - val_loss: 0.5888
+Epoch 2/25
+Epoch 2: val_loss improved from 0.58875 to 0.55718, saving model to /content/drive/MyDrive/Major_Project_Dataset/models/cnn_lstm_best.keras
+[1m3734/3734[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m40s[0m 11ms/step - accuracy: 0.7512 - loss: 0.2122 - val_accuracy: 0.7717 - val_loss: 0.5572
+Epoch 3/25
+Epoch 3: val_loss improved from 0.55718 to 0.52794, saving model to /content/drive/MyDrive/Major_Project_Dataset/models/cnn_lstm_best.keras
+[1m3734/3734[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m41s[0m 11ms/step - accuracy: 0.7770 - loss: 0.1741 - val_accuracy: 0.7876 - val_loss: 0.5279
+Epoch 4/25
+Epoch 4: val_loss did not improve from 0.52794
+[1m3734/3734[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m41s[0m 11ms/step - accuracy: 0.8015 - loss: 0.1502 - val_accuracy: 0.7015 - val_loss: 0.7662
+Epoch 5/25
+Epoch 5: val_loss did not improve from 0.52794
+[1m3734/3734[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m41s[0m 11ms/step - accuracy: 0.8146 - loss: 0.1344 - val_accuracy: 0.7714 - val_loss: 0.5805
+Epoch 6/25
+Epoch 6: val_loss improved from 0.52794 to 0.44886, saving model to /content/drive/MyDrive/Major_Project_Dataset/models/cnn_lstm_best.keras
+[1m3734/3734[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m39s[0m 10ms/step - accuracy: 0.8236 - loss: 0.1236 - val_accuracy: 0.8272 - val_loss: 0.4489
+Epoch 7/25
+Epoch 7: val_loss did not improve from 0.44886
+[1m3734/3734[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m39s[0m 11ms/step - accuracy: 0.8294 - loss: 0.1155 - val_accuracy: 0.8066 - val_loss: 0.4899
+Epoch 8/25
+Epoch 8: val_loss improved from 0.44886 to 0.36533, saving model to /content/drive/MyDrive/Major_Project_Dataset/models/cnn_lstm_best.keras
+[1m3734/3734[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m42s[0m 11ms/step - accuracy: 0.8391 - loss: 0.1059 - val_accuracy: 0.8616 - val_loss: 0.3653
+Epoch 9/25
+Epoch 9: val_loss did not improve from 0.36533
+[1m3734/3734[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m41s[0m 11ms/step - accuracy: 0.8428 - loss: 0.1004 - val_accuracy: 0.8034 - val_loss: 0.5408
+Epoch 10/25
+Epoch 10: val_loss improved from 0.36533 to 0.30329, saving model to /content/drive/MyDrive/Major_Project_Dataset/models/cnn_lstm_best.keras
+[1m3734/3734[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m41s[0m 11ms/step - accuracy: 0.8492 - loss: 0.0965 - val_accuracy: 0.8769 - val_loss: 0.3033
+Epoch 11/25
+Epoch 11: val_loss did not improve from 0.30329
+[1m3734/3734[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m39s[0m 10ms/step - accuracy: 0.8538 - loss: 0.0887 - val_accuracy: 0.8591 - val_loss: 0.3440
+Epoch 12/25
+Epoch 12: val_loss did not improve from 0.30329
+[1m3734/3734[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m40s[0m 11ms/step - accuracy: 0.8592 - loss: 0.0834 - val_accuracy: 0.8639 - val_loss: 0.3929
+Epoch 13/25
+Epoch 13: val_loss did not improve from 0.30329
+[1m3734/3734[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m42s[0m 11ms/step - accuracy: 0.8619 - loss: 0.0825 - val_accuracy: 0.8576 - val_loss: 0.3779
+Epoch 14/25
+Epoch 14: val_loss did not improve from 0.30329
+[1m3734/3734[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m42s[0m 11ms/step - accuracy: 0.8624 - loss: 0.0797 - val_accuracy: 0.8794 - val_loss: 0.3189
+Epoch 15/25
+Epoch 15: val_loss did not improve from 0.30329
+[1m3734/3734[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m41s[0m 11ms/step - accuracy: 0.8675 - loss: 0.0769 - val_accuracy: 0.7969 - val_loss: 0.5189
+Restoring model weights from the end of the best epoch: 10.
+History saved.
+
+===== CELL 166 (run #None) =====
+ from sklearn.model_selection import train_test_split
+from sklearn.utils.class_weight import compute_class_weight
+from tensorflow import keras
+from tensorflow.keras import layers, callbacks
+import numpy as np
+
+# Rebuild train sequences (train_df should still be in memory from the eval reload;
+# this rebuilds fresh if it isn't)
+def create_sequences_day_aware(X_df, y_df, feature_cols, label_col, seq_length=10, day_col='source_day'):
+    X_parts, y_parts = [], []
+    for day, group in X_df.groupby(day_col, sort=False):
+        idx = group.index
+        X_day = group[feature_cols].values.astype('float32')
+        y_day = y_df.loc[idx, label_col].values
+        n = len(X_day)
+        if n < seq_length: continue
+        windows = np.lib.stride_tricks.sliding_window_view(X_day, window_shape=seq_length, axis=0).transpose(0, 2, 1)
+        X_parts.append(windows); y_parts.append(y_day[seq_length - 1:])
+    return np.concatenate(X_parts, axis=0), np.concatenate(y_parts, axis=0)
+
+X_train_seq, y_train_seq = create_sequences_day_aware(train_df, train_df[['Label']], feature_cols, 'Label')
+
+X_tr, X_val, y_tr, y_val = train_test_split(
+    X_train_seq, y_train_seq, test_size=0.1, stratify=y_train_seq, random_state=42
+)
+
+classes = np.unique(y_tr)
+raw_weights = compute_class_weight('balanced', classes=classes, y=y_tr)
+sqrt_weights = np.sqrt(raw_weights)  # dampened, no hard cap needed
+class_weight_dict = dict(zip(classes.astype(int), sqrt_weights))
+print("Sqrt-dampened weights:", {k: round(v, 2) for k, v in class_weight_dict.items()})
+
+model_v2 = keras.Sequential([
+    layers.Conv1D(64, 3, activation='relu', input_shape=(10, 20)),
+    layers.BatchNormalization(), layers.MaxPooling1D(2),
+    layers.Conv1D(128, 3, activation='relu', padding='same'),
+    layers.BatchNormalization(), layers.MaxPooling1D(2),
+    layers.LSTM(64), layers.Dense(64, activation='relu'),
+    layers.Dense(15, activation='softmax')
+])
+model_v2.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+
+checkpoint_v2 = '/content/drive/MyDrive/Major_Project_Dataset/models/cnn_lstm_best_v2.keras'
+cb = [
+    callbacks.ModelCheckpoint(checkpoint_v2, monitor='val_loss', save_best_only=True, verbose=1),
+    callbacks.EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True, verbose=1)
+]
+
+history_v2 = model_v2.fit(X_tr, y_tr, validation_data=(X_val, y_val), epochs=25,
+                           batch_size=512, class_weight=class_weight_dict, callbacks=cb, verbose=1)
+print(f"\nStopped at epoch {len(history_v2.history['loss'])}, best val_loss: {min(history_v2.history['val_loss']):.4f}")
+----- key output lines (0) -----
+
+
+===== CELL 168 (run #None) =====
+X_train_seq, y_train_seq = create_sequences_day_aware(train_df, train_df[['Label']], feature_cols, 'Label')
+
+X_tr, X_val, y_tr, y_val = train_test_split(
+    X_train_seq, y_train_seq, test_size=0.1, stratify=y_train_seq, random_state=42
+)
+
+classes = np.unique(y_tr)
+raw_weights = compute_class_weight('balanced', classes=classes, y=y_tr)
+sqrt_weights = np.sqrt(raw_weights)
+class_weight_dict = dict(zip(classes.astype(int), sqrt_weights))
+print("Sqrt-dampened weights:", {k: round(v, 2) for k, v in class_weight_dict.items()})
+----- key output lines (1) -----
+Sqrt-dampened weights: {np.int64(0): np.float64(0.28), np.int64(1): np.float64(9.53), np.int64(2): np.float64(1.18), np.int64(3): np.float64(4.15), np.int64(4): np.float64(1.01), np.int64(5): np.float64(5.82), np.int64(6): np.float64(5.7), np.int64(7): np.float64(5.37), np.int64(8): np.float64(134.93), np.int64(9): np.float64(71.4), np.int64(10): np.float64(1.23), np.int64(11): np.float64(6.93), np.int64(12): np.float64(10.93), np.int64(13): np.float64(92.17), np.int64(14): np.float64(16.48)}
+
+===== CELL 169 (run #None) =====
+model_v2 = keras.Sequential([
+    layers.Conv1D(64, 3, activation='relu', input_shape=(10, 20)),
+    layers.BatchNormalization(), layers.MaxPooling1D(2),
+    layers.Conv1D(128, 3, activation='relu', padding='same'),
+    layers.BatchNormalization(), layers.MaxPooling1D(2),
+    layers.LSTM(64), layers.Dense(64, activation='relu'),
+    layers.Dense(15, activation='softmax')
+])
+model_v2.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+
+checkpoint_v2 = '/content/drive/MyDrive/Major_Project_Dataset/models/cnn_lstm_best_v2.keras'
+cb = [
+    callbacks.ModelCheckpoint(checkpoint_v2, monitor='val_loss', save_best_only=True, verbose=1),
+    callbacks.EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True, verbose=1)
+]
+
+history_v2 = model_v2.fit(X_tr, y_tr, validation_data=(X_val, y_val), epochs=25,
+                           batch_size=512, class_weight=class_weight_dict, callbacks=cb, verbose=1)
+print(f"\nStopped at epoch {len(history_v2.history['loss'])}, best val_loss: {min(history_v2.history['val_loss']):.4f}")
+----- key output lines (20) -----
+Epoch 1/25
+Epoch 1: val_loss improved from None to 0.15254, saving model to /content/drive/MyDrive/Major_Project_Dataset/models/cnn_lstm_best_v2.keras
+[1m3734/3734[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m46s[0m 10ms/step - accuracy: 0.9435 - loss: 0.1798 - val_accuracy: 0.9539 - val_loss: 0.1525
+Epoch 2/25
+Epoch 2: val_loss did not improve from 0.15254
+[1m3734/3734[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m39s[0m 10ms/step - accuracy: 0.9513 - loss: 0.1072 - val_accuracy: 0.8386 - val_loss: 0.3387
+Epoch 3/25
+Epoch 3: val_loss did not improve from 0.15254
+[1m3734/3734[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m39s[0m 10ms/step - accuracy: 0.9654 - loss: 0.0844 - val_accuracy: 0.9313 - val_loss: 0.2021
+Epoch 4/25
+Epoch 4: val_loss did not improve from 0.15254
+[1m3734/3734[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m39s[0m 10ms/step - accuracy: 0.9739 - loss: 0.0704 - val_accuracy: 0.9346 - val_loss: 0.2457
+Epoch 5/25
+Epoch 5: val_loss did not improve from 0.15254
+[1m3734/3734[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m42s[0m 10ms/step - accuracy: 0.9764 - loss: 0.0642 - val_accuracy: 0.9123 - val_loss: 0.2792
+Epoch 6/25
+Epoch 6: val_loss did not improve from 0.15254
+[1m3734/3734[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m40s[0m 10ms/step - accuracy: 0.9767 - loss: 0.0612 - val_accuracy: 0.9559 - val_loss: 0.1588
+Restoring model weights from the end of the best epoch: 1.
+Stopped at epoch 6, best val_loss: 0.1525
+
+===== CELL 174 (run #None) =====
+import pickle, json
+from tensorflow import keras
+
+model = keras.models.load_model("/content/repo/model/artifacts/cnn_lstm_best_v2.keras")
+with open("/content/repo/model/artifacts/scaler_v2.pkl", "rb") as f:
+    scaler = pickle.load(f)
+with open("/content/repo/model/artifacts/label_mapping_v2.json") as f:
+    label_to_int = json.load(f)
+----- key output lines (0) -----
+
+
+===== CELL 179 (run #None) =====
+import pickle, json
+from tensorflow import keras
+
+model = keras.models.load_model("/content/repo/model/artifacts/cnn_lstm_best_v2.keras")
+with open("/content/repo/model/artifacts/scaler_v2.pkl", "rb") as f:
+    scaler = pickle.load(f)
+with open("/content/repo/model/artifacts/label_mapping_v2.json") as f:
+    label_to_int = json.load(f)
+----- key output lines (0) -----
+
+
+===== CELL 185 (run #None) =====
+import os
+
+# Step 1: Mount Drive if not already mounted
+if not os.path.exists("/content/drive/MyDrive"):
+    from google.colab import drive
+    drive.mount('/content/drive')
+
+DRIVE_ROOT = "/content/drive/MyDrive/Major_Project_Dataset"
+SOURCE_CSV = f"{DRIVE_ROOT}/dataset/merged/cicids2017_cleaned_with_day.csv"
+LABEL_MAPPING_CSV = f"{DRIVE_ROOT}/output/label_mapping.csv"
+
+# Step 2: Clone repo if not already present
+if not os.path.exists("/content/repo/model/rebuild_chronological_split.py"):
+    !rm -rf /content/repo
+    !git clone -b person-b-model https://github.com/MaanyaBS/Major-Project-CNN-LSTM-IDS.git /content/repo
+
+# Step 3: Check library versions (installs only if missing/wrong)
+import importlib
+try:
+    import tensorflow as tf
+    import sklearn
+    need_install = (tf.__version__ != "2.21.0" or sklearn.__version__ != "1.9.0")
+except ImportError:
+    need_install = True
+
+if need_install:
+    !pip install -q tensorflow==2.21.0 scikit-learn==1.9.0
+    import tensorflow as tf
+    import sklearn
+
+print("tf:", tf.__version__, "| sklearn:", sklearn.__version__)
+
+# Step 4: Load committed artifacts
+import pickle, json
+from tensorflow import keras
+
+model = keras.models.load_model("/content/repo/model/artifacts/cnn_lstm_best_v2.keras")
+with open("/content/repo/model/artifacts/scaler_v2.pkl", "rb") as f:
+    scaler = pickle.load(f)
+with open("/content/repo/model/artifacts/label_mapping_v2.json") as f:
+    label_to_int = json.load(f)
+
+# Step 5: Load rebuild_chronological_split directly (bypasses the namespace-package issue)
+import importlib.util
+spec = importlib.util.spec_from_file_location(
+    "rebuild_chronological_split", "/content/repo/model/rebuild_chronological_split.py"
+)
+rebuild_mod = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(rebuild_mod)
+rebuild_chronological_split = rebuild_mod.rebuild_chronological_split
+
+print("Setup complete — model, scaler, label_to_int, and rebuild_chronological_split are all ready.")
+
+----- key output lines (0) -----
+
+
+===== CELL 188 (run #None) =====
+import os
+print(os.path.exists("/content/verify_run/X_test_seq.npy"))
+print(os.path.exists("/content/repo/model/artifacts/cnn_lstm_best_v2.keras"))
+
+----- key output lines (0) -----
+
+
+===== CELL 189 (run #None) =====
+import os
+
+# --- Mount + clone (idempotent) ---
+if not os.path.exists("/content/drive/MyDrive"):
+    from google.colab import drive
+    drive.mount('/content/drive')
+
+DRIVE_ROOT = "/content/drive/MyDrive/Major_Project_Dataset"
+SOURCE_CSV = f"{DRIVE_ROOT}/dataset/merged/cicids2017_cleaned_with_day.csv"
+LABEL_MAPPING_CSV = f"{DRIVE_ROOT}/output/label_mapping.csv"
+VERIFY_DRIVE_DIR = f"{DRIVE_ROOT}/verify_run_ruthwik"   # new folder, only this script touches it
+
+if not os.path.exists("/content/repo/model/rebuild_chronological_split.py"):
+    !rm -rf /content/repo
+    !git clone -b person-b-model https://github.com/MaanyaBS/Major-Project-CNN-LSTM-IDS.git /content/repo
+
+import tensorflow as tf
+from tensorflow import keras
+import sklearn, pickle, json, importlib.util
+import numpy as np
+from sklearn.metrics import accuracy_score, f1_score
+
+print("tf:", tf.__version__, "| sklearn:", sklearn.__version__)
+
+# --- Load committed artifacts ---
+model = keras.models.load_model("/content/repo/model/artifacts/cnn_lstm_best_v2.keras")
+with open("/content/repo/model/artifacts/scaler_v2.pkl", "rb") as f:
+    scaler = pickle.load(f)
+with open("/content/repo/model/artifacts/label_mapping_v2.json") as f:
+    label_to_int = json.load(f)
+
+# --- Rebuild sequences, or reload from Drive if already done before ---
+os.makedirs(VERIFY_DRIVE_DIR, exist_ok=True)
+test_x_path = f"{VERIFY_DRIVE_DIR}/X_test_seq.npy"
+test_y_path = f"{VERIFY_DRIVE_DIR}/y_test_seq.npy"
+
+if os.path.exists(test_x_path) and os.path.exists(test_y_path):
+    print("Found previously rebuilt test sequences on Drive — reloading (fast).")
+    X_test = np.load(test_x_path)
+    y_test = np.load(test_y_path)
+else:
+    print("Rebuilding sequences from source CSV (this takes a few minutes)...")
+    spec = importlib.util.spec_from_file_location(
+        "rebuild_chronological_split", "/content/repo/model/rebuild_chronological_split.py"
+    )
+    rebuild_mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(rebuild_mod)
+
+    X_train, y_train, X_test, y_test = rebuild_mod.rebuild_chronological_split(
+        source_csv_path=SOURCE_CSV,
+        label_mapping_path=LABEL_MAPPING_CSV,
+        output_dir="/content/verify_run",
+        seq_length=10,
+    )
+    # Save ONLY the test set to Drive, under our own new folder, so a future
+    # disconnect skips the rebuild entirely
+    np.save(test_x_path, X_test)
+    np.save(test_y_path, y_test)
+    print("Saved test sequences to Drive for next time:", VERIFY_DRIVE_DIR)
+
+print("Test set:", X_test.shape, y_test.shape)
+
+# --- Evaluate ---
+probs = model.predict(X_test, verbose=1)
+preds = np.argmax(probs, axis=1)
+
+acc = accuracy_score(y_test, preds)
+f1_wt = f1_score(y_test, preds, average="weighted")
+f1_macro = f1_score(y_test, preds, average="macro")
+
+print(f"\nAccuracy:    {acc:.4f}")
+print(f"Weighted F1: {f1_wt:.4f}")
+print(f"Macro F1:    {f1_macro:.4f}")
+----- key output lines (3) -----
+Saved test sequences to Drive for next time: /content/drive/MyDrive/Major_Project_Dataset/verify_run_ruthwik
+Weighted F1: 0.9864
+Macro F1:    0.5857
+
+===== CELL 190 (run #None) =====
+import os
+from google.colab import drive
+drive.mount('/content/drive')
+
+if not os.path.exists("/content/repo/model/artifacts/cnn_lstm_best_v2.keras"):
+    !rm -rf /content/repo
+    !git clone -b person-b-model https://github.com/MaanyaBS/Major-Project-CNN-LSTM-IDS.git /content/repo
+
+DRIVE_ROOT = "/content/drive/MyDrive/Major_Project_Dataset"
+print("Setup ready.")
+
+----- key output lines (0) -----
+
+
+===== CELL 191 (run #None) =====
+import pickle, json
+from tensorflow import keras
+
+model = keras.models.load_model("/content/repo/model/artifacts/cnn_lstm_best_v2.keras")
+with open("/content/repo/model/artifacts/scaler_v2.pkl", "rb") as f:
+    scaler = pickle.load(f)
+with open("/content/repo/model/artifacts/label_mapping_v2.json") as f:
+    label_to_int = json.load(f)
+int_to_label = {v: k for k, v in label_to_int.items()}
+
+print("Model loaded. Classes:", len(int_to_label))
+model.summary()
+
+----- key output lines (0) -----
+
+
+===== CELL 225 (run #None) =====
+import re
+from google.colab import _message
+
+nb = _message.blocking_request('get_ipynb', timeout_sec=60)['ipynb']
+KEYS = ('compute_class_weight', 'sqrt', 'best_v2', 'best_v1', 'best_v3', 'class_weight')
+SECRET = re.compile(r'(ghp_|github_pat_|gho_|AKIA|AIza|sk-)[A-Za-z0-9_\-]{8,}')
+KEEP = re.compile(r'^Epoch \d+/|val_loss|Restoring|weight|[Ss]aved|Saving|macro|F1')
+
+def text(x):
+    return ''.join(x) if isinstance(x, list) else (x or '')
+
+def outputs(cell):
+    parts = []
+    for o in cell.get('outputs', []):
+        if 'text' in o:
+            parts.append(text(o['text']))
+        elif 'text/plain' in o.get('data', {}):
+            parts.append(text(o['data']['text/plain']))
+    return ''.join(parts)
+
+report = []
+for i, cell in enumerate(nb['cells']):
+    src = text(cell.get('source'))
+    if cell.get('cell_type') != 'code' or not any(k in src for k in KEYS):
+        continue
+    keep = [l for l in outputs(cell).splitlines() if KEEP.search(l)]
+    report.append(f"===== CELL {i} (run #{cell.get('execution_count')}) =====\n{src}\n"
+                  f"----- key output lines ({len(keep)}) -----\n" + "\n".join(keep[-80:]))
+
+dump = SECRET.sub('[REDACTED]', "\n\n".join(report))
+with open('/content/drive/MyDrive/v2_training_cells.txt', 'w') as f:
+    f.write(dump)
+print(f"{len(report)} matching cells, {len(dump):,} characters -> My Drive/v2_training_cells.txt")
+print(dump[:3000])
+
+----- key output lines (0) -----

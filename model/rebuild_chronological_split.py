@@ -50,15 +50,8 @@ def _create_sequences_day_aware(X_df, y_df, feature_cols, label_col, seq_length=
     return np.concatenate(X_parts, axis=0), np.concatenate(y_parts, axis=0)
 
 
-def rebuild_chronological_split(source_csv_path, label_mapping_path, output_dir, seq_length=10):
-    """
-    Loads the day-tagged source CSV, applies a day+label stratified 80/20
-    split, scales features (fit on train only), maps labels via the
-    canonical label_mapping.csv, and builds day-aware sequence windows.
-
-    Saves X_train_seq.npy, y_train_seq.npy, X_test_seq.npy, y_test_seq.npy
-    to output_dir and returns them.
-    """
+def load_day_tagged(source_csv_path):
+    """The day-tagged dataset: the 20 features, source_day, Label (U+FFFD fixed) and orig_idx."""
     full_df = pd.read_csv(source_csv_path)
     # Re-applies the same U+FFFD fix used in 05_label_encoding.py; the
     # rebuild path doesn't currently pass through that script, so labels
@@ -66,8 +59,11 @@ def rebuild_chronological_split(source_csv_path, label_mapping_path, output_dir,
     full_df['Label'] = full_df['Label'].str.replace('\ufffd', '-', regex=False)
 
     df = full_df[FEATURE_COLS + ['source_day', 'Label']].copy()
-    df = df.reset_index(drop=False).rename(columns={'index': 'orig_idx'})
+    return df.reset_index(drop=False).rename(columns={'index': 'orig_idx'})
 
+
+def chronological_split(df):
+    """Within each (source_day, Label) group, the first 80% of rows train and the rest test."""
     train_parts, test_parts = [], []
     for (day, label), group in df.groupby(['source_day', 'Label'], sort=False):
         g = group.sort_values('orig_idx')
@@ -77,14 +73,33 @@ def rebuild_chronological_split(source_csv_path, label_mapping_path, output_dir,
 
     train_df = pd.concat(train_parts).sort_values(['source_day', 'orig_idx']).reset_index(drop=True)
     test_df = pd.concat(test_parts).sort_values(['source_day', 'orig_idx']).reset_index(drop=True)
+    return train_df, test_df
+
+
+def load_label_mapping(label_mapping_path):
+    """Canonical Attack -> Encoded mapping from label_mapping.csv."""
+    label_mapping = pd.read_csv(label_mapping_path)
+    label_mapping['Attack'] = label_mapping['Attack'].str.replace('\ufffd', '-', regex=False)
+    return dict(zip(label_mapping['Attack'], label_mapping['Encoded']))
+
+
+def rebuild_chronological_split(source_csv_path, label_mapping_path, output_dir, seq_length=10):
+    """
+    Loads the day-tagged source CSV, applies a day+label stratified 80/20
+    split, scales features (fit on train only), maps labels via the
+    canonical label_mapping.csv, and builds day-aware sequence windows.
+
+    Saves X_train_seq.npy, y_train_seq.npy, X_test_seq.npy, y_test_seq.npy
+    to output_dir and returns them.
+    """
+    df = load_day_tagged(source_csv_path)
+    train_df, test_df = chronological_split(df)
 
     scaler = StandardScaler()
     train_df[FEATURE_COLS] = scaler.fit_transform(train_df[FEATURE_COLS])
     test_df[FEATURE_COLS] = scaler.transform(test_df[FEATURE_COLS])
 
-    label_mapping = pd.read_csv(label_mapping_path)
-    label_mapping['Attack'] = label_mapping['Attack'].str.replace('\ufffd', '-', regex=False)
-    label_to_int = dict(zip(label_mapping['Attack'], label_mapping['Encoded']))
+    label_to_int = load_label_mapping(label_mapping_path)
     train_df['Label'] = train_df['Label'].map(label_to_int)
     test_df['Label'] = test_df['Label'].map(label_to_int)
 

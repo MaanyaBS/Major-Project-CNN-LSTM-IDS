@@ -1,5 +1,14 @@
 # Status Report & Handoff Questions — Person B (Model Development)
 
+> **Historical (July 2026), kept for the record. Superseded by
+> `docs/PROJECT_STATUS_CURRENT.md`, `model/MODEL_INTERFACE.md` and
+> `docs/report/person_b_report.md`.** The baselines below used a random
+> 100,000-row sample with a random split and are not comparable with the
+> CNN-LSTM; the fair comparison is `model/results/chronological_random_forest_results.txt`.
+> The `cnn_lstm_results.txt` and `cnn_lstm_confusion_matrix.png` mentioned
+> below were random-data smoke-test outputs and were deleted; the real
+> evaluation is `model/results/cnn_lstm_v2_full_test_results.txt`.
+
 ## 1. Status Report
 
 ### Baseline Models
@@ -16,7 +25,7 @@ Trained and evaluated on a 100,000-row stratified sample of the cleaned CICIDS20
 ### CNN-LSTM Architecture & Pipeline
 Modular deep learning pipeline implemented and verified end-to-end:
 1. `model/load_data.py`: Chunk-based loading, filtering malformed rows (68 cols), infinity/NaN cleaning, label sanitisation.
-2. `model/cnn_lstm_architecture.py`: Hybrid CNN-LSTM Keras model (`Conv1D` + `BN` + `MaxPool` → `Conv1D` + `BN` + `MaxPool` → `LSTM` → `Dropout` → `Dense`).
+2. `model/cnn_lstm_architecture.py`: Hybrid CNN-LSTM Keras model (`Conv1D` + `BN` + `MaxPool` → `Conv1D` + `BN` + `MaxPool` → `LSTM` → `Dense` → `Dense`; no Dropout, matching the deployed model).
 3. `model/sequence_reshaping.py`: Sliding-window transformer converting 2D tabular flow data `(samples, features)` into 3D temporal sequences `(samples, sequence_length, features)`.
 4. `model/evaluate_model.py`: Automated evaluation module outputting text classification reports (`cnn_lstm_results.txt`) and confusion matrix heatmaps (`cnn_lstm_confusion_matrix.png`).
 

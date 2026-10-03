@@ -1,0 +1,23 @@
+======================================================================
+CICIDS2017 CNN-LSTM - THE THREE TRAINED VERSIONS ON THE SAME TEST SET
+======================================================================
+Measured : 2026-10-02, Colab, by loading each checkpoint from Drive
+           Major_Project_Dataset/models/ and scoring it on the full
+           chronological test set (530,951 windows, verify_run_ruthwik/
+           X_test_seq.npy, y_test_seq.npy). Macro F1 averages over the
+           classes present in labels or predictions (scikit-learn default).
+
+Version  Checkpoint               Saved             Class weights                 Accuracy  Weighted F1  Macro F1
+v1       cnn_lstm_best.keras      2026-08-06 05:46  balanced, capped at 50        0.8831    0.9241       0.4276
+v2       cnn_lstm_best_v2.keras   2026-08-11 16:32  sqrt of balanced, no cap      0.9842    0.9864       0.5857
+v3       cnn_lstm_best_v3.keras   2026-08-12 14:20  targeted boost (see note)     0.9470    0.9524       0.4811
+
+Identity  : the Drive v2 checkpoint has the same SHA-256 prefix (e790bdb9d19a36de)
+            and save time as the committed model/artifacts/cnn_lstm_best_v2.keras,
+            so the deployed model is the v2 run of notebook cell 169.
+Training  : v1 ran 15 epochs and kept epoch 10 (val_loss 0.3033); its history is
+            model/results/cnn_lstm_v1_training_curves.png. v2 stopped after 6 epochs
+            and kept epoch 1 (val_loss 0.1525); see cnn_lstm_v2_training_history.json.
+Note      : v3's training code was not preserved in the notebook; its weighting
+            (a 3x boost on Bot, Brute Force and XSS) is as recorded in the project
+            status notes from August.

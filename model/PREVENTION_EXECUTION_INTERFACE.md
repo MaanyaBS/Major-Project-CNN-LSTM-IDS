@@ -62,10 +62,14 @@ concept (escaping request content), which a network-level IDS/IPS
 structurally cannot do. Keeping this one recommendation-only is the correct
 call, not a shortcut — say so explicitly in the report too.
 
-Three classes (Sql Injection, Heartbleed, Infiltration) are hard-locked to
-`held_for_review` in `class_action_mapping.py` regardless of confidence, so
-they will never reach `auto_action` and never trigger real execution at all
-— that's correct, unrelated to this module.
+Six classes are locked to `held_for_review` in `class_action_mapping.py`
+regardless of confidence (`never_auto_fire`), so they never reach
+`auto_action` and never trigger real execution: Sql Injection, Heartbleed
+and Infiltration (too few test rows to trust any score), and Bot, Web
+Attack - Brute Force and Web Attack - XSS (F1 below 0.15; all 17 automatic
+Bot actions on the test set hit benign traffic before the lock). The MU-IoT policy does the same
+for MiTM and Spyware; its automatic actions are all `block_ip` (see
+`model/MU_IOT_MODEL_INTERFACE.md`, Section 7).
 
 ---
 
@@ -121,6 +125,18 @@ call directly from a request handler without wrapping every call site in a
 - `sweep_expired_rules()` tested against 4 synthetic scenarios (expired /
   not-yet-expired / persistent / already-revoked) — correct in all four, and
   confirmed idempotent (safe to call repeatedly).
+- Committed tests: `python model/test_prevention.py` (22 tests, no real
+  firewall access — OS calls are replaced with recorders). They cover both
+  policies (thresholds, review-only classes, fallback, per-class F1 matching
+  the committed results, the two datasets kept apart) and every refusal path,
+  including adversarial targets such as `192.0.2.10,8.8.8.8` (netsh list
+  syntax), CIDR ranges, IPv6 and non-string input. Run them after any change
+  to the engine or the policy.
+- What the CICIDS2017 policy does on the full test set is measured in
+  `model/results/prevention_policy_cicids2017.txt`
+  (`python model/evaluate_prevention_policy.py --dataset cicids2017`):
+  0.33% of benign windows would trigger an automatic action, 96.6% of attack
+  windows are handled automatically, 2.4% are missed.
 
 Every attempt — refused, failed, or genuinely executed — is logged to
 `model/results/prevention_execution_log.jsonl`, kept separate from the
@@ -142,3 +158,7 @@ never conflated in the data or in the report.
 4. Decide and expose how `PREVENTION_EXECUTION_ENABLED` gets toggled (env
    var recommended, not a hardcoded `True`) — it should default off in
    normal operation and only be on deliberately for a demo.
+5. If MU-IoT predictions are served, call
+   `get_action(predicted_class, confidence, dataset="mu_iot")` for them.
+   The default is the CICIDS2017 policy, and both datasets have a `DDoS`
+   class with different thresholds.

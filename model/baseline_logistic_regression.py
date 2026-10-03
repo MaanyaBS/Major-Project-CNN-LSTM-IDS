@@ -101,11 +101,13 @@ def main():
     # ------------------------------------------------------------------
     # 8. Print results
     # ------------------------------------------------------------------
+    # Explicit "+" between parts: adjacent string literals are joined before
+    # "*" is applied, which previously repeated the whole report 70 times.
     results_text = (
         "=" * 70 + "\n"
-        "BASELINE – LOGISTIC REGRESSION RESULTS\n"
-        "=" * 70 + "\n\n"
-        f"Sample size      : 100,000\n"
+        + "BASELINE – LOGISTIC REGRESSION RESULTS\n"
+        + "=" * 70 + "\n\n"
+        + f"Sample size      : 100,000\n"
         f"Train / Test     : 80,000 / 20,000\n\n"
         f"Accuracy         : {acc:.6f}\n"
         f"Precision (wt.)  : {prec:.6f}\n"
@@ -113,7 +115,7 @@ def main():
         f"F1-score  (wt.)  : {f1:.6f}\n\n"
         f"Classification Report:\n{report}\n\n"
         f"Confusion Matrix:\n{cm}\n"
-        "=" * 70 + "\n"
+        + "=" * 70 + "\n"
     )
 
     print(results_text)

@@ -1,0 +1,173 @@
+{
+  "environment": {
+    "generated": "2026-09-30T15:44:42+00:00",
+    "cpu": "AMD Ryzen 3 5300U with Radeon Graphics",
+    "logical_cores": 8,
+    "power": "plugged in",
+    "python": "3.13.2",
+    "tensorflow": "2.21.0",
+    "keras": "3.15.0"
+  },
+  "results": [
+    {
+      "name": "cicids",
+      "title": "CICIDS2017 CNN-LSTM (v2)",
+      "model": "model/artifacts/cnn_lstm_best_v2.keras",
+      "seq_len": 10,
+      "n_features": 20,
+      "n_classes": 15,
+      "parameters": 83919,
+      "file_size_mb": 1.0103111267089844,
+      "dtype_policies": [
+        "float32"
+      ],
+      "load_seconds": 0.34735289998934604,
+      "input_source": "real test windows from datasets/verify_run_ruthwik/X_test_seq.npy",
+      "throughput_windows": 16384,
+      "latency_ms": {
+        "backend path (scale + model.predict)": {
+          "median": 66.71090000000001,
+          "p95": 83.47207000000002,
+          "p99": 96.234206,
+          "mean": 68.63675633333334,
+          "calls": 300
+        },
+        "  of which scaling (pandas + scaler)": {
+          "median": 0.8561,
+          "p95": 1.1735050000000005,
+          "p99": 1.4338349999999986,
+          "mean": 0.9158413333333332,
+          "calls": 300
+        },
+        "model.predict": {
+          "median": 67.2239,
+          "p95": 102.8652,
+          "p99": 143.66302699999997,
+          "mean": 73.278655,
+          "calls": 300
+        },
+        "model.predict_on_batch": {
+          "median": 1.4813,
+          "p95": 1.9422300000000001,
+          "p99": 2.1331119999999997,
+          "mean": 1.5290420000000002,
+          "calls": 300
+        },
+        "model(x) direct call": {
+          "median": 20.5216,
+          "p95": 28.94668,
+          "p99": 34.541946999999965,
+          "mean": 21.701481,
+          "calls": 300
+        }
+      },
+      "throughput_windows_per_s": {
+        "1 (backend path, one call per window)": {
+          "median": 14.990054099105242,
+          "min": null,
+          "max": null
+        },
+        "32": {
+          "median": 13489.938699269906,
+          "min": 12789.569506533771,
+          "max": 13818.448826848982
+        },
+        "256": {
+          "median": 56860.478391967365,
+          "min": 50158.413520595255,
+          "max": 59101.60794341408
+        },
+        "2048": {
+          "median": 70729.28349536094,
+          "min": 68523.63028262633,
+          "max": 72334.80631090375
+        }
+      },
+      "backend_agreement": [
+        300,
+        300
+      ]
+    },
+    {
+      "name": "mu_iot",
+      "title": "MU-IoT CNN-LSTM",
+      "model": "model/artifacts/mu_iot/best.keras",
+      "seq_len": 20,
+      "n_features": 38,
+      "n_classes": 7,
+      "parameters": 86855,
+      "file_size_mb": 1.7172574996948242,
+      "dtype_policies": [
+        "float32",
+        "mixed_float16"
+      ],
+      "load_seconds": 0.1753325999889057,
+      "input_source": "random windows of the model's input shape",
+      "throughput_windows": 16384,
+      "latency_ms": {
+        "backend path (scale + model.predict)": {
+          "median": 66.98335,
+          "p95": 88.00408000000002,
+          "p99": 110.993774,
+          "mean": 70.74329466666667,
+          "calls": 300
+        },
+        "  of which scaling (pandas + scaler)": {
+          "median": 0.78905,
+          "p95": 1.014715,
+          "p99": 1.3023189999999991,
+          "mean": 0.8318650000000001,
+          "calls": 300
+        },
+        "model.predict": {
+          "median": 66.20065,
+          "p95": 89.22484,
+          "p99": 106.00890699999994,
+          "mean": 69.33435266666666,
+          "calls": 300
+        },
+        "model.predict_on_batch": {
+          "median": 1.60215,
+          "p95": 2.2283500000000003,
+          "p99": 2.415083,
+          "mean": 1.667332,
+          "calls": 300
+        },
+        "model(x) direct call": {
+          "median": 28.022,
+          "p95": 32.64284,
+          "p99": 45.878564,
+          "mean": 28.717065333333334,
+          "calls": 300
+        }
+      },
+      "throughput_windows_per_s": {
+        "1 (backend path, one call per window)": {
+          "median": 14.929083122895465,
+          "min": null,
+          "max": null
+        },
+        "32": {
+          "median": 7247.8911485880435,
+          "min": 7160.183540856582,
+          "max": 7342.035001109375
+        },
+        "256": {
+          "median": 15512.452994488669,
+          "min": 14654.116694125849,
+          "max": 15882.736084274236
+        },
+        "2048": {
+          "median": 21907.178759410144,
+          "min": 20215.737354214278,
+          "max": 22195.940407628346
+        }
+      },
+      "backend_agreement": [
+        300,
+        300
+      ]
+    }
+  ],
+  "skipped": []
+}

@@ -1,0 +1,194 @@
+{
+  "data_dir": "/content/drive/MyDrive/Major_Project/handoff_v3",
+  "n_estimators": 100,
+  "train_rows": 2171995,
+  "rf_seconds": 403.5810511112213,
+  "checks": [
+    "test_within: CNN-LSTM accuracy 0.9672 / macro F1 0.9372 vs committed 0.9672 / 0.9372 - matches",
+    "test_within: unseen-only windows 528,967 vs committed 528,967 - matches",
+    "test_heldout: CNN-LSTM accuracy 0.6416 / macro F1 0.6469 vs committed 0.6416 / 0.6469 - matches",
+    "test_heldout: unseen-only windows 686,566 vs committed 686,566 - matches"
+  ],
+  "results": {
+    "test_within": {
+      "all": {
+        "rf": {
+          "windows": 586631,
+          "accuracy": 0.9030361504932403,
+          "weighted_f1": 0.8978369906246216,
+          "macro_f1": 0.8141876277264941,
+          "per_class_f1": {
+            "DDoS": 0.9275246311847678,
+            "Injection": 0.9582721744600545,
+            "MiTM": 0.8620249936240755,
+            "Password_Hacking": 0.9546185539606592,
+            "Scan": 0.9486640264603852,
+            "Spyware": 0.2592580313629281,
+            "normal": 0.7889509830325881
+          },
+          "normal_false_alarm_rate": 0.1702368728534504,
+          "attack_called_normal_rate": 0.04620423907456037
+        },
+        "cnn_lstm": {
+          "windows": 586631,
+          "accuracy": 0.967209370115115,
+          "weighted_f1": 0.9673735945594466,
+          "macro_f1": 0.9372296780942715,
+          "per_class_f1": {
+            "DDoS": 0.9803968047028706,
+            "Injection": 0.9779839379673221,
+            "MiTM": 0.9630179344465059,
+            "Password_Hacking": 0.9897974803170567,
+            "Scan": 0.9935020269067064,
+            "Spyware": 0.7465639667830064,
+            "normal": 0.909345595536432
+          },
+          "normal_false_alarm_rate": 0.09208181378276623,
+          "attack_called_normal_rate": 0.015014883383608752
+        }
+      },
+      "unseen": {
+        "rf": {
+          "windows": 528967,
+          "accuracy": 0.9035232821707214,
+          "weighted_f1": 0.8978421270785468,
+          "macro_f1": 0.8160017588155707,
+          "per_class_f1": {
+            "DDoS": 0.9255980872988988,
+            "Injection": 0.9582721744600545,
+            "MiTM": 0.8620249936240755,
+            "Password_Hacking": 0.954875422128859,
+            "Scan": 0.963810858979426,
+            "Spyware": 0.2596495894145417,
+            "normal": 0.78778118580314
+          },
+          "normal_false_alarm_rate": 0.17153800119688808,
+          "attack_called_normal_rate": 0.05154944692277125
+        },
+        "cnn_lstm": {
+          "windows": 528967,
+          "accuracy": 0.9640223303155018,
+          "weighted_f1": 0.9641665252509455,
+          "macro_f1": 0.9361168800134149,
+          "per_class_f1": {
+            "DDoS": 0.972676482569982,
+            "Injection": 0.9779839379673221,
+            "MiTM": 0.9630179344465059,
+            "Password_Hacking": 0.989796733357294,
+            "Scan": 0.9929205896338564,
+            "Spyware": 0.747342481638964,
+            "normal": 0.9090800004799788
+          },
+          "normal_false_alarm_rate": 0.09323758228605625,
+          "attack_called_normal_rate": 0.016532822052144396
+        }
+      },
+      "session_class": {
+        "MU_SESSION_001": "DDoS",
+        "MU_SESSION_002": "DDoS",
+        "MU_SESSION_003": "DDoS",
+        "MU_SESSION_004": "DDoS",
+        "MU_SESSION_005": "DDoS",
+        "MU_SESSION_006": "Password_Hacking",
+        "MU_SESSION_007": "Password_Hacking",
+        "MU_SESSION_008": "Password_Hacking",
+        "MU_SESSION_009": "Password_Hacking",
+        "MU_SESSION_010": "Password_Hacking",
+        "MU_SESSION_011": "Password_Hacking",
+        "MU_SESSION_012": "Password_Hacking",
+        "MU_SESSION_014": "Password_Hacking",
+        "MU_SESSION_015": "Password_Hacking",
+        "MU_SESSION_016": "Injection",
+        "MU_SESSION_017": "MiTM",
+        "MU_SESSION_018": "Injection",
+        "MU_SESSION_019": "Scan",
+        "MU_SESSION_020": "Scan",
+        "MU_SESSION_022": "DDoS",
+        "MU_SESSION_023": "Spyware",
+        "MU_SESSION_024": "DDoS",
+        "MU_SESSION_025": "Injection",
+        "MU_SESSION_027": "MiTM",
+        "MU_SESSION_028": "DDoS",
+        "MU_SESSION_029": "DDoS",
+        "MU_SESSION_030": "DDoS",
+        "MU_SESSION_032": "normal"
+      }
+    },
+    "test_heldout": {
+      "all": {
+        "rf": {
+          "windows": 731358,
+          "accuracy": 0.3857536254474553,
+          "weighted_f1": 0.354259757384754,
+          "macro_f1": 0.39991492904785564,
+          "per_class_f1": {
+            "DDoS": 0.00045884546670441566,
+            "Injection": 0.8973714267264516,
+            "Password_Hacking": 0.37863306742110714,
+            "Scan": 0.3231963765771595
+          },
+          "attack_called_normal_rate": 0.02311043292067633,
+          "per_session_accuracy": {
+            "MU_SESSION_013": 0.3606953211101092,
+            "MU_SESSION_021": 0.4954463480613165,
+            "MU_SESSION_026": 0.8390617216863651,
+            "MU_SESSION_031": 0.00023544734996493337
+          }
+        },
+        "cnn_lstm": {
+          "windows": 731358,
+          "accuracy": 0.6416378845927713,
+          "weighted_f1": 0.6220342485814034,
+          "macro_f1": 0.6469157090506563,
+          "per_class_f1": {
+            "DDoS": 0.44633350985256,
+            "Injection": 0.9180228745980454,
+            "Password_Hacking": 0.8036371482789287,
+            "Scan": 0.4196693034730911
+          },
+          "attack_called_normal_rate": 0.0008299628909508066,
+          "per_session_accuracy": {
+            "MU_SESSION_013": 0.9981715258992085,
+            "MU_SESSION_021": 0.446092575894199,
+            "MU_SESSION_026": 0.8823302993252728,
+            "MU_SESSION_031": 0.3208896904117824
+          }
+        }
+      },
+      "unseen": {
+        "rf": {
+          "windows": 686566,
+          "accuracy": 0.406846537696303,
+          "weighted_f1": 0.381020918178764,
+          "macro_f1": 0.40428570637859895,
+          "per_class_f1": {
+            "DDoS": 0.0005771332441028034,
+            "Injection": 0.8973967792710982,
+            "Password_Hacking": 0.37863904080774086,
+            "Scan": 0.34052987219145414
+          },
+          "attack_called_normal_rate": 0.024613802606013115
+        },
+        "cnn_lstm": {
+          "windows": 686566,
+          "accuracy": 0.6801079575743628,
+          "weighted_f1": 0.6628836510279736,
+          "macro_f1": 0.6763110355035624,
+          "per_class_f1": {
+            "DDoS": 0.5238147807421036,
+            "Injection": 0.9180481062955954,
+            "Password_Hacking": 0.8036484927683534,
+            "Scan": 0.45973276220819737
+          },
+          "attack_called_normal_rate": 0.0008841101947955477
+        }
+      },
+      "session_class": {
+        "MU_SESSION_013": "Password_Hacking",
+        "MU_SESSION_021": "Scan",
+        "MU_SESSION_026": "Injection",
+        "MU_SESSION_031": "DDoS"
+      }
+    }
+  }
+}
