@@ -1,4 +1,5 @@
 import io
+import os
 
 import numpy as np
 import pandas as pd
@@ -8,6 +9,15 @@ from flask_cors import CORS
 from model_service import service, FEATURE_COLS, SEQ_LEN
 from shap_service import shap_service
 from cert_in_mapping import DASHBOARD_CATEGORIES
+import prevention_executor as pe
+from prevention_runtime import (
+    configure_from_env,
+    runtime_info,
+    find_source_ip_column,
+    source_ip_for_window,
+    execute_for_result,
+    revoke,
+)
 
 MAX_CSV_WINDOWS = 2000
 MODEL_METRICS = {
@@ -17,11 +27,30 @@ MODEL_METRICS = {
     "version": "cnn_lstm_best_v2",
 }
 
-_last_upload = {"rows": None, "count": 0}
-_stream = {"rows": None, "count": 0, "cursor": 0}
+_last_upload = {"rows": None, "count": 0, "source_ips": None, "source_ip_column": None}
+_stream = {"rows": None, "count": 0, "cursor": 0, "source_ips": None, "source_ip_column": None}
 
 app = Flask(__name__)
 CORS(app)
+
+
+def _with_execution(result, source_ip):
+    """
+    Attach the real-execution outcome to a prediction, if one was attempted.
+
+    Kept separate from the recommendation on purpose: `prevention` is what the
+    policy says should happen, `execution` is what happened to this machine.
+    A recommendation with no execution must never render as an executed action.
+    """
+    outcome = execute_for_result(result, source_ip)
+    if outcome is not None:
+        result["execution"] = outcome
+    return result
+
+
+def _read_source_ips(df):
+    """Optional Source IP column -> (column_name, per_row_values)."""
+    return find_source_ip_column(df)
 
 
 @app.get("/api/health")
@@ -30,7 +59,9 @@ def health():
         {
             "status": "ok" if service.loaded else "loading",
             "shap_ready": shap_service.ready,
+            "shap_background": shap_service.background_info(),
             "model": MODEL_METRICS,
+            "prevention": runtime_info(),
         }
     )
 
@@ -126,6 +157,10 @@ def predict_csv():
     if len(df) < SEQ_LEN:
         return jsonify({"error": f"Need at least {SEQ_LEN} valid rows after cleaning"}), 400
 
+    # Optional Source IP column. Read from the cleaned frame so its row indices
+    # line up exactly with the rows that survive into windows.
+    source_ip_column, source_ips = _read_source_ips(df)
+
     X_raw = df[FEATURE_COLS].to_numpy(dtype="float32")
     max_rows = MAX_CSV_WINDOWS * SEQ_LEN
     truncated = False
@@ -136,13 +171,18 @@ def predict_csv():
     n_windows = len(X_raw) // SEQ_LEN
     _last_upload["rows"] = X_raw[: n_windows * SEQ_LEN]
     _last_upload["count"] = n_windows
+    _last_upload["source_ips"] = source_ips
+    _last_upload["source_ip_column"] = source_ip_column
 
     try:
         probs = service.predict_matrix(X_raw)
     except Exception as e:
         return jsonify({"error": f"Inference failed: {e}"}), 500
 
-    results = [service._build_result(p) for p in probs]
+    results = [
+        _with_execution(service._build_result(p), source_ip_for_window(source_ips, i))
+        for i, p in enumerate(probs)
+    ]
     attacks = sum(1 for r in results if r["predicted_class"] != "BENIGN")
 
     class_counts = {}
@@ -158,6 +198,7 @@ def predict_csv():
 
     held = sum(1 for r in results if r["prevention"]["status"] == "held_for_review")
     auto = sum(1 for r in results if r["prevention"]["status"] == "auto_action")
+    executed = sum(1 for r in results if (r.get("execution") or {}).get("executed"))
 
     return jsonify(
         {
@@ -171,9 +212,18 @@ def predict_csv():
                 "held_for_review": held,
                 "truncated": truncated,
                 "rows_dropped_invalid": rows_dropped,
+                # Counted separately from auto_actions on purpose: how many
+                # actions were recommended is not how many were carried out.
+                "actions_executed": executed,
             },
             "timeline": timeline,
             "results": results[:200],
+            "prevention": {
+                **runtime_info(),
+                "source_ip_column": source_ip_column,
+                "actions_executed": executed,
+                "auto_actions_recommended": auto,
+            },
         }
     )
 
@@ -218,12 +268,22 @@ def stream_load():
     if len(df) < SEQ_LEN:
         return jsonify({"error": f"Need at least {SEQ_LEN} valid rows after cleaning"}), 400
 
+    source_ip_column, source_ips = _read_source_ips(df)
+
     X_raw = df[FEATURE_COLS].to_numpy(dtype="float32")
     n_windows = len(X_raw) // SEQ_LEN
     _stream["rows"] = X_raw[: n_windows * SEQ_LEN]
     _stream["count"] = n_windows
     _stream["cursor"] = 0
-    return jsonify({"total_windows": n_windows, "sequence_length": SEQ_LEN})
+    _stream["source_ips"] = source_ips
+    _stream["source_ip_column"] = source_ip_column
+    return jsonify(
+        {
+            "total_windows": n_windows,
+            "sequence_length": SEQ_LEN,
+            "prevention": {**runtime_info(), "source_ip_column": source_ip_column},
+        }
+    )
 
 
 @app.get("/api/stream/next")
@@ -242,7 +302,8 @@ def stream_next():
     except Exception as e:
         return jsonify({"error": f"Inference failed: {e}"}), 500
 
-    result = service._build_result(probs[0])
+    source_ip = source_ip_for_window(_stream.get("source_ips"), cursor)
+    result = _with_execution(service._build_result(probs[0]), source_ip)
     result["window"] = cursor
     _stream["cursor"] += 1
     return jsonify(
@@ -254,9 +315,56 @@ def stream_next():
     )
 
 
+@app.post("/api/prevention/revoke")
+def prevention_revoke():
+    """
+    Lift a persistent action (block_ip / isolate_host) after human review.
+
+    Not in the original integration list, but block_ip and isolate_host stay
+    applied until explicitly revoked, so the demo needs a supported way to undo
+    one. Scoped by the engine's own safety boundary: revocation re-checks
+    nothing, so it is deliberately restricted to the RFC 5737 demo ranges.
+    """
+    payload = request.get_json(silent=True) or {}
+    action = payload.get("action")
+    target_ip = payload.get("target_ip")
+
+    if not isinstance(action, str) or not action:
+        return jsonify({"error": "'action' is required"}), 400
+    if not isinstance(target_ip, str) or not target_ip:
+        return jsonify({"error": "'target_ip' is required"}), 400
+
+    try:
+        pe.check_safe_to_execute(target_ip)
+    except pe.ExecutionNotPermitted as e:
+        return jsonify({"error": str(e)}), 400
+
+    return jsonify(revoke(action, target_ip))
+
+
 def initialize():
     service.load()
     shap_service.init()
+
+    # Real prevention execution is opt-in and off unless the environment
+    # variable explicitly arms it. Must happen before the startup sweep, and
+    # before any prediction can reach execute_action().
+    enabled = configure_from_env()
+
+    # Clean up temporary rules whose in-process expiry timer died with a
+    # previous run of this backend. Safe to call repeatedly.
+    swept = []
+    try:
+        swept = pe.sweep_expired_rules()
+    except Exception as e:  # never block startup on cleanup
+        app.logger.warning("Prevention rule sweep failed: %s", e)
+
+    app.logger.info(
+        "Prevention execution %s (env %s); swept %d expired rule(s)",
+        "ENABLED" if enabled else "disabled",
+        os.environ.get("IDS_PREVENTION_EXECUTION_ENABLED"),
+        len(swept),
+    )
 
 
 if __name__ == "__main__":
