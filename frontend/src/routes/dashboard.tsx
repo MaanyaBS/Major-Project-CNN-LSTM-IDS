@@ -50,6 +50,7 @@ import {
   type ExplainResponse,
   type HealthResponse,
   type PredictionResult,
+  type PreventionRuntime,
 } from "@/lib/api";
 import { LiveFeed } from "@/components/LiveFeed";
 
@@ -121,24 +122,21 @@ function Dashboard() {
       .catch(() => setHealth(null));
   }, []);
 
-  const selectSequence = useCallback(
-    (idx: number) => {
-      setSelectedIdx(idx);
-      setExplainState("loading");
-      setExplainError(null);
-      explainWindow(idx)
-        .then((exp) => {
-          setExplanation(exp);
-          setExplainState("idle");
-        })
-        .catch((e: Error) => {
-          setExplanation(null);
-          setExplainError(e.message);
-          setExplainState("error");
-        });
-    },
-    []
-  );
+  const selectSequence = useCallback((idx: number) => {
+    setSelectedIdx(idx);
+    setExplainState("loading");
+    setExplainError(null);
+    explainWindow(idx)
+      .then((exp) => {
+        setExplanation(exp);
+        setExplainState("idle");
+      })
+      .catch((e: Error) => {
+        setExplanation(null);
+        setExplainError(e.message);
+        setExplainState("error");
+      });
+  }, []);
 
   const analyze = async () => {
     if (!file) return;
@@ -185,7 +183,8 @@ function Dashboard() {
             </span>
           </h1>
           <p className="mt-2 text-sm text-muted-foreground max-w-2xl">
-            Upload a capture file and let the CNN-LSTM engine classify each flow — every prediction comes with a SHAP explanation.
+            Upload a capture file and let the CNN-LSTM engine classify each flow — every prediction
+            comes with a SHAP explanation.
           </p>
         </div>
         <div className="flex flex-col items-start sm:items-end gap-2">
@@ -196,6 +195,21 @@ function Dashboard() {
               {(health.model.weighted_f1 * 100).toFixed(2)}%
             </div>
           )}
+          {health?.prevention && (
+            <div
+              className={`text-[10px] font-mono tracking-wider uppercase ${
+                health.prevention.execution_enabled ? "text-success" : "text-muted-foreground"
+              }`}
+              title={
+                health.prevention.execution_enabled
+                  ? `Real firewall actions are ARMED. Only targets inside ${health.prevention.allowed_demo_ranges.join(", ")} can be acted on.`
+                  : `Real firewall actions are OFF (set ${health.prevention.env_var} to enable). The dashboard shows recommendations only.`
+              }
+            >
+              IPS execution{" "}
+              {health.prevention.execution_enabled ? "armed" : "off · recommendations only"}
+            </div>
+          )}
         </div>
       </div>
 
@@ -203,7 +217,8 @@ function Dashboard() {
         <div className="glass rounded-2xl border border-warning/40 p-4 flex items-center gap-3">
           <Info className="h-5 w-5 text-warning shrink-0" />
           <p className="text-sm text-muted-foreground">
-            Backend not reachable at <span className="font-mono text-foreground">127.0.0.1:5000</span>. Start it with{" "}
+            Backend not reachable at{" "}
+            <span className="font-mono text-foreground">127.0.0.1:5000</span>. Start it with{" "}
             <span className="font-mono text-primary">python app.py</span> inside{" "}
             <span className="font-mono text-primary">backend/</span> to run live analysis.
           </p>
@@ -230,121 +245,121 @@ function Dashboard() {
         <LiveFeed />
       ) : (
         <>
-        <section
-        onDragOver={(e) => {
-          e.preventDefault();
-          setDragOver(true);
-        }}
-        onDragLeave={() => setDragOver(false)}
-        onDrop={(e) => {
-          e.preventDefault();
-          setDragOver(false);
-          const f = e.dataTransfer.files?.[0];
-          if (f) setFile(f);
-        }}
-        className={`relative overflow-hidden glass-strong rounded-3xl p-6 sm:p-10 transition-colors ${
-          dragOver ? "border-primary/60 bg-primary/5" : ""
-        }`}
-      >
-        <div className="absolute inset-0 grid-pattern opacity-40 pointer-events-none" />
-        <div className="relative grid lg:grid-cols-[1fr_auto] gap-6 items-center">
-          <div className="flex items-start gap-5">
-            <div className="relative shrink-0 h-14 w-14 grid place-items-center rounded-2xl bg-gradient-to-br from-primary to-[#8b5cf6]">
-              <Upload className="h-6 w-6 text-primary-foreground" />
-              <span className="absolute inset-0 rounded-2xl ping-slow bg-primary/40" />
-            </div>
-            <div className="min-w-0 flex-1">
-              <h2 className="heading-card">Drag &amp; Drop Network Traffic CSV</h2>
-              <p className="text-sm text-muted-foreground mt-1">
-                Must include the 20 model feature columns · windows of 10 flows per prediction.
-              </p>
-
-              {file ? (
-                <div className="mt-4 glass rounded-xl p-3 flex items-center gap-3">
-                  <FileText className="h-5 w-5 text-primary shrink-0" />
-                  <div className="min-w-0 flex-1">
-                    <div className="truncate text-sm font-medium">{file.name}</div>
-                    <div className="text-xs text-muted-foreground font-mono">
-                      {(file.size / 1024).toFixed(1)} KB · Ready
-                    </div>
-                  </div>
-                  <span className="h-2 w-2 rounded-full bg-success animate-pulse" />
-                  <button
-                    onClick={reset}
-                    className="ml-1 rounded-md p-1.5 hover:bg-white/5"
-                    aria-label="Remove file"
-                  >
-                    <X className="h-4 w-4" />
-                  </button>
-                </div>
-              ) : (
-                <button
-                  onClick={() => inputRef.current?.click()}
-                  className="mt-4 w-full sm:w-auto inline-flex items-center gap-2 rounded-xl glass px-4 py-2.5 text-sm font-medium hover:bg-white/5 transition-colors"
-                >
-                  <FileText className="h-4 w-4 text-primary" />
-                  Browse CSV
-                </button>
-              )}
-              <input
-                ref={inputRef}
-                type="file"
-                accept=".csv"
-                className="hidden"
-                onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-              />
-            </div>
-          </div>
-
-          <button
-            onClick={analyze}
-            disabled={!file || status === "analyzing"}
-            className="group relative inline-flex items-center justify-center gap-2 px-8 py-4 bg-primary text-sm font-bold uppercase tracking-tight text-primary-foreground shadow-[8px_8px_0px_#1e1e5a] disabled:opacity-40 disabled:cursor-not-allowed hover:enabled:bg-white hover:enabled:text-background hover:enabled:shadow-[4px_4px_0px_#8b5cf6] active:enabled:scale-95 transition-all duration-300 overflow-hidden"
+          <section
+            onDragOver={(e) => {
+              e.preventDefault();
+              setDragOver(true);
+            }}
+            onDragLeave={() => setDragOver(false)}
+            onDrop={(e) => {
+              e.preventDefault();
+              setDragOver(false);
+              const f = e.dataTransfer.files?.[0];
+              if (f) setFile(f);
+            }}
+            className={`relative overflow-hidden glass-strong rounded-3xl p-6 sm:p-10 transition-colors ${
+              dragOver ? "border-primary/60 bg-primary/5" : ""
+            }`}
           >
-            <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:enabled:translate-x-full transition-transform duration-700" />
-            {status === "analyzing" ? (
+            <div className="absolute inset-0 grid-pattern opacity-40 pointer-events-none" />
+            <div className="relative grid lg:grid-cols-[1fr_auto] gap-6 items-center">
+              <div className="flex items-start gap-5">
+                <div className="relative shrink-0 h-14 w-14 grid place-items-center rounded-2xl bg-gradient-to-br from-primary to-[#8b5cf6]">
+                  <Upload className="h-6 w-6 text-primary-foreground" />
+                  <span className="absolute inset-0 rounded-2xl ping-slow bg-primary/40" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <h2 className="heading-card">Drag &amp; Drop Network Traffic CSV</h2>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Must include the 20 model feature columns · windows of 10 flows per prediction.
+                  </p>
+
+                  {file ? (
+                    <div className="mt-4 glass rounded-xl p-3 flex items-center gap-3">
+                      <FileText className="h-5 w-5 text-primary shrink-0" />
+                      <div className="min-w-0 flex-1">
+                        <div className="truncate text-sm font-medium">{file.name}</div>
+                        <div className="text-xs text-muted-foreground font-mono">
+                          {(file.size / 1024).toFixed(1)} KB · Ready
+                        </div>
+                      </div>
+                      <span className="h-2 w-2 rounded-full bg-success animate-pulse" />
+                      <button
+                        onClick={reset}
+                        className="ml-1 rounded-md p-1.5 hover:bg-white/5"
+                        aria-label="Remove file"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => inputRef.current?.click()}
+                      className="mt-4 w-full sm:w-auto inline-flex items-center gap-2 rounded-xl glass px-4 py-2.5 text-sm font-medium hover:bg-white/5 transition-colors"
+                    >
+                      <FileText className="h-4 w-4 text-primary" />
+                      Browse CSV
+                    </button>
+                  )}
+                  <input
+                    ref={inputRef}
+                    type="file"
+                    accept=".csv"
+                    className="hidden"
+                    onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+                  />
+                </div>
+              </div>
+
+              <button
+                onClick={analyze}
+                disabled={!file || status === "analyzing"}
+                className="group relative inline-flex items-center justify-center gap-2 px-8 py-4 bg-primary text-sm font-bold uppercase tracking-tight text-primary-foreground shadow-[8px_8px_0px_#1e1e5a] disabled:opacity-40 disabled:cursor-not-allowed hover:enabled:bg-white hover:enabled:text-background hover:enabled:shadow-[4px_4px_0px_#8b5cf6] active:enabled:scale-95 transition-all duration-300 overflow-hidden"
+              >
+                <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:enabled:translate-x-full transition-transform duration-700" />
+                {status === "analyzing" ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin relative" />
+                    <span className="relative">Scanning...</span>
+                  </>
+                ) : (
+                  <>
+                    <Play className="h-4 w-4 relative" />
+                    <span className="relative">Analyse Network Traffic</span>
+                  </>
+                )}
+              </button>
+            </div>
+
+            {error && (
+              <div className="relative mt-4 rounded-xl border border-destructive/40 bg-destructive/10 p-4 text-sm text-destructive">
+                {error}
+              </div>
+            )}
+
+            {status === "analyzing" && (
               <>
-                <Loader2 className="h-4 w-4 animate-spin relative" />
-                <span className="relative">Scanning...</span>
-              </>
-            ) : (
-              <>
-                <Play className="h-4 w-4 relative" />
-                <span className="relative">Analyse Network Traffic</span>
+                <ScanOverlay />
+                <div className="relative mt-4 rounded-xl border border-warning/30 bg-warning/5 p-3 flex items-center gap-2 text-xs text-warning font-mono">
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  Running CNN-LSTM inference on server — this can take a minute for large files.
+                </div>
               </>
             )}
-          </button>
-        </div>
+          </section>
 
-        {error && (
-          <div className="relative mt-4 rounded-xl border border-destructive/40 bg-destructive/10 p-4 text-sm text-destructive">
-            {error}
-          </div>
-        )}
+          {analysis && (
+            <ResultView
+              analysis={analysis}
+              selectedIdx={selectedIdx}
+              onSelect={selectSequence}
+              explanation={explanation}
+              explainState={explainState}
+              explainError={explainError}
+            />
+          )}
 
-        {status === "analyzing" && (
-          <>
-            <ScanOverlay />
-            <div className="relative mt-4 rounded-xl border border-warning/30 bg-warning/5 p-3 flex items-center gap-2 text-xs text-warning font-mono">
-              <Loader2 className="h-3.5 w-3.5 animate-spin" />
-              Running CNN-LSTM inference on server — this can take a minute for large files.
-            </div>
-          </>
-        )}
-      </section>
-
-      {analysis && (
-        <ResultView
-          analysis={analysis}
-          selectedIdx={selectedIdx}
-          onSelect={selectSequence}
-          explanation={explanation}
-          explainState={explainState}
-          explainError={explainError}
-        />
-      )}
-
-      {!analysis && status !== "analyzing" && <EmptyState />}
+          {!analysis && status !== "analyzing" && <EmptyState />}
         </>
       )}
     </div>
@@ -414,7 +429,14 @@ interface ResultViewProps {
   explainError: string | null;
 }
 
-function ResultView({ analysis, selectedIdx, onSelect, explanation, explainState, explainError }: ResultViewProps) {
+function ResultView({
+  analysis,
+  selectedIdx,
+  onSelect,
+  explanation,
+  explainState,
+  explainError,
+}: ResultViewProps) {
   const { summary, timeline, results } = analysis;
   const selected: PredictionResult | undefined = results[selectedIdx];
   const isAttackOverview = summary.attacks > 0;
@@ -431,11 +453,37 @@ function ResultView({ analysis, selectedIdx, onSelect, explanation, explainState
   ];
 
   const statCards = [
-    { label: "Sequences", value: summary.total_sequences.toLocaleString(), icon: Activity, tone: "primary" },
+    {
+      label: "Sequences",
+      value: summary.total_sequences.toLocaleString(),
+      icon: Activity,
+      tone: "primary",
+    },
     { label: "Normal", value: summary.normal.toLocaleString(), icon: ShieldCheck, tone: "success" },
-    { label: "Attacks", value: summary.attacks.toLocaleString(), icon: ShieldAlert, tone: "danger" },
-    { label: "Auto Actions", value: summary.auto_actions.toLocaleString(), icon: Gavel, tone: "danger" },
-    { label: "Held for Review", value: summary.held_for_review.toLocaleString(), icon: Eye, tone: "warning" },
+    {
+      label: "Attacks",
+      value: summary.attacks.toLocaleString(),
+      icon: ShieldAlert,
+      tone: "danger",
+    },
+    {
+      label: "Actions Recommended",
+      value: summary.auto_actions.toLocaleString(),
+      icon: Gavel,
+      tone: "danger",
+    },
+    {
+      label: "Actually Executed",
+      value: (summary.actions_executed ?? 0).toLocaleString(),
+      icon: ShieldCheck,
+      tone: "success",
+    },
+    {
+      label: "Held for Review",
+      value: summary.held_for_review.toLocaleString(),
+      icon: Eye,
+      tone: "warning",
+    },
   ] as const;
 
   const downloadReport = () => {
@@ -496,10 +544,22 @@ function ResultView({ analysis, selectedIdx, onSelect, explanation, explainState
                 </span>
               </div>
               <div className="mt-5 grid grid-cols-2 sm:grid-cols-4 gap-4">
-                <MetricInline label="Attack Rate" value={`${(summary.attack_rate * 100).toFixed(1)}%`} tone={isAttackOverview ? "danger" : "muted"} icon={Target} />
-                <MetricInline label="Top Threat" value={classCountsData.find((d) => d.name !== "BENIGN")?.name ?? "None"} tone="warning" />
+                <MetricInline
+                  label="Attack Rate"
+                  value={`${(summary.attack_rate * 100).toFixed(1)}%`}
+                  tone={isAttackOverview ? "danger" : "muted"}
+                  icon={Target}
+                />
+                <MetricInline
+                  label="Top Threat"
+                  value={classCountsData.find((d) => d.name !== "BENIGN")?.name ?? "None"}
+                  tone="warning"
+                />
                 <MetricInline label="Classes Seen" value={String(classCountsData.length)} />
-                <MetricInline label="Truncated" value={summary.truncated ? "Yes (>2000 win)" : "No"} />
+                <MetricInline
+                  label="Truncated"
+                  value={summary.truncated ? "Yes (>2000 win)" : "No"}
+                />
               </div>
             </div>
           </div>
@@ -537,21 +597,31 @@ function ResultView({ analysis, selectedIdx, onSelect, explanation, explainState
             Export Report
           </button>
         </div>
-        <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
           {statCards.map((s) => (
             <div
               key={s.label}
               className="glass rounded-2xl p-5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_15px_40px_-15px_rgba(79,70,229,0.4)]"
             >
               <div className="flex items-center justify-between">
-                <span className="text-[11px] font-mono uppercase tracking-widest text-muted-foreground">{s.label}</span>
+                <span className="text-[11px] font-mono uppercase tracking-widest text-muted-foreground">
+                  {s.label}
+                </span>
                 <s.icon
                   className={`h-4 w-4 ${
-                    s.tone === "danger" ? "text-destructive" : s.tone === "success" ? "text-success" : s.tone === "warning" ? "text-warning" : "text-primary"
+                    s.tone === "danger"
+                      ? "text-destructive"
+                      : s.tone === "success"
+                        ? "text-success"
+                        : s.tone === "warning"
+                          ? "text-warning"
+                          : "text-primary"
                   }`}
                 />
               </div>
-              <div className="mt-3 font-display text-2xl sm:text-3xl uppercase tracking-wide">{s.value}</div>
+              <div className="mt-3 font-display text-2xl sm:text-3xl uppercase tracking-wide">
+                {s.value}
+              </div>
             </div>
           ))}
         </div>
@@ -562,10 +632,22 @@ function ResultView({ analysis, selectedIdx, onSelect, explanation, explainState
           <ResponsiveContainer width="100%" height={280}>
             <BarChart data={classCountsData} layout="vertical" margin={{ left: 20, right: 20 }}>
               <XAxis type="number" hide />
-              <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} width={120} tick={{ fill: CHART_TEXT, fontSize: 11 }} />
+              <YAxis
+                dataKey="name"
+                type="category"
+                axisLine={false}
+                tickLine={false}
+                width={120}
+                tick={{ fill: CHART_TEXT, fontSize: 11 }}
+              />
               <Tooltip
                 cursor={{ fill: "rgba(79, 70, 229, 0.15)" }}
-                contentStyle={{ background: CHART_BG, border: `1px solid ${CHART_GRID}`, borderRadius: 10, fontSize: 12 }}
+                contentStyle={{
+                  background: CHART_BG,
+                  border: `1px solid ${CHART_GRID}`,
+                  borderRadius: 10,
+                  fontSize: 12,
+                }}
               />
               <Bar dataKey="count" radius={[0, 6, 6, 0]}>
                 {classCountsData.map((d) => (
@@ -579,25 +661,47 @@ function ResultView({ analysis, selectedIdx, onSelect, explanation, explainState
         <ChartCard title="Traffic Composition" subtitle="Normal vs attack categories">
           <ResponsiveContainer width="100%" height={280}>
             <PieChart>
-              <Pie data={pieData} dataKey="value" nameKey="name" innerRadius={60} outerRadius={95} paddingAngle={3} stroke="#0a0a1a">
+              <Pie
+                data={pieData}
+                dataKey="value"
+                nameKey="name"
+                innerRadius={60}
+                outerRadius={95}
+                paddingAngle={3}
+                stroke="#0a0a1a"
+              >
                 {pieData.map((d) => (
                   <Cell key={d.name} fill={classColor(d.name)} />
                 ))}
               </Pie>
-              <Tooltip contentStyle={{ background: CHART_BG, border: `1px solid ${CHART_GRID}`, borderRadius: 10, fontSize: 12 }} />
+              <Tooltip
+                contentStyle={{
+                  background: CHART_BG,
+                  border: `1px solid ${CHART_GRID}`,
+                  borderRadius: 10,
+                  fontSize: 12,
+                }}
+              />
             </PieChart>
           </ResponsiveContainer>
           <div className="mt-2 flex flex-wrap gap-x-4 gap-y-2 justify-center">
             {pieData.map((d) => (
               <div key={d.name} className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                <span className="h-2 w-2 rounded-full" style={{ backgroundColor: classColor(d.name) }} />
+                <span
+                  className="h-2 w-2 rounded-full"
+                  style={{ backgroundColor: classColor(d.name) }}
+                />
                 {d.name}
               </div>
             ))}
           </div>
         </ChartCard>
 
-        <ChartCard title="Threat Timeline" subtitle="Threats vs normal across sequence windows" className="lg:col-span-2">
+        <ChartCard
+          title="Threat Timeline"
+          subtitle="Threats vs normal across sequence windows"
+          className="lg:col-span-2"
+        >
           <ResponsiveContainer width="100%" height={260}>
             <AreaChart data={timeline.map((t) => ({ ...t, t: `#${t.window}` }))}>
               <defs>
@@ -611,11 +715,40 @@ function ResultView({ analysis, selectedIdx, onSelect, explanation, explainState
                 </linearGradient>
               </defs>
               <CartesianGrid stroke={CHART_GRID} strokeDasharray="3 3" />
-              <XAxis dataKey="t" tick={{ fill: CHART_TEXT, fontSize: 11 }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fill: CHART_TEXT, fontSize: 11 }} axisLine={false} tickLine={false} allowDecimals={false} />
-              <Tooltip contentStyle={{ background: CHART_BG, border: `1px solid ${CHART_GRID}`, borderRadius: 10, fontSize: 12 }} />
-              <Area type="monotone" dataKey="normal" stroke="#4f46e5" fill="url(#areaNormal)" strokeWidth={2} />
-              <Area type="monotone" dataKey="threats" stroke="#e5484d" fill="url(#areaThreat)" strokeWidth={2} />
+              <XAxis
+                dataKey="t"
+                tick={{ fill: CHART_TEXT, fontSize: 11 }}
+                axisLine={false}
+                tickLine={false}
+              />
+              <YAxis
+                tick={{ fill: CHART_TEXT, fontSize: 11 }}
+                axisLine={false}
+                tickLine={false}
+                allowDecimals={false}
+              />
+              <Tooltip
+                contentStyle={{
+                  background: CHART_BG,
+                  border: `1px solid ${CHART_GRID}`,
+                  borderRadius: 10,
+                  fontSize: 12,
+                }}
+              />
+              <Area
+                type="monotone"
+                dataKey="normal"
+                stroke="#4f46e5"
+                fill="url(#areaNormal)"
+                strokeWidth={2}
+              />
+              <Area
+                type="monotone"
+                dataKey="threats"
+                stroke="#e5484d"
+                fill="url(#areaThreat)"
+                strokeWidth={2}
+              />
             </AreaChart>
           </ResponsiveContainer>
         </ChartCard>
@@ -626,7 +759,9 @@ function ResultView({ analysis, selectedIdx, onSelect, explanation, explainState
           <div className="flex items-center gap-2 mb-4">
             <ListOrdered className="h-4 w-4 text-primary" />
             <h3 className="heading-card">Sequence Results</h3>
-            <span className="ml-auto text-[10px] font-mono text-muted-foreground">click to explain</span>
+            <span className="ml-auto text-[10px] font-mono text-muted-foreground">
+              click to explain
+            </span>
           </div>
           <div className="max-h-[520px] overflow-y-auto pr-1 space-y-1.5">
             {results.slice(0, 200).map((r, idx) => {
@@ -644,13 +779,17 @@ function ResultView({ analysis, selectedIdx, onSelect, explanation, explainState
                 >
                   <div className="flex items-center gap-2">
                     <span className="text-[10px] font-mono text-muted-foreground w-8">#{idx}</span>
-                    <span className={`text-xs font-semibold ${atk ? "text-destructive" : "text-success"}`}>
+                    <span
+                      className={`text-xs font-semibold ${atk ? "text-destructive" : "text-success"}`}
+                    >
                       {r.predicted_class}
                     </span>
                     <span className="ml-auto text-[10px] font-mono text-muted-foreground">
                       {(r.confidence * 100).toFixed(1)}%
                     </span>
-                    <ChevronRight className={`h-3.5 w-3.5 ${isSel ? "text-primary" : "text-muted-foreground/40"}`} />
+                    <ChevronRight
+                      className={`h-3.5 w-3.5 ${isSel ? "text-primary" : "text-muted-foreground/40"}`}
+                    />
                   </div>
                   <div className="mt-1 flex items-center gap-2 pl-10">
                     <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">
@@ -696,40 +835,59 @@ function ResultView({ analysis, selectedIdx, onSelect, explanation, explainState
               </div>
 
               <div className="mt-5 grid md:grid-cols-3 gap-4">
-                <MetricInline label="CERT-In Category" value={selected.cert_in_category} tone={selected.predicted_class !== "BENIGN" ? "danger" : "muted"} />
-                <MetricInline label="Severity" value={selected.prevention.severity.toUpperCase()} tone={severityTone(selected.prevention.severity)} />
-                <MetricInline label="Policy Action" value={selected.prevention.action.replace(/_/g, " ")} />
+                <MetricInline
+                  label="CERT-In Category"
+                  value={selected.cert_in_category}
+                  tone={selected.predicted_class !== "BENIGN" ? "danger" : "muted"}
+                />
+                <MetricInline
+                  label="Severity"
+                  value={selected.prevention.severity.toUpperCase()}
+                  tone={severityTone(selected.prevention.severity)}
+                />
+                <MetricInline
+                  label="Policy Action"
+                  value={selected.prevention.action.replace(/_/g, " ")}
+                />
               </div>
 
-              <div className={`mt-5 rounded-xl border p-4 flex items-start gap-3 ${
-                selected.prevention.status === "auto_action"
-                  ? "border-destructive/40 bg-destructive/5"
-                  : selected.prevention.status === "held_for_review"
-                  ? "border-warning/40 bg-warning/5"
-                  : "border-success/40 bg-success/5"
-              }`}>
-                <Gavel className={`h-5 w-5 mt-0.5 shrink-0 ${
+              <div
+                className={`mt-5 rounded-xl border p-4 flex items-start gap-3 ${
                   selected.prevention.status === "auto_action"
-                    ? "text-destructive"
+                    ? "border-destructive/40 bg-destructive/5"
                     : selected.prevention.status === "held_for_review"
-                    ? "text-warning"
-                    : "text-success"
-                }`} />
+                      ? "border-warning/40 bg-warning/5"
+                      : "border-success/40 bg-success/5"
+                }`}
+              >
+                <Gavel
+                  className={`h-5 w-5 mt-0.5 shrink-0 ${
+                    selected.prevention.status === "auto_action"
+                      ? "text-destructive"
+                      : selected.prevention.status === "held_for_review"
+                        ? "text-warning"
+                        : "text-success"
+                  }`}
+                />
                 <div>
                   <div className="text-sm font-semibold">
                     {selected.prevention.status === "auto_action"
-                      ? "Automated response executed"
+                      ? "Response recommended"
                       : selected.prevention.status === "held_for_review"
-                      ? "Flagged for analyst review"
-                      : "No action required"}
+                        ? "Flagged for analyst review"
+                        : "No action required"}
                   </div>
                   <div className="text-xs text-muted-foreground mt-0.5">
-                    Policy: <span className="font-mono">{selected.prevention.action}</span> · threshold logic calibrated per-class from baseline F1 scores.
+                    Policy recommends:{" "}
+                    <span className="font-mono text-foreground">{selected.prevention.action}</span>{" "}
+                    · thresholds calibrated per-class from CNN-LSTM v2 F1 scores.
                     {selected.low_confidence_class &&
                       " Note: this class has known poor recall — treat confidence as indicative only."}
                   </div>
                 </div>
               </div>
+
+              <ExecutionPanel result={selected} runtime={analysis.prevention} />
 
               <div className="mt-6">
                 <div className="text-[11px] font-mono uppercase tracking-widest text-muted-foreground mb-3">
@@ -756,7 +914,13 @@ function RadialGauge({ value }: { value: number }) {
   return (
     <RadialBarChart innerRadius="70%" outerRadius="100%" startAngle={210} endAngle={-30}>
       <PolarAngleAxis type="number" domain={[0, 100]} tick={false} />
-      <RadialBar background={{ fill: CHART_BG }} dataKey="value" cornerRadius={20} fill="#e5484d" data={[{ value }]} />
+      <RadialBar
+        background={{ fill: CHART_BG }}
+        dataKey="value"
+        cornerRadius={20}
+        fill="#e5484d"
+        data={[{ value }]}
+      />
     </RadialBarChart>
   );
 }
@@ -781,6 +945,93 @@ function StatusChip({ status, severity }: { status: string; severity: string }) 
   );
 }
 
+/**
+ * Renders the recommendation and the real execution outcome as two visibly
+ * separate claims.
+ *
+ * "Recommended: block_ip" is a policy decision. "Executed: Windows Firewall
+ * rule added" is a fact about this machine. Collapsing the two would let a
+ * demo screenshot imply the system blocked a real attacker when it only
+ * produced a suggestion.
+ */
+function ExecutionPanel({
+  result,
+  runtime,
+}: {
+  result: PredictionResult;
+  runtime?: PreventionRuntime;
+}) {
+  const execution = result.execution;
+
+  // Nothing was attempted: either the policy did not ask for an action, or it
+  // did but there was no IP to act on.
+  if (!execution) {
+    const recommended = result.prevention.status === "auto_action";
+    return (
+      <div className="mt-3 rounded-xl border border-white/10 bg-white/[0.02] p-4 flex items-start gap-3">
+        <Info className="h-4 w-4 mt-0.5 shrink-0 text-muted-foreground" />
+        <div className="text-xs text-muted-foreground leading-relaxed">
+          {recommended ? (
+            <>
+              Action <span className="font-mono text-foreground">{result.prevention.action}</span>{" "}
+              was recommended but not executed — this window has no Source IP, so there is no target
+              to act on. Predictions are per-window and the model never sees source addresses.
+            </>
+          ) : (
+            <>No real action was attempted for this window.</>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  if (execution.executed) {
+    const expires =
+      execution.auto_expires_in_seconds == null
+        ? "persistent until revoked"
+        : `auto-expires in ${execution.auto_expires_in_seconds}s`;
+    return (
+      <div className="mt-3 rounded-xl border border-success/40 bg-success/5 p-4 flex items-start gap-3">
+        <ShieldCheck className="h-5 w-5 mt-0.5 shrink-0 text-success" />
+        <div className="min-w-0">
+          <div className="text-sm font-semibold text-success">
+            Executed — Windows Firewall rule added
+          </div>
+          <div className="mt-1 text-xs text-muted-foreground font-mono break-all">
+            rule: {execution.rule_name}
+          </div>
+          <div className="mt-0.5 text-xs text-muted-foreground">
+            target <span className="font-mono">{execution.target_ip}</span> · action{" "}
+            <span className="font-mono">{execution.action}</span> · {expires}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-3 rounded-xl border border-white/10 bg-white/[0.02] p-4 flex items-start gap-3">
+      <Info className="h-4 w-4 mt-0.5 shrink-0 text-muted-foreground" />
+      <div className="min-w-0">
+        <div className="text-sm font-semibold text-muted-foreground">
+          Recommended only — nothing was executed
+        </div>
+        <div className="mt-0.5 text-xs text-muted-foreground leading-relaxed">
+          {execution.reason}
+          {runtime?.execution_enabled === false && (
+            <>
+              {" "}
+              Real execution is off: set{" "}
+              <span className="font-mono text-foreground">{runtime.env_var}</span> and restart the
+              backend to enable it (administrator terminal required).
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function ProbabilityBreakdown({ probabilities }: { probabilities: Record<string, number> }) {
   const entries = Object.entries(probabilities).sort((a, b) => b[1] - a[1]);
   const max = entries[0]?.[1] || 1;
@@ -788,7 +1039,9 @@ function ProbabilityBreakdown({ probabilities }: { probabilities: Record<string,
     <div className="space-y-2">
       {entries.map(([name, v]) => (
         <div key={name} className="flex items-center gap-3">
-          <span className="w-44 shrink-0 truncate font-mono text-xs text-muted-foreground">{name}</span>
+          <span className="w-44 shrink-0 truncate font-mono text-xs text-muted-foreground">
+            {name}
+          </span>
           <div className="flex-1 h-2 rounded-full bg-white/5 overflow-hidden">
             <div
               className="h-full rounded-full transition-all duration-500"
@@ -860,11 +1113,18 @@ function ShapPanel({
   const narrative = `The model leaned on ${narrativeTop
     .map(
       (a) =>
-        `${a.feature} (${a.shap_value >= 0 ? "+" : ""}${a.shap_value.toFixed(3)}, pushing toward ${selectedClass})`
+        `${a.feature} (${a.shap_value >= 0 ? "+" : ""}${a.shap_value.toFixed(3)}, pushing toward ${selectedClass})`,
     )
-    .join(", ")}. Features shown in red increased the ${selectedClass} score from the baseline of ${explanation.base_value.toFixed(
-    3
+    .join(
+      ", ",
+    )}. Features shown in red increased the ${selectedClass} score from the baseline of ${explanation.base_value.toFixed(
+    3,
   )} up to ${explanation.f_x.toFixed(3)}; blue features argued against it.`;
+
+  // SHAP's local accuracy: base value + all attributions should reconstruct the
+  // model's output. Shown rather than asserted, so the claim is checkable.
+  const acc = explanation.local_accuracy;
+  const accOk = acc ? acc.abs_error < 5e-3 : null;
 
   return (
     <div className="space-y-6 fade-up">
@@ -878,14 +1138,29 @@ function ShapPanel({
         </div>
 
         <div className="grid lg:grid-cols-2 gap-6">
-          <ChartCard title="Feature Attributions" subtitle={`Contribution toward "${explanation.predicted_class}" · red pushes up, blue pulls down`}>
+          <ChartCard
+            title="Feature Attributions"
+            subtitle={`Contribution toward "${explanation.predicted_class}" · summed over the window · red pushes up, blue pulls down`}
+          >
             <ResponsiveContainer width="100%" height={Math.max(260, attrs.length * 26)}>
               <BarChart data={chartData} layout="vertical" margin={{ left: 20, right: 20 }}>
                 <XAxis type="number" domain={[-maxAbs, maxAbs]} hide />
-                <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} width={150} tick={{ fill: CHART_TEXT, fontSize: 10 }} />
+                <YAxis
+                  dataKey="name"
+                  type="category"
+                  axisLine={false}
+                  tickLine={false}
+                  width={150}
+                  tick={{ fill: CHART_TEXT, fontSize: 10 }}
+                />
                 <Tooltip
                   cursor={{ fill: "rgba(79, 70, 229, 0.15)" }}
-                  contentStyle={{ background: CHART_BG, border: `1px solid ${CHART_GRID}`, borderRadius: 10, fontSize: 12 }}
+                  contentStyle={{
+                    background: CHART_BG,
+                    border: `1px solid ${CHART_GRID}`,
+                    borderRadius: 10,
+                    fontSize: 12,
+                  }}
                   formatter={(v: number) => v.toFixed(4)}
                 />
                 <ReferenceLine x={0} stroke={CHART_GRID} />
@@ -908,13 +1183,46 @@ function ShapPanel({
               <div className="mt-4 grid grid-cols-3 gap-3 text-center">
                 <MiniStat label="Base rate" value={explanation.base_value.toFixed(3)} />
                 <MiniStat label="Model output" value={explanation.f_x.toFixed(3)} highlight />
-                <MiniStat label="Confidence" value={`${(explanation.confidence * 100).toFixed(1)}%`} />
+                <MiniStat
+                  label="Confidence"
+                  value={`${(explanation.confidence * 100).toFixed(1)}%`}
+                />
               </div>
               <div className="mt-4 flex items-start gap-2 rounded-xl border border-primary/25 bg-primary/5 p-3">
                 <Lightbulb className="h-4 w-4 text-primary mt-0.5 shrink-0" />
-                <p className="text-xs text-muted-foreground">
-                  SHAP values decompose the softmax score for the predicted class into per-feature contributions, averaged over the 10 timesteps of the sequence window.
-                </p>
+                <div className="text-xs text-muted-foreground space-y-1">
+                  <p>
+                    SHAP values decompose the softmax score for the predicted class into per-feature
+                    contributions, <strong className="text-foreground">summed</strong> across the{" "}
+                    {explanation.timesteps ?? 10} timesteps of the sequence window. Summing (rather
+                    than averaging) is what keeps base value + all attributions equal to the model
+                    output.
+                  </p>
+                  {acc && (
+                    <p className="font-mono text-[11px]">
+                      additivity check: {acc.base_value.toFixed(4)} +{" "}
+                      {acc.sum_all_attributions.toFixed(4)} ={" "}
+                      <span className={accOk ? "text-success" : "text-warning"}>
+                        {acc.reconstructed.toFixed(4)}
+                      </span>{" "}
+                      vs model {acc.model_output.toFixed(4)} (error {acc.abs_error.toExponential(1)}
+                      )
+                    </p>
+                  )}
+                  <p>
+                    Baseline is the model's average output over{" "}
+                    <strong className="text-foreground">
+                      {explanation.background_source === "real_training_windows"
+                        ? "100 sampled real training windows"
+                        : "a synthetic N(0,1) fallback"}
+                    </strong>
+                    , so contributions read as movement away from{" "}
+                    {explanation.background_source === "real_training_windows"
+                      ? "real traffic"
+                      : "random noise (not yet real traffic)"}
+                    .
+                  </p>
+                </div>
               </div>
             </div>
 
@@ -958,11 +1266,23 @@ function ShapPanel({
   );
 }
 
-function MiniStat({ label, value, highlight }: { label: string; value: string; highlight?: boolean }) {
+function MiniStat({
+  label,
+  value,
+  highlight,
+}: {
+  label: string;
+  value: string;
+  highlight?: boolean;
+}) {
   return (
     <div className="rounded-xl border border-white/5 bg-white/[0.03] p-3">
-      <div className="text-[9px] font-mono uppercase tracking-widest text-muted-foreground">{label}</div>
-      <div className={`mt-1 font-display text-xl ${highlight ? "bg-gradient-to-r from-primary to-[#a78bfa] bg-clip-text text-transparent" : ""}`}>
+      <div className="text-[9px] font-mono uppercase tracking-widest text-muted-foreground">
+        {label}
+      </div>
+      <div
+        className={`mt-1 font-display text-xl ${highlight ? "bg-gradient-to-r from-primary to-[#a78bfa] bg-clip-text text-transparent" : ""}`}
+      >
         {value}
       </div>
     </div>
@@ -988,7 +1308,11 @@ function MetricInline({
       </div>
       <div
         className={`mt-1 font-display text-lg uppercase tracking-wide truncate ${
-          tone === "danger" ? "text-destructive" : tone === "warning" ? "text-warning" : "text-foreground"
+          tone === "danger"
+            ? "text-destructive"
+            : tone === "warning"
+              ? "text-warning"
+              : "text-foreground"
         }`}
       >
         {value}
@@ -1009,7 +1333,9 @@ function ChartCard({
   className?: string;
 }) {
   return (
-    <div className={`glass rounded-3xl p-6 transition-all duration-300 hover:shadow-[0_20px_60px_-30px_rgba(79,70,229,0.5)] ${className ?? ""}`}>
+    <div
+      className={`glass rounded-3xl p-6 transition-all duration-300 hover:shadow-[0_20px_60px_-30px_rgba(79,70,229,0.5)] ${className ?? ""}`}
+    >
       <div className="flex items-center justify-between">
         <div>
           <h3 className="heading-card">{title}</h3>

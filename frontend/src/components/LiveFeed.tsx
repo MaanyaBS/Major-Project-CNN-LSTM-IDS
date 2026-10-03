@@ -12,16 +12,8 @@ import {
   Gavel,
   Eye,
 } from "lucide-react";
-import {
-  BarChart,
-  Bar,
-  ResponsiveContainer,
-  XAxis,
-  YAxis,
-  Tooltip,
-  Cell,
-} from "recharts";
-import { streamLoad, streamNext, type PredictionResult } from "@/lib/api";
+import { BarChart, Bar, ResponsiveContainer, XAxis, YAxis, Tooltip, Cell } from "recharts";
+import { streamLoad, streamNext, type PredictionResult, type PreventionRuntime } from "@/lib/api";
 
 const CHART_BG = "#141432";
 const CHART_GRID = "rgba(79, 70, 229, 0.15)";
@@ -37,6 +29,7 @@ interface FeedEntry {
   cert_in_category: string;
   confidence: number;
   status: string;
+  executed: boolean;
 }
 
 export function LiveFeed() {
@@ -48,6 +41,7 @@ export function LiveFeed() {
   const [feed, setFeed] = useState<FeedEntry[]>([]);
   const [counts, setCounts] = useState({ threats: 0, normal: 0 });
   const [error, setError] = useState<string | null>(null);
+  const [runtime, setRuntime] = useState<PreventionRuntime | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const timerRef = useRef<number | null>(null);
 
@@ -74,7 +68,7 @@ export function LiveFeed() {
       setCounts((c) =>
         r.predicted_class === "BENIGN"
           ? { ...c, normal: c.normal + 1 }
-          : { ...c, threats: c.threats + 1 }
+          : { ...c, threats: c.threats + 1 },
       );
       setFeed((f) =>
         [
@@ -84,9 +78,10 @@ export function LiveFeed() {
             cert_in_category: r.cert_in_category,
             confidence: r.confidence,
             status: r.prevention.status,
+            executed: r.execution?.executed === true,
           },
           ...f,
-        ].slice(0, FEED_CAP)
+        ].slice(0, FEED_CAP),
       );
     } catch (e) {
       stopTimer();
@@ -113,6 +108,7 @@ export function LiveFeed() {
     try {
       const res = await streamLoad(file);
       setTotal(res.total_windows);
+      setRuntime(res.prevention ?? null);
       setPhase("running");
     } catch (e) {
       setError(e instanceof Error ? e.message : "Could not load stream");
@@ -130,16 +126,15 @@ export function LiveFeed() {
     setCursor(0);
     setCounts({ threats: 0, normal: 0 });
     setError(null);
+    setRuntime(null);
     if (inputRef.current) inputRef.current.value = "";
   };
 
   const isAttack = current && current.predicted_class !== "BENIGN";
-  const chartData = [...feed]
-    .reverse()
-    .map((f) => ({
-      w: `#${f.window}`,
-      threatScore: f.predicted_class === "BENIGN" ? 0 : Math.round(f.confidence * 100),
-    }));
+  const chartData = [...feed].reverse().map((f) => ({
+    w: `#${f.window}`,
+    threatScore: f.predicted_class === "BENIGN" ? 0 : Math.round(f.confidence * 100),
+  }));
 
   return (
     <div className="space-y-6">
@@ -154,8 +149,8 @@ export function LiveFeed() {
             <div className="min-w-0 flex-1">
               <h2 className="heading-card">Live Traffic Replay</h2>
               <p className="text-sm text-muted-foreground mt-1">
-                Streams a stored capture window-by-window — one prediction every{" "}
-                {POLL_MS / 1000}s, like real-time monitoring.
+                Streams a stored capture window-by-window — one prediction every {POLL_MS / 1000}s,
+                like real-time monitoring.
               </p>
 
               {file ? (
@@ -263,158 +258,232 @@ export function LiveFeed() {
       </div>
 
       {(phase === "running" || phase === "paused" || phase === "done") && (
-        <div className="grid xl:grid-cols-[380px_1fr] gap-6 items-start">
-          <div className="space-y-6">
-            <div
-              className={`glass-strong rounded-3xl p-6 border ${
-                !current ? "" : isAttack ? "border-destructive/40" : "border-success/40"
-              }`}
-            >
-              <div className="text-[11px] font-mono uppercase tracking-widest text-muted-foreground">
-                Latest Detection {current ? `· Window #${current.window}` : ""}
-              </div>
-              {!current ? (
-                <p className="mt-6 text-sm text-muted-foreground">Waiting for first window...</p>
+        <div className="space-y-6">
+          {runtime && !runtime.execution_enabled && (
+            <div className="rounded-2xl border border-white/10 bg-white/[0.02] px-4 py-3 text-xs text-muted-foreground">
+              Real firewall actions are <strong className="text-foreground">off</strong>. Entries
+              below show what the policy <em>recommends</em>; nothing is actually applied to this
+              machine.{" "}
+              {runtime.source_ip_column ? (
+                <>
+                  Source IP column read from{" "}
+                  <span className="font-mono text-foreground">{runtime.source_ip_column}</span>.
+                </>
               ) : (
                 <>
-                  <div className="mt-3 flex items-center gap-4">
-                    <div
-                      className={`h-16 w-16 shrink-0 grid place-items-center rounded-2xl border ${
-                        isAttack
-                          ? "bg-destructive/15 border-destructive/40"
-                          : "bg-success/15 border-success/40"
-                      }`}
-                    >
-                      {isAttack ? (
-                        <ShieldAlert className="h-8 w-8 text-destructive" />
-                      ) : (
-                        <ShieldCheck className="h-8 w-8 text-success" />
-                      )}
-                    </div>
-                    <div className="min-w-0">
-                      <div
-                        className={`font-display text-2xl uppercase tracking-wide truncate ${
-                          isAttack ? "text-destructive" : "text-success"
-                        }`}
-                      >
-                        {current.predicted_class}
-                      </div>
-                      <div className="text-xs text-muted-foreground font-mono mt-0.5">
-                        {current.cert_in_category} · {(current.confidence * 100).toFixed(1)}%
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="mt-4 h-2 rounded-full bg-white/5 overflow-hidden">
-                    <div
-                      className={`h-full rounded-full transition-all duration-500 ${
-                        isAttack ? "bg-destructive" : "bg-success"
-                      }`}
-                      style={{ width: `${current.confidence * 100}%` }}
-                    />
-                  </div>
-
-                  <div className="mt-4 flex items-center gap-2 text-xs">
-                    {current.prevention.status === "auto_action" ? (
-                      <span className="inline-flex items-center gap-1.5 rounded-lg border border-destructive/40 bg-destructive/10 px-2.5 py-1 font-mono uppercase text-destructive">
-                        <Gavel className="h-3 w-3" /> {current.prevention.action.replace(/_/g, " ")}
-                      </span>
-                    ) : current.prevention.status === "held_for_review" ? (
-                      <span className="inline-flex items-center gap-1.5 rounded-lg border border-warning/40 bg-warning/10 px-2.5 py-1 font-mono uppercase text-warning">
-                        <Eye className="h-3 w-3" /> held for review
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center gap-1.5 rounded-lg border border-success/40 bg-success/10 px-2.5 py-1 font-mono uppercase text-success">
-                        no action needed
-                      </span>
-                    )}
-                  </div>
+                  This capture has no Source IP column, so no action has a target even when
+                  execution is enabled.
                 </>
               )}
             </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="glass rounded-2xl p-5">
-                <div className="text-[11px] font-mono uppercase tracking-widest text-muted-foreground">
-                  Threats
-                </div>
-                <div className="mt-2 font-display text-3xl text-destructive">{counts.threats}</div>
-              </div>
-              <div className="glass rounded-2xl p-5">
-                <div className="text-[11px] font-mono uppercase tracking-widest text-muted-foreground">
-                  Normal
-                </div>
-                <div className="mt-2 font-display text-3xl text-success">{counts.normal}</div>
-              </div>
+          )}
+          {runtime?.execution_enabled && (
+            <div className="rounded-2xl border border-warning/40 bg-warning/5 px-4 py-3 text-xs text-warning">
+              Real firewall actions are <strong>armed</strong>. Only targets inside{" "}
+              <span className="font-mono">{runtime.allowed_demo_ranges.join(", ")}</span> (RFC 5737
+              reserved, never routable) can be acted on. Persistent rules stay applied until
+              revoked.
             </div>
-          </div>
+          )}
+          <div className="grid xl:grid-cols-[380px_1fr] gap-6 items-start">
+            <div className="space-y-6">
+              <div
+                className={`glass-strong rounded-3xl p-6 border ${
+                  !current ? "" : isAttack ? "border-destructive/40" : "border-success/40"
+                }`}
+              >
+                <div className="text-[11px] font-mono uppercase tracking-widest text-muted-foreground">
+                  Latest Detection {current ? `· Window #${current.window}` : ""}
+                </div>
+                {!current ? (
+                  <p className="mt-6 text-sm text-muted-foreground">Waiting for first window...</p>
+                ) : (
+                  <>
+                    <div className="mt-3 flex items-center gap-4">
+                      <div
+                        className={`h-16 w-16 shrink-0 grid place-items-center rounded-2xl border ${
+                          isAttack
+                            ? "bg-destructive/15 border-destructive/40"
+                            : "bg-success/15 border-success/40"
+                        }`}
+                      >
+                        {isAttack ? (
+                          <ShieldAlert className="h-8 w-8 text-destructive" />
+                        ) : (
+                          <ShieldCheck className="h-8 w-8 text-success" />
+                        )}
+                      </div>
+                      <div className="min-w-0">
+                        <div
+                          className={`font-display text-2xl uppercase tracking-wide truncate ${
+                            isAttack ? "text-destructive" : "text-success"
+                          }`}
+                        >
+                          {current.predicted_class}
+                        </div>
+                        <div className="text-xs text-muted-foreground font-mono mt-0.5">
+                          {current.cert_in_category} · {(current.confidence * 100).toFixed(1)}%
+                        </div>
+                      </div>
+                    </div>
 
-          <div className="space-y-6">
-            <div className="glass rounded-3xl p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="heading-card">Threat Confidence Stream</h3>
-                <span className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground">
-                  last {chartData.length} windows
-                </span>
-              </div>
-              <ResponsiveContainer width="100%" height={220}>
-                <BarChart data={chartData}>
-                  <XAxis dataKey="w" hide />
-                  <YAxis domain={[0, 100]} tick={{ fill: CHART_TEXT, fontSize: 11 }} axisLine={false} tickLine={false} />
-                  <Tooltip
-                    contentStyle={{ background: CHART_BG, border: `1px solid ${CHART_GRID}`, borderRadius: 10, fontSize: 12 }}
-                    formatter={(v: number) => [`${v}%`, "confidence"]}
-                  />
-                  <Bar dataKey="threatScore" radius={[4, 4, 0, 0]}>
-                    {chartData.map((d) => (
-                      <Cell key={d.w} fill={d.threatScore >= 50 ? "#e5484d" : "#4f46e5"} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
+                    <div className="mt-4 h-2 rounded-full bg-white/5 overflow-hidden">
+                      <div
+                        className={`h-full rounded-full transition-all duration-500 ${
+                          isAttack ? "bg-destructive" : "bg-success"
+                        }`}
+                        style={{ width: `${current.confidence * 100}%` }}
+                      />
+                    </div>
 
-            <div className="glass rounded-3xl p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="heading-card">Detection Log</h3>
-                <span className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground">
-                  newest first
-                </span>
-              </div>
-              <div className="max-h-[320px] overflow-y-auto pr-1 space-y-1">
-                {feed.length === 0 && (
-                  <p className="text-sm text-muted-foreground">No detections yet.</p>
-                )}
-                {feed.map((f) => {
-                  const atk = f.predicted_class !== "BENIGN";
-                  return (
-                    <div
-                      key={f.window}
-                      className={`rounded-xl px-3 py-2 border flex items-center gap-3 ${
-                        atk ? "border-destructive/30 bg-destructive/5" : "border-transparent bg-white/[0.02]"
-                      }`}
-                    >
-                      <span className="text-[10px] font-mono text-muted-foreground w-12 shrink-0">
-                        #{f.window}
-                      </span>
-                      <span className={`text-xs font-semibold ${atk ? "text-destructive" : "text-success"}`}>
-                        {f.predicted_class}
-                      </span>
-                      <span className="text-[10px] font-mono uppercase text-muted-foreground hidden sm:inline">
-                        {f.cert_in_category}
-                      </span>
-                      <span className="ml-auto text-[11px] font-mono text-muted-foreground">
-                        {(f.confidence * 100).toFixed(1)}%
-                      </span>
-                      {atk && f.status === "auto_action" && (
-                        <Gavel className="h-3.5 w-3.5 text-destructive shrink-0" />
-                      )}
-                      {atk && f.status === "held_for_review" && (
-                        <Eye className="h-3.5 w-3.5 text-warning shrink-0" />
+                    <div className="mt-4 flex items-center gap-2 text-xs">
+                      {current.prevention.status === "auto_action" ? (
+                        <>
+                          {/* Recommendation and real execution are separate claims,
+                            so they get separate chips. */}
+                          <span className="inline-flex items-center gap-1.5 rounded-lg border border-destructive/40 bg-destructive/10 px-2.5 py-1 font-mono uppercase text-destructive">
+                            <Gavel className="h-3 w-3" /> rec:{" "}
+                            {current.prevention.action.replace(/_/g, " ")}
+                          </span>
+                          {current.execution?.executed ? (
+                            <span
+                              className="inline-flex items-center gap-1.5 rounded-lg border border-success/40 bg-success/10 px-2.5 py-1 font-mono uppercase text-success"
+                              title={`Firewall rule ${current.execution.rule_name}`}
+                            >
+                              <ShieldCheck className="h-3 w-3" /> executed
+                            </span>
+                          ) : (
+                            <span
+                              className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.03] px-2.5 py-1 font-mono uppercase text-muted-foreground"
+                              title={current.execution?.reason ?? "No source IP for this window"}
+                            >
+                              not executed
+                            </span>
+                          )}
+                        </>
+                      ) : current.prevention.status === "held_for_review" ? (
+                        <span className="inline-flex items-center gap-1.5 rounded-lg border border-warning/40 bg-warning/10 px-2.5 py-1 font-mono uppercase text-warning">
+                          <Eye className="h-3 w-3" /> held for review
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1.5 rounded-lg border border-success/40 bg-success/10 px-2.5 py-1 font-mono uppercase text-success">
+                          no action needed
+                        </span>
                       )}
                     </div>
-                  );
-                })}
+                  </>
+                )}
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="glass rounded-2xl p-5">
+                  <div className="text-[11px] font-mono uppercase tracking-widest text-muted-foreground">
+                    Threats
+                  </div>
+                  <div className="mt-2 font-display text-3xl text-destructive">
+                    {counts.threats}
+                  </div>
+                </div>
+                <div className="glass rounded-2xl p-5">
+                  <div className="text-[11px] font-mono uppercase tracking-widest text-muted-foreground">
+                    Normal
+                  </div>
+                  <div className="mt-2 font-display text-3xl text-success">{counts.normal}</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-6">
+              <div className="glass rounded-3xl p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="heading-card">Threat Confidence Stream</h3>
+                  <span className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground">
+                    last {chartData.length} windows
+                  </span>
+                </div>
+                <ResponsiveContainer width="100%" height={220}>
+                  <BarChart data={chartData}>
+                    <XAxis dataKey="w" hide />
+                    <YAxis
+                      domain={[0, 100]}
+                      tick={{ fill: CHART_TEXT, fontSize: 11 }}
+                      axisLine={false}
+                      tickLine={false}
+                    />
+                    <Tooltip
+                      contentStyle={{
+                        background: CHART_BG,
+                        border: `1px solid ${CHART_GRID}`,
+                        borderRadius: 10,
+                        fontSize: 12,
+                      }}
+                      formatter={(v: number) => [`${v}%`, "confidence"]}
+                    />
+                    <Bar dataKey="threatScore" radius={[4, 4, 0, 0]}>
+                      {chartData.map((d) => (
+                        <Cell key={d.w} fill={d.threatScore >= 50 ? "#e5484d" : "#4f46e5"} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+
+              <div className="glass rounded-3xl p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="heading-card">Detection Log</h3>
+                  <span className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground">
+                    newest first
+                  </span>
+                </div>
+                <div className="max-h-[320px] overflow-y-auto pr-1 space-y-1">
+                  {feed.length === 0 && (
+                    <p className="text-sm text-muted-foreground">No detections yet.</p>
+                  )}
+                  {feed.map((f) => {
+                    const atk = f.predicted_class !== "BENIGN";
+                    return (
+                      <div
+                        key={f.window}
+                        className={`rounded-xl px-3 py-2 border flex items-center gap-3 ${
+                          atk
+                            ? "border-destructive/30 bg-destructive/5"
+                            : "border-transparent bg-white/[0.02]"
+                        }`}
+                      >
+                        <span className="text-[10px] font-mono text-muted-foreground w-12 shrink-0">
+                          #{f.window}
+                        </span>
+                        <span
+                          className={`text-xs font-semibold ${atk ? "text-destructive" : "text-success"}`}
+                        >
+                          {f.predicted_class}
+                        </span>
+                        <span className="text-[10px] font-mono uppercase text-muted-foreground hidden sm:inline">
+                          {f.cert_in_category}
+                        </span>
+                        <span className="ml-auto text-[11px] font-mono text-muted-foreground">
+                          {(f.confidence * 100).toFixed(1)}%
+                        </span>
+                        {atk &&
+                          f.status === "auto_action" &&
+                          (f.executed ? (
+                            <ShieldCheck
+                              className="h-3.5 w-3.5 text-success shrink-0"
+                              aria-label="executed"
+                            />
+                          ) : (
+                            <Gavel
+                              className="h-3.5 w-3.5 text-destructive shrink-0"
+                              aria-label="recommended, not executed"
+                            />
+                          ))}
+                        {atk && f.status === "held_for_review" && (
+                          <Eye className="h-3.5 w-3.5 text-warning shrink-0" />
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             </div>
           </div>
