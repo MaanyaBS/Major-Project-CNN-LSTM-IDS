@@ -30,6 +30,10 @@ FEATURE_COLS = [
 SEQ_LEN = 10
 NUM_FEATURES = 20
 
+# Above this many windows in one call, fall back from predict_on_batch() to
+# predict(..., batch_size=...). See predict_matrix() for why.
+BATCH_PREDICT_CUTOFF = 2048
+
 
 class ModelService:
     def __init__(self):
@@ -63,14 +67,35 @@ class ModelService:
             raise ValueError(f"Non-numeric feature value in input: {e}") from e
 
     def predict_matrix(self, X_raw):
+        """
+        Scale, window into sequences of SEQ_LEN, and return class probabilities.
+
+        Windowing here is NON-OVERLAPPING and fixed-length: every SEQ_LEN rows
+        of the input become exactly one prediction. Training and evaluation used
+        overlapping sliding windows (one new window per arriving flow) instead.
+        Both are valid; the demo uses this one. See docs/report/person_c_report.md.
+
+        Speed: for a single window (the live-feed path) model.predict() costs
+        ~67 ms of fixed per-call overhead against ~1.5 ms for the underlying
+        computation, because it builds a tf.data pipeline and a callback
+        iterator per invocation. predict_on_batch() skips that machinery and
+        calls the model directly. The saving is per-call overhead only, so it
+        is applied to small inputs; large uploads keep predict(), which batches
+        properly and streams progress instead of materialising one huge batch.
+        Measured in model/results/inference_benchmark.txt.
+        """
         X_df = pd.DataFrame(X_raw, columns=FEATURE_COLS)
         X_scaled = self.scaler.transform(X_df).astype("float32")
         n_seq = len(X_scaled) // SEQ_LEN
         if n_seq == 0:
             raise ValueError("Not enough rows to form one sequence")
         X_seq = X_scaled[: n_seq * SEQ_LEN].reshape(n_seq, SEQ_LEN, NUM_FEATURES)
-        probs = self.model.predict(X_seq, verbose=0)
-        return probs
+
+        if n_seq <= BATCH_PREDICT_CUTOFF:
+            probs = self.model.predict_on_batch(X_seq)
+        else:
+            probs = self.model.predict(X_seq, batch_size=BATCH_PREDICT_CUTOFF, verbose=0)
+        return np.asarray(probs)
 
     def predict_one(self, flow_rows):
         X_raw = self._rows_to_raw(flow_rows)
