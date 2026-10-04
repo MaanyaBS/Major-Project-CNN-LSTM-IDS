@@ -288,3 +288,36 @@ refused — and every call, including refusals, is appended to
    temporary full block (the OS has no portable QoS primitive that matches the name), and
    `sanitize_input` is recommendation-only with no executor. Both are deliberate, but the
    UI must not present them as enforced policy.
+
+---
+
+## 5. Scope — Deferred Pending Team Sign-Off
+
+### MU-IoT is not in the dashboard
+
+Surfacing the MU-IoT model alongside CICIDS2017 was raised as an optional sixth item and
+has **not** been started, because it needs the team's agreement on scope first. Nothing in
+this report or the dashboard depends on it; every figure above is CICIDS2017 only.
+
+If it is approved, it is a substantial piece of work rather than a UI toggle, and the
+following would all be required:
+
+- A separate 38-feature handoff — MU-IoT does not share CICIDS2017's 20 CICFlowMeter
+  features, so the model interface, scaler and column contract are different.
+- A separate model artifact and scaler, and a dataset-aware code path. Pointing the
+  existing endpoints at MU-IoT would silently break the column contract.
+- A per-dataset prevention policy. MU-IoT has 7 classes (DDoS, Injection, MiTM,
+  Password_Hacking, Scan, Spyware, normal) against CICIDS2017's 15, so
+  `CLASS_ACTION_MAP` and the `never_auto_fire` set must be reviewed separately — several
+  CICIDS classes have no MU-IoT counterpart and vice versa.
+- A dataset switch in the UI that keeps the two visibly distinct, so MU-IoT and
+  CICIDS2017 numbers are never read as comparable. They are not: different feature
+  spaces, different class sets, different label distributions.
+
+**Recommendation:** if MU-IoT is shown at all, it should be an explicitly-labelled
+separate view rather than a dataset toggle on the existing charts. Presenting two
+different feature spaces behind one set of metrics invites exactly the misreading this
+report otherwise tries to avoid.
+
+MU-IoT model artefacts and results already exist under `model/artifacts/mu_iot/` and are
+committed — only the serving and dashboard integration is outstanding.
