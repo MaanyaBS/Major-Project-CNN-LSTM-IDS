@@ -230,12 +230,22 @@ def predict_csv():
 
 @app.post("/api/explain_window")
 def explain_window():
-    payload = request.get_json(silent=True) or {}
-    window = payload.get("window", 0)
+    # A malformed body must not silently fall back to window 0: the whole
+    # point of this endpoint is to explain ONE specific window, so quietly
+    # returning a confident explanation of the wrong window is worse than an
+    # error. get_json(silent=True) returns None on unparseable JSON, which used
+    # to make a bad request look like a valid request for window 0.
+    payload = request.get_json(silent=True)
+    if payload is None:
+        return jsonify({"error": "Request body must be valid JSON"}), 400
+    if "window" not in payload:
+        return jsonify({"error": "Request body must include 'window'"}), 400
+
+    window = payload["window"]
     rows = _last_upload.get("rows")
     if rows is None:
         return jsonify({"error": "Upload a CSV via /api/predict_csv first"}), 409
-    if not isinstance(window, int) or window < 0 or window >= _last_upload["count"]:
+    if not isinstance(window, int) or isinstance(window, bool) or window < 0 or window >= _last_upload["count"]:
         return jsonify(
             {"error": f"'window' must be an integer in [0, {_last_upload['count'] - 1}]"}
         ), 400
