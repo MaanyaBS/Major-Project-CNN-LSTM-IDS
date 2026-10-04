@@ -259,24 +259,31 @@ rules through `netsh`, behind independent checks:
    touched;
 3. a deny-list (loopback, broadcast, unspecified) and an administrator check.
 
-Temporary actions expire on a timer, a startup sweep removes rules a crash
-left behind, and every attempt is logged. Rate limiting is approximated by a
+Each rule is added once per target, however many windows flag it (500
+windows from one IP give 1 rule). Temporary actions expire on a timer; on
+startup, a sweep removes rules a crash left behind, restarts timers that are
+not yet due and remembers rules still in force. Revoking works with the kill
+switch off, so an action can always be undone, but only for TEST-NET targets.
+Every attempt is logged. Rate limiting is approximated by a
 temporary block; input sanitisation for XSS stays recommendation-only.
 
 ### 7.3 Verification
 
-- **22 automated tests** (`model/test_prevention.py`) cover both policies and
-  every refusal path, including adversarial targets such as
+- **31 automated tests** (`model/test_prevention.py`) cover both policies,
+  one rule per target, revoking, restart recovery and every refusal path, including adversarial targets such as
   `192.0.2.10,8.8.8.8` (netsh list syntax), CIDR ranges, IPv6 and
   non-string input. They never call the real firewall.
-- **Mutation check:** the code was broken deliberately in 17 ways (kill
+- **Mutation check:** the code was broken deliberately in 26 ways (kill
   switch removed, allow-list removed, a locked class unlocked, the dataset
-  argument ignored, and so on); a test failed every time.
+  argument ignored, duplicate rules allowed, a stale timer allowed to remove
+  a newer rule, and so on); a test failed every time.
 - **End-to-end:** a real rule was created and removed on schedule in an
   elevated terminal.
 - Writing the tests found three engine bugs, all fixed: revocations were
   logged without the rule name, timer expiry was not logged, and non-string
-  targets were not explicitly refused.
+  targets were not explicitly refused. Integration with the backend found two
+  more, also fixed: the same rule was added once per flagged window, and a
+  revoke was refused whenever the kill switch was off.
 
 ### 7.4 Measured Effect
 

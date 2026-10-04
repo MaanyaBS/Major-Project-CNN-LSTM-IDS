@@ -74,7 +74,16 @@ def check_safe_to_execute(target_ip: str) -> None:
             "Real execution is disabled (PREVENTION_EXECUTION_ENABLED=False). "
             "This is the default - flip it explicitly to enable real actions."
         )
+    check_in_scope(target_ip)
 
+
+def check_in_scope(target_ip: str) -> None:
+    """
+    Layers 2 and 3 without the kill switch: raises ExecutionNotPermitted
+    unless target_ip is a single address inside the TEST-NET demo ranges.
+    Used on its own only to UNDO an action (revoke_action), which must
+    stay possible after the kill switch is turned off again.
+    """
     if not isinstance(target_ip, str):
         raise ExecutionNotPermitted(f"Target must be an IP address string, got {type(target_ip).__name__}.")
 
@@ -171,10 +180,33 @@ def _remove_block_rule(rule_name: str) -> None:
         # Non-fatal if already gone - deletion is best-effort cleanup.
 
 
-def _expire_rule(rule_name: str, action: str, target_ip: str) -> None:
+# Rules this process believes are in force: rule_name -> {"token", "timer"}.
+# One attacker IP is usually flagged in many consecutive windows; without this
+# every window would add the same firewall rule again. The token ties each
+# expiry timer to the rule it was started for, so a stale timer can never
+# remove a newer rule for the same target.
+_active_rules = {}
+_rules_lock = threading.RLock()
+
+
+def _start_expiry(rule_name: str, action: str, target_ip: str, seconds: float) -> None:
+    """Register a temporary rule and start its expiry timer. Caller holds _rules_lock."""
+    token = object()
+    timer = threading.Timer(max(0.0, seconds), _expire_rule, args=(rule_name, action, target_ip, token))
+    timer.daemon = True
+    _active_rules[rule_name] = {"token": token, "timer": timer}
+    timer.start()
+
+
+def _expire_rule(rule_name: str, action: str, target_ip: str, token: object) -> None:
     """Timer callback: remove a temporary rule and record that it expired on schedule."""
-    _remove_block_rule(rule_name)
-    _log_execution({"action": action, "target_ip": target_ip, "rule_name": rule_name, "expired": True})
+    with _rules_lock:
+        entry = _active_rules.get(rule_name)
+        if entry is None or entry["token"] is not token:
+            return  # revoked meanwhile, or replaced by a newer rule - not this timer's to remove
+        del _active_rules[rule_name]
+        _remove_block_rule(rule_name)
+        _log_execution({"action": action, "target_ip": target_ip, "rule_name": rule_name, "expired": True})
 
 
 def execute_action(action: str, target_ip: str, predicted_class: str, confidence: float) -> dict:
@@ -185,6 +217,10 @@ def execute_action(action: str, target_ip: str, predicted_class: str, confidence
     OS level - is logged distinctly from the recommendation log, to
     EXECUTION_LOG_PATH, so "recommended" and "actually executed" are
     never conflated.
+
+    If the same rule (same action, same target) is already in force,
+    nothing is added again: the result has "executed": False and
+    "already_active": True.
 
     Never raises - always returns a dict describing what actually
     happened, so it's safe to call from the backend without wrapping
@@ -219,38 +255,86 @@ def execute_action(action: str, target_ip: str, predicted_class: str, confidence
     rule_name = _rule_name(action, target_ip)
     duration = ACTION_DURATIONS[action]
 
-    try:
-        _add_block_rule(rule_name, target_ip)
-    except RuntimeError as e:
-        outcome = {"executed": False, "reason": f"OS-level execution failed: {e}"}
+    # Held across check, add and log so two requests cannot both add the
+    # rule, and an expiry timer cannot log "expired" before "executed".
+    with _rules_lock:
+        if rule_name in _active_rules:
+            outcome = {"executed": False, "already_active": True, "rule_name": rule_name,
+                       "reason": "This rule is already in force for this target - not added again."}
+            # Logged under "active_rule", not "rule_name": only records that
+            # change a rule's state carry rule_name (see sweep_expired_rules).
+            _log_execution({**base_event, "executed": False, "already_active": True,
+                            "active_rule": rule_name, "reason": outcome["reason"]})
+            return outcome
+
+        try:
+            _add_block_rule(rule_name, target_ip)
+        except RuntimeError as e:
+            outcome = {"executed": False, "reason": f"OS-level execution failed: {e}"}
+            _log_execution({**base_event, **outcome})
+            return outcome
+
+        outcome = {"executed": True, "rule_name": rule_name, "auto_expires_in_seconds": duration}
         _log_execution({**base_event, **outcome})
-        return outcome
-
-    outcome = {"executed": True, "rule_name": rule_name, "auto_expires_in_seconds": duration}
-    _log_execution({**base_event, **outcome})
-
-    if duration is not None:
-        timer = threading.Timer(duration, _expire_rule, args=(rule_name, action, target_ip))
-        timer.daemon = True
-        timer.start()
+        if duration is None:
+            _active_rules[rule_name] = {"token": object(), "timer": None}
+        else:
+            _start_expiry(rule_name, action, target_ip, duration)
 
     return outcome
 
 
-def revoke_action(action: str, target_ip: str) -> None:
-    """Manually reverse a persistent (non-expiring) action, e.g. after human review."""
+def revoke_action(action: str, target_ip: str) -> dict:
+    """
+    Manually reverse an action, e.g. a persistent block_ip after human
+    review. Works with the kill switch OFF - undoing must stay possible
+    after real execution is switched off again - but only for targets
+    inside the TEST-NET demo scope (check_in_scope).
+
+    Never raises - returns {"revoked": True, "rule_name": ...} or
+    {"revoked": False, "reason": ...}. Every attempt is logged.
+    """
+    base_event = {"action": action, "target_ip": target_ip}
+
+    if action not in ACTION_DURATIONS:
+        outcome = {"revoked": False, "reason": f"Unknown action type: {action}"}
+        _log_execution({**base_event, **outcome})
+        return outcome
+
+    try:
+        check_in_scope(target_ip)
+    except ExecutionNotPermitted as e:
+        outcome = {"revoked": False, "reason": str(e)}
+        _log_execution({**base_event, **outcome})
+        return outcome
+
+    if not _is_admin():
+        outcome = {"revoked": False,
+                   "reason": "Not running with administrator privileges - removing "
+                             "firewall rules requires elevation."}
+        _log_execution({**base_event, **outcome})
+        return outcome
+
     rule_name = _rule_name(action, target_ip)
-    _remove_block_rule(rule_name)
-    _log_execution({"action": action, "target_ip": target_ip, "rule_name": rule_name, "revoked": True})
+    with _rules_lock:
+        entry = _active_rules.pop(rule_name, None)
+        if entry and entry["timer"] is not None:
+            entry["timer"].cancel()
+        _remove_block_rule(rule_name)
+        outcome = {"revoked": True, "rule_name": rule_name}
+        _log_execution({**base_event, **outcome})
+    return outcome
 
 
 def sweep_expired_rules() -> list:
     """
-    Cleans up any temporary rule whose auto-expiry timer never got to
-    fire - the scenario that actually happens if the backend process
-    crashes or restarts between when a rule was added and when it was
-    due to expire (an in-process threading.Timer dies with the process,
-    it doesn't survive a restart).
+    Startup recovery from the execution log, for everything an in-process
+    threading.Timer cannot survive (a crash or restart of the backend):
+
+    - a temporary rule already past its expiry is removed (logged "swept");
+    - a temporary rule not yet due gets a new timer for its remaining time;
+    - every rule still in force is remembered, so execute_action() does
+      not add it a second time after the restart.
 
     Call this once at backend startup, before serving any predictions.
     Safe to call any number of times - already-clean rules are simply
@@ -259,7 +343,7 @@ def sweep_expired_rules() -> list:
     if not EXECUTION_LOG_PATH.exists():
         return []
 
-    latest_state = {}  # rule_name -> most recent log record for it
+    latest_state = {}  # rule_name -> most recent state-changing log record for it
     with open(EXECUTION_LOG_PATH, "r", encoding="utf-8") as f:
         for line in f:
             line = line.strip()
@@ -270,7 +354,9 @@ def sweep_expired_rules() -> list:
             except json.JSONDecodeError:
                 continue
             rule_name = record.get("rule_name")
-            if rule_name:
+            # Only records that change a rule's state count: added, expired,
+            # revoked or swept. Refusals and "already active" skips do not.
+            if rule_name and any(record.get(k) for k in ("executed", "revoked", "expired", "swept")):
                 latest_state[rule_name] = record
 
     now = datetime.now(timezone.utc)
@@ -282,18 +368,28 @@ def sweep_expired_rules() -> list:
         if not record.get("executed"):
             continue  # was never actually created
         duration = record.get("auto_expires_in_seconds")
-        if duration is None:
-            continue  # persistent rule - only revoke_action() should touch it
 
-        created_at = datetime.fromisoformat(record["timestamp"])
-        if now.timestamp() >= created_at.timestamp() + duration:
-            _remove_block_rule(rule_name)
-            _log_execution({
-                "action": record.get("action"), "target_ip": record.get("target_ip"),
-                "rule_name": rule_name, "swept": True,
-                "reason": "Expiry timer never fired (likely a process restart) - "
-                          "cleaned up by startup sweep instead.",
-            })
-            swept.append(rule_name)
+        with _rules_lock:
+            if duration is None:
+                # Persistent rule still in force - only revoke_action() removes it.
+                _active_rules.setdefault(rule_name, {"token": object(), "timer": None})
+                continue
+
+            created_at = datetime.fromisoformat(record["timestamp"])
+            remaining = created_at.timestamp() + duration - now.timestamp()
+            if remaining <= 0:
+                entry = _active_rules.pop(rule_name, None)
+                if entry and entry["timer"] is not None:
+                    entry["timer"].cancel()
+                _remove_block_rule(rule_name)
+                _log_execution({
+                    "action": record.get("action"), "target_ip": record.get("target_ip"),
+                    "rule_name": rule_name, "swept": True,
+                    "reason": "Expiry timer never fired (likely a process restart) - "
+                              "cleaned up by startup sweep instead.",
+                })
+                swept.append(rule_name)
+            elif rule_name not in _active_rules:
+                _start_expiry(rule_name, record.get("action"), record.get("target_ip"), remaining)
 
     return swept

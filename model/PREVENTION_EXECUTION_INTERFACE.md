@@ -93,23 +93,40 @@ result = pe.execute_action(
 )
 # result = {"executed": True/False, "reason": "..." (if False),
 #           "rule_name": "..." (if True), "auto_expires_in_seconds": int|None}
+# If the same action is already in force for this target:
+#   {"executed": False, "already_active": True, "rule_name": "...", "reason": "..."}
+#   Nothing is added again - show it as "already blocked", not as a failure.
 
-# To manually lift a persistent action (block_ip/isolate_host) after human review:
-pe.revoke_action(action="block_ip", target_ip=source_ip)
+# To manually lift an action after human review. Works with the kill switch
+# OFF (undoing must stay possible), but only for TEST-NET targets:
+outcome = pe.revoke_action(action="block_ip", target_ip=source_ip)
+# outcome = {"revoked": True, "rule_name": "..."} or {"revoked": False, "reason": "..."}
+# Return this outcome to the caller as-is; do not report success without it.
 
 # Call this ONCE at backend startup, alongside service.load() in initialize():
 pe.sweep_expired_rules()
 ```
 
-**Why the startup sweep matters:** the auto-expiry timer lives inside the
-process that called `execute_action()`. If the backend process crashes or
-restarts before a temporary rule's timer fires, that rule would otherwise be
-orphaned. `sweep_expired_rules()` catches and cleans up exactly that case —
-call it once during `initialize()`, before serving any predictions.
+**One rule per target.** One attacker IP is usually flagged in many
+consecutive windows. The engine remembers which rules are in force and adds
+each (action, target) rule once; repeats return `already_active`. Measured: 500
+windows from one IP give 1 firewall rule, not 500 (1,000 `netsh` calls).
 
-`execute_action()` never raises — it always returns a dict, so it's safe to
-call directly from a request handler without wrapping every call site in a
-`try/except`.
+**Why the startup sweep matters:** expiry timers live inside the process that
+called `execute_action()` and die with it. On startup, `sweep_expired_rules()`
+reads the execution log and:
+
+- removes temporary rules that are already past their expiry;
+- restarts the timer for temporary rules that are not yet due;
+- remembers every rule still in force, so it is not added again.
+
+Call it once during `initialize()`, before serving any predictions.
+
+`execute_action()` and `revoke_action()` never raise — they always return a
+dict, so they are safe to call directly from a request handler. To check a
+target's scope without the kill switch (for example to validate a revoke
+request), use `pe.check_in_scope(target_ip)`; `check_safe_to_execute()` also
+requires the kill switch to be on.
 
 ---
 
@@ -125,10 +142,11 @@ call directly from a request handler without wrapping every call site in a
 - `sweep_expired_rules()` tested against 4 synthetic scenarios (expired /
   not-yet-expired / persistent / already-revoked) — correct in all four, and
   confirmed idempotent (safe to call repeatedly).
-- Committed tests: `python model/test_prevention.py` (22 tests, no real
+- Committed tests: `python model/test_prevention.py` (31 tests, no real
   firewall access — OS calls are replaced with recorders). They cover both
   policies (thresholds, review-only classes, fallback, per-class F1 matching
-  the committed results, the two datasets kept apart) and every refusal path,
+  the committed results, the two datasets kept apart), one rule per target,
+  revoke with the kill switch off, restart recovery, and every refusal path,
   including adversarial targets such as `192.0.2.10,8.8.8.8` (netsh list
   syntax), CIDR ranges, IPv6 and non-string input. Run them after any change
   to the engine or the policy.

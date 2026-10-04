@@ -29,7 +29,7 @@ Varshini D N — dashboard and backend.
 | MU-IoT data package (3.94M rows, 38 features, held-out recordings) | Done | Drive `Major_Project/handoff_v3` |
 | CICIDS2017 CNN-LSTM, evaluation, baselines | Done | `person-b-model` |
 | MU-IoT CNN-LSTM, evaluation, SHAP, baseline | Done | `person-b-model` |
-| Prevention policy (both datasets) and execution engine | Done, 22 tests | `person-b-model` |
+| Prevention policy (both datasets) and execution engine | Done, 31 tests | `person-b-model` |
 | Flask API: predict, CSV upload, SHAP, stream replay | Done | `varshini-dashboard` |
 | React dashboard | Done | `varshini-dashboard` |
 | Backend wiring of real prevention (`execute_action`) | **Not done** (handed off 2026-09-02) | — |
@@ -141,7 +141,7 @@ Thresholds come from test-set F1; there is no separate calibration set.
 | MU-IoT results and analysis | `model/results/mu_iot/` (start with `FINDINGS.md`) |
 | Prevention policy outcomes | `model/results/prevention_policy_cicids2017.txt`, `mu_iot/prevention_policy_mu_iot.txt` |
 | Speed | `model/results/inference_benchmark.txt` |
-| Tests | `python model/test_prevention.py` (22), `python model/test_mu_iot_windows.py` (8) |
+| Tests | `python model/test_prevention.py` (31), `python model/test_mu_iot_windows.py` (8) |
 
 ---
 
