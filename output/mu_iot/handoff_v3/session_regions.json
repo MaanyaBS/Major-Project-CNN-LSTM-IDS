@@ -1,0 +1,194 @@
+[
+  {
+    "session": "MU_SESSION_002",
+    "category": "DDoS",
+    "start": 0,
+    "end": 4243
+  },
+  {
+    "session": "MU_SESSION_003",
+    "category": "DDoS",
+    "start": 4243,
+    "end": 32242
+  },
+  {
+    "session": "MU_SESSION_004",
+    "category": "DDoS",
+    "start": 32242,
+    "end": 121113
+  },
+  {
+    "session": "MU_SESSION_001",
+    "category": "DDoS",
+    "start": 121113,
+    "end": 401016
+  },
+  {
+    "session": "MU_SESSION_030",
+    "category": "DDoS",
+    "start": 401016,
+    "end": 416058
+  },
+  {
+    "session": "MU_SESSION_005",
+    "category": "DDoS",
+    "start": 416058,
+    "end": 566635
+  },
+  {
+    "session": "MU_SESSION_022",
+    "category": "DDoS",
+    "start": 566635,
+    "end": 717212
+  },
+  {
+    "session": "MU_SESSION_024",
+    "category": "DDoS",
+    "start": 717212,
+    "end": 5127489
+  },
+  {
+    "session": "MU_SESSION_028",
+    "category": "DDoS",
+    "start": 5127489,
+    "end": 10278857
+  },
+  {
+    "session": "MU_SESSION_029",
+    "category": "DDoS",
+    "start": 10278857,
+    "end": 10279768
+  },
+  {
+    "session": "MU_SESSION_031",
+    "category": "DDoS",
+    "start": 10279768,
+    "end": 12946205
+  },
+  {
+    "session": "MU_SESSION_018",
+    "category": "Injection",
+    "start": 12946205,
+    "end": 13126529
+  },
+  {
+    "session": "MU_SESSION_016",
+    "category": "Injection",
+    "start": 13126529,
+    "end": 13137012
+  },
+  {
+    "session": "MU_SESSION_025",
+    "category": "Injection",
+    "start": 13137012,
+    "end": 13182428
+  },
+  {
+    "session": "MU_SESSION_026",
+    "category": "Injection",
+    "start": 13182428,
+    "end": 13315192
+  },
+  {
+    "session": "MU_SESSION_027",
+    "category": "MiTM",
+    "start": 13315192,
+    "end": 13316237
+  },
+  {
+    "session": "MU_SESSION_017",
+    "category": "MiTM",
+    "start": 13316237,
+    "end": 13341798
+  },
+  {
+    "session": "MU_SESSION_006",
+    "category": "Password_Hacking",
+    "start": 13341798,
+    "end": 13707142
+  },
+  {
+    "session": "MU_SESSION_007",
+    "category": "Password_Hacking",
+    "start": 13707142,
+    "end": 14870071
+  },
+  {
+    "session": "MU_SESSION_008",
+    "category": "Password_Hacking",
+    "start": 14870071,
+    "end": 14988081
+  },
+  {
+    "session": "MU_SESSION_009",
+    "category": "Password_Hacking",
+    "start": 14988081,
+    "end": 15168122
+  },
+  {
+    "session": "MU_SESSION_010",
+    "category": "Password_Hacking",
+    "start": 15168122,
+    "end": 15508398
+  },
+  {
+    "session": "MU_SESSION_011",
+    "category": "Password_Hacking",
+    "start": 15508398,
+    "end": 15851633
+  },
+  {
+    "session": "MU_SESSION_012",
+    "category": "Password_Hacking",
+    "start": 15851633,
+    "end": 16921160
+  },
+  {
+    "session": "MU_SESSION_013",
+    "category": "Password_Hacking",
+    "start": 16921160,
+    "end": 17857243
+  },
+  {
+    "session": "MU_SESSION_014",
+    "category": "Password_Hacking",
+    "start": 17857243,
+    "end": 17962637
+  },
+  {
+    "session": "MU_SESSION_015",
+    "category": "Password_Hacking",
+    "start": 17962637,
+    "end": 18241359
+  },
+  {
+    "session": "MU_SESSION_019",
+    "category": "Scan",
+    "start": 18241359,
+    "end": 22202158
+  },
+  {
+    "session": "MU_SESSION_020",
+    "category": "Scan",
+    "start": 22202158,
+    "end": 22602546
+  },
+  {
+    "session": "MU_SESSION_021",
+    "category": "Scan",
+    "start": 22602546,
+    "end": 23469451
+  },
+  {
+    "session": "MU_SESSION_023",
+    "category": "Spyware",
+    "start": 23469451,
+    "end": 23605268
+  },
+  {
+    "session": "MU_SESSION_032",
+    "category": "normal",
+    "start": 23605268,
+    "end": 24171263
+  }
+]

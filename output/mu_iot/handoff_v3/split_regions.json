@@ -1,0 +1,618 @@
+[
+  {
+    "session": "MU_SESSION_002",
+    "category": "DDoS",
+    "split": "train",
+    "start": 0,
+    "end": 2970
+  },
+  {
+    "session": "MU_SESSION_002",
+    "category": "DDoS",
+    "split": "val",
+    "start": 2970,
+    "end": 3606
+  },
+  {
+    "session": "MU_SESSION_002",
+    "category": "DDoS",
+    "split": "test_within",
+    "start": 3606,
+    "end": 4243
+  },
+  {
+    "session": "MU_SESSION_003",
+    "category": "DDoS",
+    "split": "train",
+    "start": 4243,
+    "end": 23842
+  },
+  {
+    "session": "MU_SESSION_003",
+    "category": "DDoS",
+    "split": "val",
+    "start": 23842,
+    "end": 28042
+  },
+  {
+    "session": "MU_SESSION_003",
+    "category": "DDoS",
+    "split": "test_within",
+    "start": 28042,
+    "end": 32242
+  },
+  {
+    "session": "MU_SESSION_004",
+    "category": "DDoS",
+    "split": "train",
+    "start": 32242,
+    "end": 94451
+  },
+  {
+    "session": "MU_SESSION_004",
+    "category": "DDoS",
+    "split": "val",
+    "start": 94451,
+    "end": 107782
+  },
+  {
+    "session": "MU_SESSION_004",
+    "category": "DDoS",
+    "split": "test_within",
+    "start": 107782,
+    "end": 121113
+  },
+  {
+    "session": "MU_SESSION_001",
+    "category": "DDoS",
+    "split": "train",
+    "start": 121113,
+    "end": 317045
+  },
+  {
+    "session": "MU_SESSION_001",
+    "category": "DDoS",
+    "split": "val",
+    "start": 317045,
+    "end": 359030
+  },
+  {
+    "session": "MU_SESSION_001",
+    "category": "DDoS",
+    "split": "test_within",
+    "start": 359030,
+    "end": 401016
+  },
+  {
+    "session": "MU_SESSION_030",
+    "category": "DDoS",
+    "split": "train",
+    "start": 401016,
+    "end": 411545
+  },
+  {
+    "session": "MU_SESSION_030",
+    "category": "DDoS",
+    "split": "val",
+    "start": 411545,
+    "end": 413801
+  },
+  {
+    "session": "MU_SESSION_030",
+    "category": "DDoS",
+    "split": "test_within",
+    "start": 413801,
+    "end": 416058
+  },
+  {
+    "session": "MU_SESSION_005",
+    "category": "DDoS",
+    "split": "train",
+    "start": 416058,
+    "end": 521461
+  },
+  {
+    "session": "MU_SESSION_005",
+    "category": "DDoS",
+    "split": "val",
+    "start": 521461,
+    "end": 544048
+  },
+  {
+    "session": "MU_SESSION_005",
+    "category": "DDoS",
+    "split": "test_within",
+    "start": 544048,
+    "end": 566635
+  },
+  {
+    "session": "MU_SESSION_022",
+    "category": "DDoS",
+    "split": "train",
+    "start": 566635,
+    "end": 672038
+  },
+  {
+    "session": "MU_SESSION_022",
+    "category": "DDoS",
+    "split": "val",
+    "start": 672038,
+    "end": 694625
+  },
+  {
+    "session": "MU_SESSION_022",
+    "category": "DDoS",
+    "split": "test_within",
+    "start": 694625,
+    "end": 717212
+  },
+  {
+    "session": "MU_SESSION_024",
+    "category": "DDoS",
+    "split": "train",
+    "start": 717212,
+    "end": 3804405
+  },
+  {
+    "session": "MU_SESSION_024",
+    "category": "DDoS",
+    "split": "val",
+    "start": 3804405,
+    "end": 4465947
+  },
+  {
+    "session": "MU_SESSION_024",
+    "category": "DDoS",
+    "split": "test_within",
+    "start": 4465947,
+    "end": 5127489
+  },
+  {
+    "session": "MU_SESSION_028",
+    "category": "DDoS",
+    "split": "train",
+    "start": 5127489,
+    "end": 8733446
+  },
+  {
+    "session": "MU_SESSION_028",
+    "category": "DDoS",
+    "split": "val",
+    "start": 8733446,
+    "end": 9506151
+  },
+  {
+    "session": "MU_SESSION_028",
+    "category": "DDoS",
+    "split": "test_within",
+    "start": 9506151,
+    "end": 10278857
+  },
+  {
+    "session": "MU_SESSION_029",
+    "category": "DDoS",
+    "split": "train",
+    "start": 10278857,
+    "end": 10279494
+  },
+  {
+    "session": "MU_SESSION_029",
+    "category": "DDoS",
+    "split": "val",
+    "start": 10279494,
+    "end": 10279631
+  },
+  {
+    "session": "MU_SESSION_029",
+    "category": "DDoS",
+    "split": "test_within",
+    "start": 10279631,
+    "end": 10279768
+  },
+  {
+    "session": "MU_SESSION_031",
+    "category": "DDoS",
+    "split": "test_heldout",
+    "start": 10279768,
+    "end": 12946205
+  },
+  {
+    "session": "MU_SESSION_018",
+    "category": "Injection",
+    "split": "train",
+    "start": 12946205,
+    "end": 13072431
+  },
+  {
+    "session": "MU_SESSION_018",
+    "category": "Injection",
+    "split": "val",
+    "start": 13072431,
+    "end": 13099480
+  },
+  {
+    "session": "MU_SESSION_018",
+    "category": "Injection",
+    "split": "test_within",
+    "start": 13099480,
+    "end": 13126529
+  },
+  {
+    "session": "MU_SESSION_016",
+    "category": "Injection",
+    "split": "train",
+    "start": 13126529,
+    "end": 13133867
+  },
+  {
+    "session": "MU_SESSION_016",
+    "category": "Injection",
+    "split": "val",
+    "start": 13133867,
+    "end": 13135439
+  },
+  {
+    "session": "MU_SESSION_016",
+    "category": "Injection",
+    "split": "test_within",
+    "start": 13135439,
+    "end": 13137012
+  },
+  {
+    "session": "MU_SESSION_025",
+    "category": "Injection",
+    "split": "train",
+    "start": 13137012,
+    "end": 13168803
+  },
+  {
+    "session": "MU_SESSION_025",
+    "category": "Injection",
+    "split": "val",
+    "start": 13168803,
+    "end": 13175615
+  },
+  {
+    "session": "MU_SESSION_025",
+    "category": "Injection",
+    "split": "test_within",
+    "start": 13175615,
+    "end": 13182428
+  },
+  {
+    "session": "MU_SESSION_026",
+    "category": "Injection",
+    "split": "test_heldout",
+    "start": 13182428,
+    "end": 13315192
+  },
+  {
+    "session": "MU_SESSION_027",
+    "category": "MiTM",
+    "split": "train",
+    "start": 13315192,
+    "end": 13315923
+  },
+  {
+    "session": "MU_SESSION_027",
+    "category": "MiTM",
+    "split": "val",
+    "start": 13315923,
+    "end": 13316080
+  },
+  {
+    "session": "MU_SESSION_027",
+    "category": "MiTM",
+    "split": "test_within",
+    "start": 13316080,
+    "end": 13316237
+  },
+  {
+    "session": "MU_SESSION_017",
+    "category": "MiTM",
+    "split": "train",
+    "start": 13316237,
+    "end": 13334129
+  },
+  {
+    "session": "MU_SESSION_017",
+    "category": "MiTM",
+    "split": "val",
+    "start": 13334129,
+    "end": 13337963
+  },
+  {
+    "session": "MU_SESSION_017",
+    "category": "MiTM",
+    "split": "test_within",
+    "start": 13337963,
+    "end": 13341798
+  },
+  {
+    "session": "MU_SESSION_006",
+    "category": "Password_Hacking",
+    "split": "train",
+    "start": 13341798,
+    "end": 13597538
+  },
+  {
+    "session": "MU_SESSION_006",
+    "category": "Password_Hacking",
+    "split": "val",
+    "start": 13597538,
+    "end": 13652340
+  },
+  {
+    "session": "MU_SESSION_006",
+    "category": "Password_Hacking",
+    "split": "test_within",
+    "start": 13652340,
+    "end": 13707142
+  },
+  {
+    "session": "MU_SESSION_007",
+    "category": "Password_Hacking",
+    "split": "train",
+    "start": 13707142,
+    "end": 14521192
+  },
+  {
+    "session": "MU_SESSION_007",
+    "category": "Password_Hacking",
+    "split": "val",
+    "start": 14521192,
+    "end": 14695631
+  },
+  {
+    "session": "MU_SESSION_007",
+    "category": "Password_Hacking",
+    "split": "test_within",
+    "start": 14695631,
+    "end": 14870071
+  },
+  {
+    "session": "MU_SESSION_008",
+    "category": "Password_Hacking",
+    "split": "train",
+    "start": 14870071,
+    "end": 14952678
+  },
+  {
+    "session": "MU_SESSION_008",
+    "category": "Password_Hacking",
+    "split": "val",
+    "start": 14952678,
+    "end": 14970379
+  },
+  {
+    "session": "MU_SESSION_008",
+    "category": "Password_Hacking",
+    "split": "test_within",
+    "start": 14970379,
+    "end": 14988081
+  },
+  {
+    "session": "MU_SESSION_009",
+    "category": "Password_Hacking",
+    "split": "train",
+    "start": 14988081,
+    "end": 15114109
+  },
+  {
+    "session": "MU_SESSION_009",
+    "category": "Password_Hacking",
+    "split": "val",
+    "start": 15114109,
+    "end": 15141115
+  },
+  {
+    "session": "MU_SESSION_009",
+    "category": "Password_Hacking",
+    "split": "test_within",
+    "start": 15141115,
+    "end": 15168122
+  },
+  {
+    "session": "MU_SESSION_010",
+    "category": "Password_Hacking",
+    "split": "train",
+    "start": 15168122,
+    "end": 15406315
+  },
+  {
+    "session": "MU_SESSION_010",
+    "category": "Password_Hacking",
+    "split": "val",
+    "start": 15406315,
+    "end": 15457356
+  },
+  {
+    "session": "MU_SESSION_010",
+    "category": "Password_Hacking",
+    "split": "test_within",
+    "start": 15457356,
+    "end": 15508398
+  },
+  {
+    "session": "MU_SESSION_011",
+    "category": "Password_Hacking",
+    "split": "train",
+    "start": 15508398,
+    "end": 15748662
+  },
+  {
+    "session": "MU_SESSION_011",
+    "category": "Password_Hacking",
+    "split": "val",
+    "start": 15748662,
+    "end": 15800147
+  },
+  {
+    "session": "MU_SESSION_011",
+    "category": "Password_Hacking",
+    "split": "test_within",
+    "start": 15800147,
+    "end": 15851633
+  },
+  {
+    "session": "MU_SESSION_012",
+    "category": "Password_Hacking",
+    "split": "train",
+    "start": 15851633,
+    "end": 16600301
+  },
+  {
+    "session": "MU_SESSION_012",
+    "category": "Password_Hacking",
+    "split": "val",
+    "start": 16600301,
+    "end": 16760730
+  },
+  {
+    "session": "MU_SESSION_012",
+    "category": "Password_Hacking",
+    "split": "test_within",
+    "start": 16760730,
+    "end": 16921160
+  },
+  {
+    "session": "MU_SESSION_013",
+    "category": "Password_Hacking",
+    "split": "test_heldout",
+    "start": 16921160,
+    "end": 17857243
+  },
+  {
+    "session": "MU_SESSION_014",
+    "category": "Password_Hacking",
+    "split": "train",
+    "start": 17857243,
+    "end": 17931018
+  },
+  {
+    "session": "MU_SESSION_014",
+    "category": "Password_Hacking",
+    "split": "val",
+    "start": 17931018,
+    "end": 17946827
+  },
+  {
+    "session": "MU_SESSION_014",
+    "category": "Password_Hacking",
+    "split": "test_within",
+    "start": 17946827,
+    "end": 17962637
+  },
+  {
+    "session": "MU_SESSION_015",
+    "category": "Password_Hacking",
+    "split": "train",
+    "start": 17962637,
+    "end": 18157742
+  },
+  {
+    "session": "MU_SESSION_015",
+    "category": "Password_Hacking",
+    "split": "val",
+    "start": 18157742,
+    "end": 18199550
+  },
+  {
+    "session": "MU_SESSION_015",
+    "category": "Password_Hacking",
+    "split": "test_within",
+    "start": 18199550,
+    "end": 18241359
+  },
+  {
+    "session": "MU_SESSION_019",
+    "category": "Scan",
+    "split": "train",
+    "start": 18241359,
+    "end": 21013918
+  },
+  {
+    "session": "MU_SESSION_019",
+    "category": "Scan",
+    "split": "val",
+    "start": 21013918,
+    "end": 21608038
+  },
+  {
+    "session": "MU_SESSION_019",
+    "category": "Scan",
+    "split": "test_within",
+    "start": 21608038,
+    "end": 22202158
+  },
+  {
+    "session": "MU_SESSION_020",
+    "category": "Scan",
+    "split": "train",
+    "start": 22202158,
+    "end": 22482429
+  },
+  {
+    "session": "MU_SESSION_020",
+    "category": "Scan",
+    "split": "val",
+    "start": 22482429,
+    "end": 22542487
+  },
+  {
+    "session": "MU_SESSION_020",
+    "category": "Scan",
+    "split": "test_within",
+    "start": 22542487,
+    "end": 22602546
+  },
+  {
+    "session": "MU_SESSION_021",
+    "category": "Scan",
+    "split": "test_heldout",
+    "start": 22602546,
+    "end": 23469451
+  },
+  {
+    "session": "MU_SESSION_023",
+    "category": "Spyware",
+    "split": "train",
+    "start": 23469451,
+    "end": 23564522
+  },
+  {
+    "session": "MU_SESSION_023",
+    "category": "Spyware",
+    "split": "val",
+    "start": 23564522,
+    "end": 23584895
+  },
+  {
+    "session": "MU_SESSION_023",
+    "category": "Spyware",
+    "split": "test_within",
+    "start": 23584895,
+    "end": 23605268
+  },
+  {
+    "session": "MU_SESSION_032",
+    "category": "normal",
+    "split": "train",
+    "start": 23605268,
+    "end": 24001464
+  },
+  {
+    "session": "MU_SESSION_032",
+    "category": "normal",
+    "split": "val",
+    "start": 24001464,
+    "end": 24086363
+  },
+  {
+    "session": "MU_SESSION_032",
+    "category": "normal",
+    "split": "test_within",
+    "start": 24086363,
+    "end": 24171263
+  }
+]
