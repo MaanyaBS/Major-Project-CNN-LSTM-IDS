@@ -267,19 +267,30 @@ The more specialized validation, analysis and V3 handoff utilities are available
 
 ## Model
 
-The model implementation, trained artifacts, evaluation results, SHAP explainability analysis and prevention-policy components are maintained under:
+The model, its evaluation, the prevention layer and all model-side results are under `model/`. Start with `docs/report/person_b_report.md`.
 
-```text
-model/
+| | CICIDS2017 | MU-IoT |
+|---|---|---|
+| Input window | 10 flows × 20 features | 20 flows × 38 features |
+| Classes | 15 | 7 |
+| Model file | `model/artifacts/cnn_lstm_best_v2.keras` | `model/artifacts/mu_iot/best.keras` |
+| How to use it | `model/MODEL_INTERFACE.md` | `model/MU_IOT_MODEL_INTERFACE.md` |
+| CNN-LSTM | accuracy 0.984, macro F1 0.586 | unseen recordings: accuracy 0.680, macro F1 0.676 |
+| Random forest, same test examples | accuracy 0.991, macro F1 0.780 | unseen recordings: macro F1 0.404 |
+
+* On CICIDS2017 a single-flow random forest does better than the CNN-LSTM. On MU-IoT, where single flow records are often ambiguous, the CNN-LSTM is clearly better.
+* Accuracy is dominated by benign traffic; macro F1 is the honest summary. Weak and rare classes, and other limitations, are listed in `model/MODEL_INTERFACE.md` (Section 6) and `docs/report/person_b_report.md` (Section 9).
+
+Checks that run on a normal laptop:
+
+```bash
+python model/test_prevention.py        # 31 tests of the prevention policy and engine (no real firewall access)
+python model/test_mu_iot_windows.py    # 8 tests of the MU-IoT windowing rules
+python model/benchmark_inference.py    # CPU speed of both models
+python model/evaluate_model.py         # CICIDS2017 evaluation (needs datasets/verify_run_ruthwik/)
 ```
 
-The model uses the prepared dataset to learn spatial-temporal patterns in network traffic.
-
-Detailed model results are documented in the model-side reports under:
-
-```text
-model/results/
-```
+Training, the MU-IoT evaluation, the baselines and the SHAP error analysis run in Google Colab; the commands are in `docs/report/person_b_report.md`, Section 10.
 
 ---
 
@@ -289,7 +300,7 @@ The project includes:
 
 * **SHAP-based explainability** to identify influential input features.
 * **Threat classification** based on the CNN-LSTM prediction.
-* **Prevention-policy logic** that maps detected threats to recommended or simulated actions.
+* **Prevention-policy logic** that maps detected threats to recommended actions; weak or data-starved classes always go to human review. Actions can be executed as real Windows Firewall rules, but only when `IDS_PREVENTION_EXECUTION_ENABLED` is set and only for RFC 5737 TEST-NET demo addresses (`model/PREVENTION_EXECUTION_INTERFACE.md`).
 * **Audit logging** for prevention decisions.
 
 These components are maintained primarily under the model and frontend portions of the repository.
