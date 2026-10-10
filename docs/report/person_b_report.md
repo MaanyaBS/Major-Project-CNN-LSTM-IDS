@@ -277,8 +277,12 @@ temporary block; input sanitisation for XSS stays recommendation-only.
   switch removed, allow-list removed, a locked class unlocked, the dataset
   argument ignored, duplicate rules allowed, a stale timer allowed to remove
   a newer rule, and so on); a test failed every time.
-- **End-to-end:** a real rule was created and removed on schedule in an
-  elevated terminal.
+- **End-to-end on the real Windows Firewall** (`model/live_check_prevention.py`,
+  22/22 checks, `model/results/prevention_live_check.txt`): real rules added
+  once per target with no duplicates, real addresses refused, temporary rules
+  removed by their timer, revoke working with the kill switch off, and
+  recovery after a simulated restart. Only TEST-NET addresses are used, and
+  every rule is removed at the end.
 - Writing the tests found three engine bugs, all fixed: revocations were
   logged without the rule name, timer expiry was not logged, and non-string
   targets were not explicitly refused. Integration with the backend found two

@@ -135,10 +135,14 @@ requires the kill switch to be on.
 - All safety-refusal paths tested: disabled switch, real-world IP, deny-list
   addresses, malformed input, unknown action type — all correctly refused
   and logged with a clear reason.
-- Real execution tested end-to-end in an elevated terminal: rule genuinely
-  created (confirmed via `netsh advfirewall firewall show rule`), then
-  genuinely auto-removed after its duration elapsed, process kept alive
-  throughout to properly exercise the timer.
+- Real execution tested end-to-end against the Windows Firewall, in an
+  elevated terminal, on the current engine: `python model/live_check_prevention.py`
+  (22/22 checks on 2026-10-10, `model/results/prevention_live_check.txt`).
+  Real `netsh` rules confirm: one in + one out rule per block, no duplicates
+  when the same target repeats, real addresses refused, temporary rules
+  removed by their timer, revoke working with the kill switch off, restart
+  recovery, and nothing added with the switch off. Test addresses only;
+  every rule it creates is removed at the end.
 - `sweep_expired_rules()` tested against 4 synthetic scenarios (expired /
   not-yet-expired / persistent / already-revoked) — correct in all four, and
   confirmed idempotent (safe to call repeatedly).

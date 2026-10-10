@@ -1,0 +1,49 @@
+======================================================================
+PREVENTION ENGINE - LIVE FIREWALL CHECK
+======================================================================
+System   : Windows-11-10.0.26200-SP0
+Python   : 3.13.2
+Timers shortened for the check: drop_connection 8 s, rate_limit 12 s
+Targets  : TEST-NET only (192.0.2.66, 198.51.100.20, 203.0.113.7, 203.0.113.8)
+
+Firewall : Windows Firewall (netsh advfirewall)
+Started  : 2026-10-10T05:21:32+00:00
+
+1. block_ip adds one inbound and one outbound rule
+PASS  execute_action reports executed
+PASS  firewall holds exactly 2 rules (in + out)  (found 2)
+
+2. the same attacker flagged again
+PASS  5 repeats all return already_active
+PASS  still exactly 2 rules (no duplicates)  (found 2)
+
+3. real addresses are refused
+PASS  8.8.8.8 refused  (8.8.8.8 is outside the allowed demo scope (RFC 5737 TEST-NET ranges on)
+PASS  no rule exists for 8.8.8.8
+PASS  192.168.1.1 refused  (192.168.1.1 is outside the allowed demo scope (RFC 5737 TEST-NET range)
+PASS  no rule exists for 192.168.1.1
+
+4. temporary rule removed by its timer (drop_connection, 8 s)
+PASS  added  (found 2)
+PASS  removed on schedule  (found 0 after the timer)
+
+5. revoke with the kill switch OFF
+PASS  revoke reports revoked
+PASS  both rules removed  (found 0)
+PASS  revoke of a real address refused  (8.8.8.8 is outside the allowed demo scope (RFC 5737 TEST-NET ranges on)
+
+6. restart recovery (rate_limit 12 s + a persistent block)
+PASS  both added
+PASS  startup sweep removes nothing still due  ([])
+PASS  after restart, the persistent block is remembered (already_active)
+PASS  still exactly 2 rules  (found 2)
+PASS  the restarted timer removed the rate_limit rule  (found 0)
+PASS  persistent block revoked
+
+7. kill switch OFF: nothing is added
+PASS  refused as disabled
+PASS  no rule exists
+
+PASS  cleanup: no test rules left in the firewall  ([])
+
+22/22 checks passed
