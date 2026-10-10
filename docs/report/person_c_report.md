@@ -5,9 +5,10 @@
 ### Method
 
 We use **SHAP KernelExplainer** (Lundberg & Lee, 2017) to generate local, per-window
-feature attributions for each CNN-LSTM prediction. The explainer is an exact Shapley
-value computation (model-agnostic linear-sampling hybrid) run with `nsamples=100` on a
-flattened representation of each window.
+feature attributions for each CNN-LSTM prediction. The explainer is a model-agnostic
+Shapley value approximation run with `nsamples=1000` over **20 grouped features** (each
+feature across all 10 timesteps, via `DenseData` groups) on a flattened representation
+of each window.
 
 We originally specified **GradientExplainer**, and measured it against KernelExplainer on
 the actual CNN-LSTM v2 model before switching. GradientExplainer did not hold up on three
@@ -16,8 +17,8 @@ counts that matter for a dashboard explanation:
 | Property | GradientExplainer | KernelExplainer (shipped) |
 |---|---|---|
 | Additivity error (`base + Σϕ` vs model output) | ~1.3 × 10⁻¹ (e.g. sum 0.903 vs required 0.988 — a 9% shortfall) | ~1 × 10⁻⁹ (measured max 7.23 × 10⁻⁹) |
-| Determinism | Unstable — same input returned 0.693 / 0.903 / 1.043 on repeated runs | Deterministic (seeded) |
-| Latency per window | 1–16 s | 137–200 ms |
+| Determinism | Unstable — same input returned 0.693 / 0.903 / 1.043 on repeated runs | Deterministic (seeded); seed-to-seed r = 0.96 |
+| Latency per window | 1–16 s | ~1.5 s (nsamples=1000; ~0.5 s at nsamples=300, r = 0.92) |
 
 Additivity is the property that makes an explanation trustworthy: if the attributions do
 not sum to the prediction they are explaining, they cannot be read as "these are the
@@ -30,7 +31,8 @@ which is precisely the number needed to display the additive decomposition.
 
 KernelExplainer is normally considered too slow for recurrent models, but that concern
 applies to explaining large batches. We explain **one window at a time, on demand**, so
-the 100-sample cost is acceptable at ~137 ms.
+the 1000-sample cost is acceptable at ~1.5 s (~0.5 s at `nsamples=300`, which still
+measures r = 0.92 against the converged reference).
 
 ### Background Distribution
 
@@ -69,14 +71,22 @@ silently show approximate explanations as if they were exact.
    is required, not cosmetic: a `(n, 10, 20)` array is interpreted by SHAP as an *image*
    stack, and the tabular masker rejects it. The model itself still receives the proper
    `(1, 10, 20)` tensor through an internal wrapper, so predictions are unaffected.
-3. KernelExplainer is queried with `nsamples=100` under `np.random.seed(0)`; KernelExplainer
-   draws from the global NumPy RNG, and without the seed the unseeded spread was 0.17 —
-   large enough to change the displayed ranking between two clicks.
-4. The raw SHAP output is sliced to the predicted class dimension.
-5. Per-feature attributions are obtained by **summing** across the 10 timesteps, not
-   averaging. Summation is required for the additivity check to hold:
-   `base_value + Σϕ == f(x)`. An average silently divides the explanation by 10 and breaks
-   that identity.
+3. KernelExplainer is given **one group per feature** (that feature at all 10 timesteps,
+   via the internal `shap.utils._legacy.DenseData`), so it estimates 20 grouped values
+   rather than 200 scalars. Measured against a converged reference (5,000 samples, stable
+   seed-to-seed), the earlier 200-scalar setup did not hold up: r = 0.34 agreement, 2.2/5
+   of the same top-5 features, and r = 0.08 for the same window across seeds. Two causes:
+   shap 0.52's default `l1_reg="num_features(10)"` silently zeroes all but 10 of the 200
+   inputs, and 100 samples cannot estimate 200 values. The grouped setup measures
+   r = 0.98, 4.6/5 top-5, r = 0.96 across seeds. The exact 1e-9 additivity held in *both*
+   setups — it is a property of the constrained regression, not evidence the values are
+   right. `shap` is pinned to `==0.52.0` because `DenseData` is internal.
+4. The query runs under `np.random.seed(0)` with `nsamples=1000` and `l1_reg=False`;
+   KernelExplainer draws from the global NumPy RNG, so without the seed the same window
+   returns slightly different attributions on each click.
+5. The raw SHAP output is sliced to the predicted class dimension. With one group per
+   feature this is already a 20-value per-feature vector — no aggregation step, so
+   nothing is summed or averaged over timesteps.
 6. Attributions are ranked by `|shap_value|` and returned with the raw feature means —
    enough data to render diverging bar charts or waterfall plots in the frontend.
 
@@ -99,13 +109,15 @@ The frontend (`dashboard.tsx`) displays SHAP attributions as:
 - The exactness of the attribution now depends entirely on the background being real.
   While `shap_background.npy` is missing, the service is in `synthetic_fallback` mode and
   attributions must be treated as indicative. `/api/health` reports which mode is active.
-- Attribution cost is ~137 ms per window, so explaining every window in a 2000-window
+- Attribution cost is ~1.5 s per window, so explaining every window in a 2000-window
   batch is not practical on demand; the UI explains the selected window only.
-- Timestep-specific contribution patterns are not surfaced. Summing across the 10
-  timesteps is required for additivity, but it means a feature that spikes on one
-  timestep and is flat on the other nine is displayed with the same weight as a feature
-  that is consistently elevated. Separating the two would require a 3D attribution
-  display, which is out of scope for the current UI.
+- Attributions are grouped per feature across all 10 timesteps, by design: the model
+  never consumes one timestep of one feature in isolation, so a per-timestep value
+  would claim a resolution the measurement does not have. The consequence is that a
+  feature that spikes on one timestep and is flat on the other nine is displayed with
+  the same weight as a feature that is consistently elevated. Separating those would
+  require a finer grouping scheme and a 3D attribution display, which is out of scope
+  for the current UI.
 
 ---
 

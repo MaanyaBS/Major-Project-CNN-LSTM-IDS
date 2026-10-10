@@ -36,26 +36,49 @@ prediction:
     be recomputed by predicting on the background.
 
 KernelExplainer is model-agnostic and, for a model this small, fast enough to be
-interactive. It satisfies additivity exactly (measured error ~1e-9, i.e. float
-precision) because the Shapley values are computed from weighted linear
-regressions that are constrained to sum to f(x) - E[f(x)].
+interactive.
 
-Two implementation details matter:
-  - The window is FLATTENED to 200 columns (10 timesteps x 20 features) before
-    being handed to shap. A (n, 10, 20) array is ambiguous to shap - it tries
-    to interpret it as an image stack and the tabular masker rejects it. The
-    flat form is also what we want: the model still sees (1, 10, 20) via the
-    wrapper, but shap explains 200 independent scalar inputs.
+Explained features: 20 groups, not 200 scalars
+----------------------------------------------
+The window is flattened to 200 columns (10 timesteps x 20 features) before
+being handed to shap - a (n, 10, 20) array is ambiguous to shap, which tries
+to interpret it as an image stack. But shap does NOT explain those 200
+scalars independently: DenseData is given one group per feature (that feature
+at all 10 timesteps), so KernelExplainer estimates 20 grouped values - exactly
+the 20 features the dashboard shows.
+
+Measured against a converged reference (KernelExplainer at 5,000 samples,
+whose results are stable from seed to seed), the 200-scalar setup does not
+hold up even though its additivity error is ~1e-9:
+
+  setup                          agreement r   same top-5   same window, new seed
+  200 scalars, nsamples=100         0.34         2.2 / 5          0.08
+  20 groups,   nsamples=1000        0.98         4.6 / 5          0.96
+
+The 200-scalar setup failed for two reasons: shap 0.52's default
+l1_reg="num_features(10)" silently keeps only 10 of the 200 inputs and zeroes
+the rest, and 100 reference samples are far too few to estimate 200 values.
+Exact additivity (1e-9) held by construction in BOTH setups - it is a property
+of the constrained regression, not evidence that the values are right. The
+fixed seed made the bad values repeatable, not correct: a different seed gave
+an almost unrelated answer (r = 0.08). Grouping is also honest about what the
+model consumes: it never looks at one timestep of one feature in isolation,
+so claiming a per-timestep attribution would overstate the resolution we have.
+
+The remaining implementation details:
+  - nsamples=1000 costs ~1.5 s per window (about half that on a fast machine).
+    nsamples=300 gives r = 0.92 in ~0.5 s if that is ever too slow.
   - np.random.seed() is set before each call. KernelExplainer draws its
-    reference samples from the global numpy RNG, so without this the same window
-    returns visibly different attributions on every click (measured spread
-    0.17). Seeding makes an explanation reproducible.
+    reference samples from the global numpy RNG, so without this the same
+    window returns different attributions on every click (measured r = 0.96
+    between seeds with the grouped setup - close, but not identical).
+  - shap.utils._legacy.DenseData is an internal class, which is why
+    requirements.txt pins shap==0.52.0 exactly.
 
-Attributions are SUMMED over the 10 timesteps to get one number per feature.
-That keeps local accuracy intact in the form the API returns:
+Local accuracy still holds in the form the API returns:
     base_value + sum(attributions) == model output for the predicted class
-Averaging over timesteps would divide every contribution by 10 and break that
-identity, which is why base_value, f_x and the measured error are all returned.
+There is no aggregation step at all now - the 20 grouped values ARE the
+per-feature attributions, so nothing is summed or averaged over timesteps.
 """
 
 from pathlib import Path
@@ -73,9 +96,11 @@ BACKGROUND_PATH = Path(__file__).resolve().parent / "shap_background.npy"
 # still works rather than failing closed.
 FALLBACK_BACKGROUND_SEQUENCES = 32
 
-# KernelExplainer reference samples per explanation. 100 gives exact additivity
-# and ~200 ms per window; higher is not more accurate here, only slower.
-KERNEL_NSAMPLES = 100
+# KernelExplainer reference samples per explanation. 1000 is the measured
+# convergence point against a 5,000-sample reference (r = 0.98); 100 was far
+# too few to estimate anything reliably. nsamples=300 gives r = 0.92 at about
+# a third of the cost if this is ever too slow.
+KERNEL_NSAMPLES = 1000
 
 # Fixed so repeated clicks on the same window return the same explanation.
 EXPLAIN_SEED = 0
@@ -96,14 +121,22 @@ class ShapService:
 
     def init(self):
         import shap
+        from shap.utils._legacy import DenseData  # internal API - hence the shap pin
 
         self.background, self.background_source = self._load_background()
 
         # Flatten (n, SEQ_LEN, NUM_FEATURES) -> (n, SEQ_LEN * NUM_FEATURES) so
-        # shap treats the window as tabular independent features rather than
-        # guessing it is an image stack.
+        # shap treats the window as tabular rather than guessing it is an
+        # image stack.
         self.background_flat = self.background.reshape(len(self.background), -1)
-        self.explainer = shap.KernelExplainer(self._predict_flat, self.background_flat)
+
+        # One group per feature = that feature at all 10 timesteps, so shap
+        # explains 20 grouped features - exactly what the dashboard shows -
+        # instead of 200 scalars it cannot estimate from 1000 samples.
+        groups = [[t * NUM_FEATURES + f for t in range(SEQ_LEN)] for f in range(NUM_FEATURES)]
+        self.explainer = shap.KernelExplainer(
+            self._predict_flat, DenseData(self.background_flat, FEATURE_COLS, groups)
+        )
         self.ready = True
 
     def _predict_flat(self, flat):
@@ -155,21 +188,29 @@ class ShapService:
         f_x = float(probs[pred_idx])
 
         # KernelExplainer samples from the global numpy RNG, so seed it to keep
-        # repeated explanations of the same window identical.
+        # repeated explanations of the same window identical. l1_reg=False
+        # matters: shap 0.52's default "num_features(10)" silently zeroes all
+        # but 10 features, which is what made the old 200-scalar setup so
+        # unreliable. With 20 groups there is nothing to prune and nothing
+        # to gain from pruning.
         np.random.seed(EXPLAIN_SEED)
-        shap_values = self.explainer.shap_values(X_flat, nsamples=KERNEL_NSAMPLES, silent=True)
+        shap_values = self.explainer.shap_values(
+            X_flat, nsamples=KERNEL_NSAMPLES, l1_reg=False, silent=True
+        )
         sv = np.asarray(shap_values)
 
         if sv.ndim == 3 and sv.shape[-1] == len(probs):
-            flat_attr = sv[0, :, pred_idx]
-        elif sv.ndim == 2:
-            flat_attr = sv[0]
+            # (1, 20 groups, n_classes): one value per feature group.
+            feature_attr = sv[0, :, pred_idx]
+        elif sv.ndim == 2 and sv.shape[0] == 1 and sv.shape[1] == NUM_FEATURES:
+            feature_attr = sv[0]
         else:
             raise RuntimeError(f"Unexpected SHAP output shape: {sv.shape}")
 
-        # (10 timesteps x 20 features) -> SUM over timesteps, so that
-        # base_value + sum(feature_attr) == model output.
-        feature_attr = flat_attr.reshape(SEQ_LEN, NUM_FEATURES).sum(axis=0)
+        # No aggregation step: the explainer was given one group per feature
+        # (that feature at all 10 timesteps), so feature_attr already holds
+        # exactly NUM_FEATURES values. Summing or averaging here would either
+        # break additivity or divide every contribution by SEQ_LEN.
         raw_means = X_raw.mean(axis=0)
 
         base_value = self._base_value(pred_idx)
@@ -197,7 +238,7 @@ class ShapService:
             "f_x": f_x,
             "attributions": attributions,
             "all_features": [a["feature"] for a in attributions],
-            "aggregation": "sum_over_timesteps",
+            "aggregation": "grouped_by_feature_over_timesteps",
             "explainer": "KernelExplainer",
             "timesteps": int(SEQ_LEN),
             "background_source": self.background_source,
