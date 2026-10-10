@@ -165,9 +165,10 @@ the single-flow baseline (`model/results/mu_iot/FINDINGS.md`).
   URG_FC). A rare non-default value becomes an extreme scaled input: RTSP
   method `SETUP` scales to about 207, where typical inputs are within ±3.
   Predictions on such flows are less trustworthy.
-- **Dataset properties (for the report).** Two MU-IoT files are the same
-  Slowloris capture with different timestamps. The DNS amplification
-  recording is too small to learn (618 test windows, 0% correct). Flow
+- **Dataset properties (for the report).** Two MU-IoT files
+  (`Botnet_Slowloris.csv`, `Slowloris.csv`) are byte-identical, so one
+  Slowloris recording is counted twice. The DNS amplification recording is
+  too small to learn (4,243 raw rows, 618 test windows, 0% correct). Flow
   timestamps were removed as inputs because each file is one class with its
   own time range, so timestamps would reveal the answer.
 

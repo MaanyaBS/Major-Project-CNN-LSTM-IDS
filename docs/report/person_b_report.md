@@ -259,24 +259,35 @@ rules through `netsh`, behind independent checks:
    touched;
 3. a deny-list (loopback, broadcast, unspecified) and an administrator check.
 
-Temporary actions expire on a timer, a startup sweep removes rules a crash
-left behind, and every attempt is logged. Rate limiting is approximated by a
+Each rule is added once per target, however many windows flag it (500
+windows from one IP give 1 rule). Temporary actions expire on a timer; on
+startup, a sweep removes rules a crash left behind, restarts timers that are
+not yet due and remembers rules still in force. Revoking works with the kill
+switch off, so an action can always be undone, but only for TEST-NET targets.
+Every attempt is logged. Rate limiting is approximated by a
 temporary block; input sanitisation for XSS stays recommendation-only.
 
 ### 7.3 Verification
 
-- **22 automated tests** (`model/test_prevention.py`) cover both policies and
-  every refusal path, including adversarial targets such as
+- **31 automated tests** (`model/test_prevention.py`) cover both policies,
+  one rule per target, revoking, restart recovery and every refusal path, including adversarial targets such as
   `192.0.2.10,8.8.8.8` (netsh list syntax), CIDR ranges, IPv6 and
   non-string input. They never call the real firewall.
-- **Mutation check:** the code was broken deliberately in 17 ways (kill
+- **Mutation check:** the code was broken deliberately in 26 ways (kill
   switch removed, allow-list removed, a locked class unlocked, the dataset
-  argument ignored, and so on); a test failed every time.
-- **End-to-end:** a real rule was created and removed on schedule in an
-  elevated terminal.
+  argument ignored, duplicate rules allowed, a stale timer allowed to remove
+  a newer rule, and so on); a test failed every time.
+- **End-to-end on the real Windows Firewall** (`model/live_check_prevention.py`,
+  22/22 checks, `model/results/prevention_live_check.txt`): real rules added
+  once per target with no duplicates, real addresses refused, temporary rules
+  removed by their timer, revoke working with the kill switch off, and
+  recovery after a simulated restart. Only TEST-NET addresses are used, and
+  every rule is removed at the end.
 - Writing the tests found three engine bugs, all fixed: revocations were
   logged without the rule name, timer expiry was not logged, and non-string
-  targets were not explicitly refused.
+  targets were not explicitly refused. Integration with the backend found two
+  more, also fixed: the same rule was added once per flagged window, and a
+  revoke was refused whenever the kill switch was off.
 
 ### 7.4 Measured Effect
 
@@ -332,6 +343,27 @@ the evaluated model was kept.
 - The live feed replays recorded traffic; nothing is captured from a network.
 - The deployed CICIDS2017 model kept its first-epoch weights; longer or
   slower training has not been explored.
+- **Feature selection saw test rows.** The 20 CICIDS2017 features were
+  ranked by random-forest importance on a random 100,000-row sample of the
+  whole dataset, before the chronological split (`person_a_report.md`, 3.1).
+  Some of those rows are now test rows: a mild selection leak. Its effect is
+  likely small (a ranking from 100,000 of 2,655,060 rows) but was not
+  measured; removing it means re-selecting features on training rows only
+  and retraining.
+- **CICIDS2017 validation overlaps training.** v2's validation set is a
+  random 10% of the sliding training windows, and neighbouring windows share
+  9 of their 10 flows. This weakened the early-stopping signal (it kept
+  epoch 1), not the test score, which comes from the separate chronological
+  test set. MU-IoT validation uses separate blocks, so it shares no rows with
+  training.
+- **The CICIDS2017 test is not unseen attacks.** It is the later 20% of the
+  same capture sessions used in training. Only the MU-IoT held-out
+  recordings (macro F1 0.68) measure attacks from recordings never seen.
+- **One training run per model.** No repeated seeds, so the reported scores
+  carry no error margin.
+- **Input is pre-extracted flow features.** Turning raw packets into
+  CICFlowMeter-style flow records is outside the system; "real-time" here
+  means per-window inference on flow records as they arrive.
 
 ---
 

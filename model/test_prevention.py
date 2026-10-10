@@ -62,7 +62,7 @@ def sandbox(enabled=True, admin=True, add_error=None, durations=None):
     calls = {"added": [], "removed": []}
     saved = {k: getattr(pe, k) for k in ("PREVENTION_EXECUTION_ENABLED", "_is_admin", "_add_block_rule",
                                          "_remove_block_rule", "subprocess", "EXECUTION_LOG_PATH",
-                                         "ACTION_DURATIONS")}
+                                         "ACTION_DURATIONS", "_active_rules")}
 
     def fake_add(rule_name, target_ip):
         if add_error:
@@ -77,9 +77,13 @@ def sandbox(enabled=True, admin=True, add_error=None, durations=None):
         pe.subprocess = _NoRealNetsh
         pe.EXECUTION_LOG_PATH = Path(tmp) / "log.jsonl"
         pe.ACTION_DURATIONS = dict(saved["ACTION_DURATIONS"], **(durations or {}))
+        pe._active_rules = {}
         try:
             yield calls
         finally:
+            for entry in pe._active_rules.values():  # no timer may outlive the sandbox
+                if entry["timer"] is not None:
+                    entry["timer"].cancel()
             for k, v in saved.items():
                 setattr(pe, k, v)
 
@@ -316,6 +320,123 @@ def test_sweep_cleans_only_stale_temporary_rules_and_is_idempotent():
         assert pe.sweep_expired_rules() == [stale]
         assert calls["removed"] == [stale]
         assert pe.sweep_expired_rules() == [], "second sweep was not a no-op"
+
+
+# ----------------------------------------------------------------------
+# Execution engine: one rule per target, revoke, restart recovery
+# ----------------------------------------------------------------------
+
+def wait_until(condition, timeout=3.0):
+    deadline = time.time() + timeout
+    while not condition() and time.time() < deadline:
+        time.sleep(0.02)
+    return condition()
+
+
+def test_same_target_flagged_repeatedly_adds_one_rule():
+    with sandbox() as calls:
+        results = [pe.execute_action("block_ip", "192.0.2.10", "DDoS", 0.99) for _ in range(50)]
+        assert len(calls["added"]) == 1, f"rule added {len(calls['added'])} times"
+        assert results[0]["executed"] is True
+        assert all(r["executed"] is False and r["already_active"] for r in results[1:])
+        assert sum(1 for r in log_records() if r.get("executed")) == 1
+        # A different action or target is a different rule.
+        pe.execute_action("block_ip", "192.0.2.11", "DDoS", 0.99)
+        pe.execute_action("rate_limit", "192.0.2.10", "DoS Hulk", 0.99)
+        assert len(calls["added"]) == 3
+
+
+def test_rule_can_be_applied_again_after_revoke_or_expiry():
+    with sandbox(durations={"drop_connection": 0.05}) as calls:
+        pe.execute_action("block_ip", "192.0.2.10", "DDoS", 0.99)
+        pe.revoke_action("block_ip", "192.0.2.10")
+        assert pe.execute_action("block_ip", "192.0.2.10", "DDoS", 0.99)["executed"] is True
+
+        rule = pe.execute_action("drop_connection", "192.0.2.20", "DoS slowloris", 0.99)["rule_name"]
+        assert wait_until(lambda: rule in calls["removed"]), "temporary rule did not expire"
+        assert pe.execute_action("drop_connection", "192.0.2.20", "DoS slowloris", 0.99)["executed"] is True
+        assert len(calls["added"]) == 4
+
+
+def test_stale_timer_never_removes_a_newer_rule():
+    with sandbox(durations={"drop_connection": 0.2}) as calls:
+        rule = pe.execute_action("drop_connection", "192.0.2.30", "DoS slowloris", 0.99)["rule_name"]
+        pe.revoke_action("drop_connection", "192.0.2.30")            # cancels the 0.2 s timer
+        pe.ACTION_DURATIONS["drop_connection"] = 30
+        pe.execute_action("drop_connection", "192.0.2.30", "DoS slowloris", 0.99)  # new rule, 30 s
+        time.sleep(0.4)
+        assert calls["removed"] == [rule], f"new rule removed early: {calls['removed']}"
+        assert rule in pe._active_rules
+
+
+def test_timer_that_already_fired_cannot_remove_a_newer_rule():
+    # The race cancel() cannot stop: the old timer has fired and is waiting
+    # for the lock while the rule is revoked and added again.
+    with sandbox(durations={"drop_connection": 30}) as calls:
+        rule = pe.execute_action("drop_connection", "192.0.2.31", "DoS slowloris", 0.99)["rule_name"]
+        old_token = pe._active_rules[rule]["token"]
+        pe.revoke_action("drop_connection", "192.0.2.31")
+        pe.execute_action("drop_connection", "192.0.2.31", "DoS slowloris", 0.99)
+        pe._expire_rule(rule, "drop_connection", "192.0.2.31", old_token)   # the late callback
+        assert calls["removed"] == [rule] and rule in pe._active_rules
+
+
+def test_revoke_cancels_the_expiry_timer():
+    with sandbox(durations={"drop_connection": 30}):
+        rule = pe.execute_action("drop_connection", "192.0.2.32", "DoS slowloris", 0.99)["rule_name"]
+        timer = pe._active_rules[rule]["timer"]
+        pe.revoke_action("drop_connection", "192.0.2.32")
+        assert timer.finished.is_set(), "timer still pending after revoke"
+
+
+def test_revoke_works_with_switch_off_but_only_in_scope():
+    with sandbox() as calls:
+        pe.execute_action("block_ip", "192.0.2.10", "DDoS", 0.99)
+        pe.PREVENTION_EXECUTION_ENABLED = False                       # e.g. restarted without the env var
+        r = pe.revoke_action("block_ip", "192.0.2.10")
+        assert r["revoked"] is True and calls["removed"] == [r["rule_name"]]
+        for action, target in [("block_ip", "8.8.8.8"), ("block_ip", "192.0.2.10,8.8.8.8"),
+                               ("block_ip", None), ("wipe_disk", "192.0.2.10")]:
+            r = pe.revoke_action(action, target)
+            assert r["revoked"] is False and r["reason"], f"{action} {target!r} was not refused"
+        assert len(calls["removed"]) == 1, "a refused revoke reached the firewall"
+
+
+def test_revoke_needs_admin():
+    with sandbox(admin=False) as calls:
+        r = pe.revoke_action("block_ip", "192.0.2.10")
+        assert r["revoked"] is False and "administrator" in r["reason"]
+        assert not calls["removed"]
+
+
+def test_restart_restores_active_rules_and_pending_expiry():
+    with sandbox() as calls:
+        persistent = pe._rule_name("block_ip", "192.0.2.40")
+        pending = pe._rule_name("drop_connection", "192.0.2.41")
+        write_log([
+            {"timestamp": ago(3600), "rule_name": persistent, "action": "block_ip",
+             "target_ip": "192.0.2.40", "executed": True, "auto_expires_in_seconds": None},
+            {"timestamp": ago(1), "rule_name": pending, "action": "drop_connection",
+             "target_ip": "192.0.2.41", "executed": True, "auto_expires_in_seconds": 1.3},
+        ])
+        assert pe.sweep_expired_rules() == []                          # neither is due yet
+        assert pe.execute_action("block_ip", "192.0.2.40", "DDoS", 0.99)["already_active"]
+        assert not calls["added"], "a rule already in force was added again after restart"
+        assert wait_until(lambda: pending in calls["removed"]), "pending expiry was not rescheduled"
+        assert any(r.get("expired") and r.get("rule_name") == pending for r in log_records())
+
+
+def test_refusals_and_skips_do_not_hide_a_stale_rule_from_the_sweep():
+    with sandbox() as calls:
+        stale = pe._rule_name("rate_limit", "192.0.2.50")
+        write_log([{"timestamp": ago(3600), "rule_name": stale, "action": "rate_limit",
+                    "target_ip": "192.0.2.50", "executed": True, "auto_expires_in_seconds": 120}])
+        pe._is_admin = lambda: False
+        pe.revoke_action("rate_limit", "192.0.2.50")                   # refused: not admin
+        with open(pe.EXECUTION_LOG_PATH, "a", encoding="utf-8") as f:  # a record naming the rule
+            f.write(json.dumps({"timestamp": ago(10), "rule_name": stale,   # without changing it
+                                "executed": False, "reason": "refused"}) + "\n")
+        assert pe.sweep_expired_rules() == [stale]
 
 
 if __name__ == "__main__":

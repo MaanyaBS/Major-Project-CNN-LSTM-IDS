@@ -150,12 +150,15 @@ for TCP scans). Exact definitions are in the MU-IoT paper.
 ## Data-quality notes (for the report)
 
 - `Botnet_Slowloris.csv` (MU_SESSION_005) and `Slowloris.csv` (MU_SESSION_022)
-  are the same capture with different timestamps: ~60% of 022's sampled rows
-  are identical to 005's (control: 0%). The two copies are aligned, so they
-  do not leak between train and test (0.7%), but one recording is counted
-  twice. This is a property of the MU-IoT dataset itself.
-- MU_SESSION_002 (DNS amplification DDoS) is tiny (618 test windows) and
-  scores 0% — too little data to learn.
+  are byte-identical files: a full comparison of the raw CSVs matches exactly
+  (150,577 rows each; `docs/report/person_a_report.md`, 12.1). One recording
+  is therefore counted twice, as two sessions. The two copies were split the
+  same way, so they do not leak between train and test (0.7% overlap), and
+  their test results are identical (22,530 windows, 0.932 accuracy each).
+  This is a property of the MU-IoT dataset itself. (An earlier version of
+  this note said "different timestamps"; the raw-file comparison corrects it.)
+- MU_SESSION_002 (DNS amplification DDoS) is tiny (4,243 raw rows, 618 test
+  windows) and scores 0% — too little data to learn.
 - Normal and Spyware each come from a single recording, so their test scores
   come from the same recording as their training data (optimistic).
 - FPT/LPT (flow timestamps) were removed as model inputs: each file has its own
