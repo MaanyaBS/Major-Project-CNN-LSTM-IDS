@@ -184,6 +184,13 @@ def execute_for_result(result, source_ip):
 
 
 def revoke(action, target_ip):
-    """Lift a persistent (non-expiring) action after human review."""
-    pe.revoke_action(action=action, target_ip=target_ip)
-    return {"revoked": True, "action": action, "target_ip": target_ip}
+    """
+    Lift a persistent (non-expiring) action after human review.
+
+    Returns the engine's own verdict as-is: revoke_action() re-checks scope
+    (TEST-NET only) and admin rights itself, works with the kill switch off,
+    and never raises - so callers must surface revoked=False rather than
+    assuming success. action/target_ip are echoed back for display.
+    """
+    outcome = pe.revoke_action(action=action, target_ip=target_ip)
+    return {**outcome, "action": action, "target_ip": target_ip}

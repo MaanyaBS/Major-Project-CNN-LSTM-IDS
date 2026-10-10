@@ -15,6 +15,12 @@ export interface Prevention {
  */
 export interface Execution {
   executed: boolean;
+  /**
+   * True when the rule was already in force for this target - the engine
+   * refuses to add the same rule twice, so a repeated attacker IP is NOT an
+   * error and must not render as a failed execution.
+   */
+  already_active?: boolean;
   reason?: string;
   rule_name?: string;
   /** null for persistent actions (block_ip / isolate_host) that never expire. */

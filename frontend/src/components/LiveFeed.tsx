@@ -30,6 +30,8 @@ interface FeedEntry {
   confidence: number;
   status: string;
   executed: boolean;
+  /** Rule already in force for this target - blocked, not a failed action. */
+  alreadyBlocked: boolean;
 }
 
 export function LiveFeed() {
@@ -79,6 +81,7 @@ export function LiveFeed() {
             confidence: r.confidence,
             status: r.prevention.status,
             executed: r.execution?.executed === true,
+            alreadyBlocked: r.execution?.already_active === true,
           },
           ...f,
         ].slice(0, FEED_CAP),
@@ -352,6 +355,15 @@ export function LiveFeed() {
                             >
                               <ShieldCheck className="h-3 w-3" /> executed
                             </span>
+                          ) : current.execution?.already_active ? (
+                            // Same rule already in force - the target IS
+                            // blocked, the engine just refused to add it twice.
+                            <span
+                              className="inline-flex items-center gap-1.5 rounded-lg border border-success/30 bg-success/[0.06] px-2.5 py-1 font-mono uppercase text-success"
+                              title={`Firewall rule ${current.execution.rule_name} was already in force - not added again.`}
+                            >
+                              <ShieldCheck className="h-3 w-3" /> already blocked
+                            </span>
                           ) : (
                             <span
                               className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.03] px-2.5 py-1 font-mono uppercase text-muted-foreground"
@@ -466,10 +478,13 @@ export function LiveFeed() {
                         </span>
                         {atk &&
                           f.status === "auto_action" &&
-                          (f.executed ? (
+                          (f.executed || f.alreadyBlocked ? (
+                            // "Already blocked" is still a blocked target -
+                            // only a recommendation with no rule in force
+                            // gets the red gavel.
                             <ShieldCheck
                               className="h-3.5 w-3.5 text-success shrink-0"
-                              aria-label="executed"
+                              aria-label={f.executed ? "executed" : "already blocked"}
                             />
                           ) : (
                             <Gavel

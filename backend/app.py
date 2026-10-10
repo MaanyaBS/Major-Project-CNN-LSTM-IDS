@@ -332,8 +332,10 @@ def prevention_revoke():
 
     Not in the original integration list, but block_ip and isolate_host stay
     applied until explicitly revoked, so the demo needs a supported way to undo
-    one. Scoped by the engine's own safety boundary: revocation re-checks
-    nothing, so it is deliberately restricted to the RFC 5737 demo ranges.
+    one. Deliberately NOT gated on the kill switch: undoing must stay possible
+    after a restart without the env var. The engine's revoke_action() does its
+    own checks (TEST-NET scope + admin rights), never raises, and its verdict
+    is surfaced as-is - a refusal is a 400, never a silent success.
     """
     payload = request.get_json(silent=True) or {}
     action = payload.get("action")
@@ -344,12 +346,10 @@ def prevention_revoke():
     if not isinstance(target_ip, str) or not target_ip:
         return jsonify({"error": "'target_ip' is required"}), 400
 
-    try:
-        pe.check_safe_to_execute(target_ip)
-    except pe.ExecutionNotPermitted as e:
-        return jsonify({"error": str(e)}), 400
-
-    return jsonify(revoke(action, target_ip))
+    outcome = revoke(action, target_ip)
+    if not outcome.get("revoked"):
+        return jsonify(outcome), 400
+    return jsonify(outcome)
 
 
 def initialize():

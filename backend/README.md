@@ -56,9 +56,12 @@ is taken from the **first flow row of each window**. Blank / `null` / `n/a` /
 non-IP values become `None`, and `None` targets are never executed.
 
 ### `POST /api/prevention/revoke`
-Body: `{ "target_ip": "192.168.1.50" }`.
+Body: `{ "action": "block_ip", "target_ip": "192.0.2.50" }`.
 Removes a demo firewall rule previously created by the execution engine and
-reports whether anything was removed.
+returns the engine's own verdict. Deliberately **not** gated on the kill
+switch — undoing must stay possible after a restart without the env var — but
+the engine re-checks scope (RFC 5737 TEST-NET only) and admin rights itself.
+A refusal comes back as HTTP 400 with `{"revoked": false, "reason": ...}`.
 
 ## Prevention execution
 

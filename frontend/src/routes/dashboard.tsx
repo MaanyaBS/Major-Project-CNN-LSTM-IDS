@@ -985,6 +985,29 @@ function ExecutionPanel({
     );
   }
 
+  // Same rule already in force for this target: not an error and not a new
+  // execution - the target is already blocked. Rendered as its own state so
+  // a repeated attacker IP never looks like a failed action.
+  if (execution.already_active) {
+    return (
+      <div className="mt-3 rounded-xl border border-success/30 bg-success/[0.03] p-4 flex items-start gap-3">
+        <ShieldCheck className="h-5 w-5 mt-0.5 shrink-0 text-success" />
+        <div className="min-w-0">
+          <div className="text-sm font-semibold text-success">
+            Already blocked — rule already in force
+          </div>
+          <div className="mt-1 text-xs text-muted-foreground font-mono break-all">
+            rule: {execution.rule_name}
+          </div>
+          <div className="mt-0.5 text-xs text-muted-foreground">
+            target <span className="font-mono">{execution.target_ip}</span> · action{" "}
+            <span className="font-mono">{execution.action}</span> · not added again
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (execution.executed) {
     const expires =
       execution.auto_expires_in_seconds == null
