@@ -1,0 +1,33 @@
+Demo CSV: demo_cicids_test.csv
+220 rows = 22 windows of 10 rows. Source: CICIDS2017 chronological test set
+(never seen in training). Label = each flow's true class, for the presenter; the model ignores it.
+
+win  rows       true class     predicted        conf  source IP      policy            expected
+  0     2-11    BENIGN         BENIGN          0.907  192.0.2.10     no_action_needed  normal traffic: no action
+  1    12-21    BENIGN         BENIGN          0.960  192.0.2.10     no_action_needed  normal traffic: no action
+  2    22-31    BENIGN         BENIGN          0.753  192.0.2.10     no_action_needed  normal traffic: no action
+  3    32-41    BENIGN         BENIGN          0.856  192.0.2.10     no_action_needed  normal traffic: no action
+  4    42-51    BENIGN         BENIGN          0.940  192.0.2.10     no_action_needed  normal traffic: no action
+  5    52-61    PortScan       PortScan        0.961  192.0.2.66     auto_action       automatic block_ip; repeats show 'already blocked'
+  6    62-71    PortScan       PortScan        0.984  192.0.2.66     auto_action       automatic block_ip; repeats show 'already blocked'
+  7    72-81    PortScan       PortScan        0.996  192.0.2.66     auto_action       automatic block_ip; repeats show 'already blocked'
+  8    82-91    BENIGN         BENIGN          0.997  192.0.2.10     no_action_needed  normal traffic: no action
+  9    92-101   BENIGN         BENIGN          0.769  192.0.2.10     no_action_needed  normal traffic: no action
+ 10   102-111   BENIGN         BENIGN          0.986  192.0.2.10     no_action_needed  normal traffic: no action
+ 11   112-121   DDoS           DDoS            1.000  198.51.100.20  auto_action       automatic block_ip; repeats show 'already blocked'
+ 12   122-131   DDoS           DDoS            1.000  198.51.100.20  auto_action       automatic block_ip; repeats show 'already blocked'
+ 13   132-141   DDoS           DDoS            1.000  198.51.100.20  auto_action       automatic block_ip; repeats show 'already blocked'
+ 14   142-151   DoS Hulk       DoS Hulk        1.000  203.0.113.7    auto_action       automatic rate_limit: removed after 120 s
+ 15   152-161   DoS Hulk       DoS Hulk        1.000  203.0.113.7    auto_action       automatic rate_limit: removed after 120 s
+ 16   162-171   DoS slowloris  DoS slowloris   0.996  203.0.113.9    auto_action       automatic drop_connection: removed after 60 s
+ 17   172-181   Bot            Bot             0.538  192.0.2.88     held_for_review   held for human review (Bot never acts automatically) - only 5 of its 10 flows are Bot, the rest BENIGN
+ 18   182-191   PortScan       PortScan        0.997  8.8.8.8        auto_action       refused: real address outside the demo scope
+ 19   192-201   BENIGN         BENIGN          0.939  192.0.2.10     no_action_needed  normal traffic: no action
+ 20   202-211   BENIGN         BENIGN          0.883  192.0.2.10     no_action_needed  normal traffic: no action
+ 21   212-221   BENIGN         BENIGN          0.947  192.0.2.10     no_action_needed  normal traffic: no action
+
+rows = line numbers in the CSV (line 1 is the header).
+Firewall actions need the backend running as administrator with
+IDS_PREVENTION_EXECUTION_ENABLED=1; otherwise every action stays 'recommended'.
+
+ALL WINDOWS AS PLANNED
