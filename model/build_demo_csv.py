@@ -45,6 +45,11 @@ from class_action_mapping import CLASS_ACTION_MAP, get_action  # noqa: E402
 from rebuild_chronological_split import FEATURE_COLS  # noqa: E402
 
 SEQ = 10
+INTEGER_COLS = {
+    "Destination Port", "Total Length of Fwd Packets", "Total Length of Bwd Packets",
+    "Fwd Packet Length Max", "Bwd Packet Length Max", "Max Packet Length", "Flow IAT Max",
+    "Subflow Fwd Packets", "Subflow Fwd Bytes", "Subflow Bwd Bytes",
+}
 # (class, windows, source IP, what the demo shows)
 PLAN = [
     ("BENIGN", 5, "192.0.2.10", "normal traffic: no action"),
@@ -136,12 +141,12 @@ def main():
             for r, lab in zip(raw, row_labels(y, v)):
                 rows.append([*r, ip, id_to_name[int(lab)]])
     df = pd.DataFrame(rows, columns=FEATURE_COLS + ["Source IP", "Label"])
-    for col in FEATURE_COLS:   # integer-valued columns written as integers, like the original files
-        vals = df[col].to_numpy()
-        if np.allclose(vals, np.round(vals), atol=1e-3):
-            df[col] = np.round(vals).astype(np.int64)
-        else:
-            df[col] = np.round(vals, 6)
+    # Undo the float rounding of scale -> inverse-scale: every feature is a count,
+    # length, time or spread, so none can be negative; counts and byte totals are
+    # whole numbers in the original files.
+    for col in FEATURE_COLS:
+        vals = np.clip(df[col].to_numpy(), 0, None)
+        df[col] = np.round(vals).astype(np.int64) if col in INTEGER_COLS else np.round(vals, 3)
 
     out_dir = Path(args.out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
