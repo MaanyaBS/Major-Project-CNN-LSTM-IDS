@@ -78,29 +78,53 @@ def test_fin_ends_the_flow_and_later_packets_start_a_new_one():
     assert flows[1].features()["Destination Port"] == 1000, "the leftover packet's own direction defines the new flow"
 
 
-def test_rst_does_not_end_the_flow():
-    # Like CICFlowMeter-V3: a scan's SYN and RST/ACK stay one flow.
-    f = one_flow([pkt(0.0, A, B, 40000, 443, 2), pkt(0.00005, B, A, 443, 40000, 6, ff.RST)])
-    assert (f["Total Length of Fwd Packets"], f["Total Length of Bwd Packets"]) == (2, 6)
+def test_rst_ends_the_flow_only_when_enabled():
+    scan = [pkt(0.0, A, B, 40000, 443, 2), pkt(0.00005, B, A, 443, 40000, 6, ff.RST)]
+    after = scan + [pkt(0.0001, A, B, 40000, 443, 0)]          # a packet after the RST
+    assert len(ff.flows_from_packets(after)) == 1, "end_on_rst=False: the RST does not end the flow"
+    assert len(ff.flows_from_packets(after, end_on_rst=True)) == 2, "end_on_rst=True: it does"
+    for rst in (False, True):                                   # a scan flow is the same either way
+        f = one_flow(scan, end_on_rst=rst)
+        assert (f["Total Length of Fwd Packets"], f["Total Length of Bwd Packets"]) == (2, 6)
+        assert close(f["Flow IAT Max"], 50.0, 1e-6)
 
 
-def test_active_timeout_splits_long_flows():
-    flows = ff.flows_from_packets([pkt(0.0, A, B, 1000, 80), pkt(121.0, A, B, 1000, 80)])
-    assert len(flows) == 2
+def test_fin_ends_the_flow_under_both_settings():
+    pk = [pkt(0.0, A, B, 1000, 80), pkt(0.1, A, B, 1000, 80, 0, ff.FIN), pkt(0.2, A, B, 1000, 80)]
+    for rst in (False, True):
+        assert len(ff.flows_from_packets(pk, end_on_rst=rst)) == 2
 
 
-def test_idle_timeout_only_when_set():
-    pk = [pkt(0.0, A, B, 1000, 80), pkt(10.0, A, B, 1000, 80)]
+def test_file_path_never_ends_flows_on_idle():
+    # CICFlowMeter-V3 has no idle termination: 100 s of silence, still one flow.
+    pk = [pkt(0.0, A, B, 1000, 443), pkt(100.0, A, B, 1000, 443), pkt(119.0, A, B, 1000, 443)]
     assert len(ff.flows_from_packets(pk)) == 1
-    assert len(ff.flows_from_packets(pk, idle_timeout_s=5)) == 2
+
+
+def test_flow_timeout_is_measured_from_flow_start():
+    # A busy flow still ends 120 s after it started (file behaviour).
+    pk = [pkt(float(t), A, B, 1000, 80) for t in range(0, 130, 5)]   # 0 .. 125 s
+    flows = ff.flows_from_packets(pk)
+    assert len(flows) == 2 and flows[0].last <= 120.0
+
+
+def test_live_tick_ends_flows_only_past_the_flow_timeout():
+    other = [pkt(float(t), B, A, 9, 9) for t in range(0, 30)]   # keeps capture time moving
+    pk = sorted([pkt(0.0, A, B, 1000, 80)] + other, key=lambda p: p.ts)
+    ended = ff.flows_from_packets(pk, live_flow_timeout_s=10)
+    first = next(f for f in ended if f.sport == 1000)
+    assert ended.index(first) == 0, "ended by the tick at ~10 s, before the end-of-capture flush"
+    table = ff.FlowTable(active_timeout_s=10)
+    table.add(pkt(0.0, A, B, 1000, 80))
+    assert table.tick(9.9) == [] and len(table.tick(10.1)) == 1
 
 
 def test_flows_returned_in_end_order():
-    table = ff.FlowTable(idle_timeout_s=1)
+    table = ff.FlowTable(active_timeout_s=1)
     table.add(pkt(0.0, A, B, 1, 80))
     table.add(pkt(0.5, A, B, 2, 80))
     table.add(pkt(0.2, A, B, 1, 80))
-    ended = table.expire(5.0)
+    ended = table.tick(5.0)
     assert [f.sport for f in ended] == [1, 2], "sorted by last packet time"
 
 

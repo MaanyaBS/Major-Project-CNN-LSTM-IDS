@@ -20,11 +20,21 @@ must be reproduced:
     CICIDS2017 was captured on wired Ethernet; Wi-Fi frames carry no such
     padding, so pad_to_ethernet=True pads every packet to Ethernet's 60-byte
     minimum frame, as if captured there.
-  - Times are microseconds. A flow ends at its first FIN packet (included)
-    or when a packet arrives more than 120 s after the flow started.
-For live capture an idle timeout (default 5 s) also ends flows, so results
-appear within seconds; this is the one deliberate difference from
-CICFlowMeter, which only used the 120 s limit.
+  - Times are microseconds.
+
+Flow termination follows CICFlowMeter-V3: a flow ends at its first FIN
+packet (included), or when a packet arrives more than 120 s after the flow
+started (the 120 s "flow timeout"). There is no idle termination: V3's 5 s
+"activity timeout" only feeds the Active/Idle statistics, which are not among
+the 20 features. Whether V3 also ended flows on RST is not certain, so
+end_on_rst is a parameter (default False until the CICIDS validation,
+model/validate_against_cicids.py, decides).
+
+Live capture (flows_from_packets(..., live_flow_timeout_s=...), used by the
+backend's live engine) checks the flow timeout every second from flow start
+and ends flows on RST: a scan flow (SYN -> RST/ACK) has the same feature
+values whether it ends at the RST or at the timeout, so scans are reported
+within seconds while long benign flows still end on FIN or the timeout.
 
 Usage:
     python model/flow_features.py capture.pcapng -o flows.csv
@@ -162,9 +172,9 @@ class FlowTable:
     ended, in the order they ended - the order the model's windows use.
     """
 
-    def __init__(self, idle_timeout_s=None, active_timeout_s=ACTIVE_TIMEOUT_S):
-        self.idle_timeout_s = idle_timeout_s
+    def __init__(self, active_timeout_s=ACTIVE_TIMEOUT_S, end_on_rst=False):
         self.active_timeout_s = active_timeout_s
+        self.end_on_rst = end_on_rst
         self.flows = {}
 
     @staticmethod
@@ -183,15 +193,13 @@ class FlowTable:
             flow = self.flows[key] = Flow(p)
         else:
             flow.add(p)
-        if p.proto == TCP and p.flags & FIN:
+        if p.proto == TCP and (p.flags & FIN or (self.end_on_rst and p.flags & RST)):
             ended.append(self.flows.pop(key))
         return ended
 
-    def expire(self, now):
-        """Flows idle longer than idle_timeout_s (no-op without an idle timeout)."""
-        if self.idle_timeout_s is None:
-            return []
-        done = [k for k, f in self.flows.items() if now - f.last > self.idle_timeout_s]
+    def tick(self, now):
+        """Live mode: end flows that started more than active_timeout_s ago."""
+        done = [k for k, f in self.flows.items() if now - f.start > self.active_timeout_s]
         return sorted((self.flows.pop(k) for k in done), key=lambda f: f.last)
 
     def flush(self):
@@ -208,29 +216,47 @@ def flows_to_frame(flows):
     return pd.DataFrame(rows, columns=FEATURE_COLS + INFO_COLS)
 
 
-def flows_from_packets(packets, idle_timeout_s=None):
-    """Packet iterable (time-ordered) -> list of ended flows, in end order."""
-    table, ended = FlowTable(idle_timeout_s=idle_timeout_s), []
+def flows_from_packets(packets, end_on_rst=False, live_flow_timeout_s=None, tick_s=1.0):
+    """
+    Packet iterable (time-ordered) -> list of ended flows, in end order.
+
+    Default: CICFlowMeter-V3 file behaviour (FIN, optional RST, 120 s flow
+    timeout checked when the flow's next packet arrives, rest at the end).
+    live_flow_timeout_s: replays the live engine instead - the flow timeout
+    is checked every tick_s seconds of capture time, from flow start.
+    """
+    live = live_flow_timeout_s is not None
+    table = FlowTable(active_timeout_s=live_flow_timeout_s if live else ACTIVE_TIMEOUT_S,
+                      end_on_rst=end_on_rst)
+    ended, next_tick = [], None
     for p in packets:
-        ended += table.expire(p.ts)
+        if live:
+            if next_tick is None:
+                next_tick = p.ts + tick_s
+            while p.ts >= next_tick:
+                ended += table.tick(next_tick)
+                next_tick += tick_s
         ended += table.add(p)
     return ended + table.flush()
 
 
-def flows_from_pcap(path, pad_to_ethernet=True, idle_timeout_s=None, max_packets=None):
-    """Wireshark .pcap/.pcapng -> DataFrame of flows (20 features + flow info)."""
+def iter_packets(path, pad_to_ethernet=True, max_packets=None):
+    """Wireshark .pcap/.pcapng -> Packet stream (IPv4 TCP/UDP only), read lazily."""
     from scapy.utils import PcapReader
 
-    def packets():
-        with PcapReader(str(path)) as reader:
-            for i, pkt in enumerate(reader):
-                if max_packets is not None and i >= max_packets:
-                    break
-                p = packet_from_scapy(pkt, pad_to_ethernet)
-                if p is not None:
-                    yield p
+    with PcapReader(str(path)) as reader:
+        for i, pkt in enumerate(reader):
+            if max_packets is not None and i >= max_packets:
+                break
+            p = packet_from_scapy(pkt, pad_to_ethernet)
+            if p is not None:
+                yield p
 
-    return flows_to_frame(flows_from_packets(packets(), idle_timeout_s))
+
+def flows_from_pcap(path, pad_to_ethernet=True, end_on_rst=False, live_flow_timeout_s=None, max_packets=None):
+    """Wireshark .pcap/.pcapng -> DataFrame of flows (20 features + flow info)."""
+    packets = iter_packets(path, pad_to_ethernet, max_packets)
+    return flows_to_frame(flows_from_packets(packets, end_on_rst, live_flow_timeout_s))
 
 
 def main():
@@ -239,10 +265,10 @@ def main():
     parser.add_argument("-o", "--output", help="CSV to write (default: <pcap>.flows.csv)")
     parser.add_argument("--no-ethernet-padding", action="store_true",
                         help="use the captured lengths as they are (not recommended for Wi-Fi captures)")
-    parser.add_argument("--idle-timeout", type=float, default=None, help="also end flows idle this many seconds")
+    parser.add_argument("--end-on-rst", action="store_true", help="also end TCP flows at the first RST")
     args = parser.parse_args()
 
-    df = flows_from_pcap(args.pcap, pad_to_ethernet=not args.no_ethernet_padding, idle_timeout_s=args.idle_timeout)
+    df = flows_from_pcap(args.pcap, pad_to_ethernet=not args.no_ethernet_padding, end_on_rst=args.end_on_rst)
     out = Path(args.output or f"{args.pcap}.flows.csv")
     df.to_csv(out, index=False)
     print(f"{len(df):,} flows -> {out}  ({len(df) // 10} model windows of 10 flows)")
