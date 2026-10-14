@@ -1,175 +1,169 @@
 """
 ==========================================================
 Project : CNN-LSTM Intrusion Detection System
-Module  : Model Evaluation & Results Export
-Author  : Maanya & Team
+Module  : CICIDS2017 CNN-LSTM v2 Evaluation
+Author  : Maanya B S, Ruthwik Sai Ganesh , Varshini D N
 ==========================================================
-Evaluates a trained Keras model, prints metrics, saves a
-classification report and confusion-matrix heatmap to disk.
+Evaluates the trained CICIDS2017 model (model/artifacts/cnn_lstm_best_v2.keras)
+on the full chronological test set built by model/rebuild_chronological_split.py
+and writes:
+
+    model/results/cnn_lstm_v2_full_test_results.txt   metrics, per-class report,
+                                                      confusion matrix
+    model/results/cnn_lstm_v2_confusion_matrix.png    row-normalised heatmap
+
+Usage (paths default to the repo layout, so it runs from any directory):
+
+    python model/evaluate_model.py
+    python model/evaluate_model.py --sequences-dir <folder with X_test_seq.npy, y_test_seq.npy>
 """
 
+import argparse
+import json
 import os
-import sys
+from datetime import datetime, timezone
+
 import numpy as np
-import matplotlib
-matplotlib.use("Agg")                       # non-interactive backend
-import matplotlib.pyplot as plt
 
-from sklearn.metrics import (
-    accuracy_score,
-    f1_score,
-    classification_report,
-    confusion_matrix,
-)
+REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
-def evaluate_model(model, X_test, y_test, class_names,
-                   output_dir="model/results"):
-    """
-    Evaluate a trained Keras model and persist results.
+def repo_path(path):
+    return path if os.path.isabs(path) else os.path.join(REPO, path)
 
-    Outputs
-    -------
-    - Console  : accuracy, weighted F1, macro F1
-    - Text file: full classification report + metrics
-                 → <output_dir>/cnn_lstm_results.txt
-    - PNG file : confusion-matrix heatmap
-                 → <output_dir>/cnn_lstm_confusion_matrix.png
 
-    Parameters
-    ----------
-    model       : tf.keras.Model – trained model with .predict()
-    X_test      : np.ndarray     – test features (3-D for CNN-LSTM)
-    y_test      : np.ndarray     – true integer-encoded labels
-    class_names : list[str]      – human-readable class names
-    output_dir  : str            – directory for saved artefacts
-    """
+def display_path(path):
+    return os.path.relpath(path, REPO).replace(os.sep, "/")
 
-    os.makedirs(output_dir, exist_ok=True)
 
-    # ---- Predict ----
-    y_prob = model.predict(X_test)
-    y_pred = np.argmax(y_prob, axis=1)
+def load_class_names(label_mapping_path):
+    with open(label_mapping_path) as f:
+        label_to_int = json.load(f)
+    id_to_name = {v: k for k, v in label_to_int.items()}
+    return [id_to_name[i] for i in sorted(id_to_name)]
 
-    # ---- Metrics ----
-    acc        = accuracy_score(y_test, y_pred)
-    f1_wt      = f1_score(y_test, y_pred, average="weighted", zero_division=0)
-    f1_macro   = f1_score(y_test, y_pred, average="macro",    zero_division=0)
-    report     = classification_report(
-        y_test, y_pred,
-        target_names=class_names,
-        zero_division=0,
-    )
-    cm = confusion_matrix(y_test, y_pred)
 
-    # ---- Console summary ----
-    print("=" * 70)
-    print("CNN-LSTM EVALUATION RESULTS")
-    print("=" * 70)
-    print(f"Accuracy         : {acc:.6f}")
-    print(f"F1-score (wt.)   : {f1_wt:.6f}")
-    print(f"F1-score (macro) : {f1_macro:.6f}")
-    print(f"\nClassification Report:\n{report}")
-    print(f"Confusion Matrix:\n{cm}")
-    print("=" * 70)
+def evaluate(model_path, X_test, y_test, class_names, batch_size):
+    from sklearn.metrics import accuracy_score, classification_report, confusion_matrix, f1_score
+    from tensorflow import keras
 
-    # ---- Save text report ----
-    results_text = (
-        "=" * 70 + "\n"
-        "CNN-LSTM EVALUATION RESULTS\n"
-        "=" * 70 + "\n\n"
-        f"Accuracy         : {acc:.6f}\n"
-        f"Precision (wt.)  : —  (see per-class report below)\n"
-        f"Recall    (wt.)  : —  (see per-class report below)\n"
-        f"F1-score  (wt.)  : {f1_wt:.6f}\n"
-        f"F1-score  (macro): {f1_macro:.6f}\n\n"
-        f"Classification Report:\n{report}\n\n"
-        f"Confusion Matrix:\n{cm}\n"
-        "=" * 70 + "\n"
-    )
+    model = keras.models.load_model(model_path)
+    preds = np.argmax(model.predict(X_test, batch_size=batch_size, verbose=1), axis=1)
+    ids = list(range(len(class_names)))
+    return {
+        "accuracy": accuracy_score(y_test, preds),
+        "weighted_f1": f1_score(y_test, preds, average="weighted", zero_division=0),
+        "macro_f1": f1_score(y_test, preds, average="macro", zero_division=0),
+        "report": classification_report(y_test, preds, labels=ids, target_names=class_names,
+                                         zero_division=0),
+        "confusion": confusion_matrix(y_test, preds, labels=ids),
+    }
 
-    txt_path = os.path.join(output_dir, "cnn_lstm_results.txt")
-    with open(txt_path, "w", encoding="utf-8") as f:
-        f.write(results_text)
-    print(f"\nResults saved to : {txt_path}")
 
-    # ---- Save confusion-matrix heatmap (matplotlib only) ----
-    fig, ax = plt.subplots(figsize=(max(8, len(class_names)),
-                                    max(6, len(class_names) * 0.8)))
-    im = ax.imshow(cm, interpolation="nearest", cmap=plt.cm.Blues)
-    ax.set_title("CNN-LSTM Confusion Matrix", fontsize=14, pad=12)
-    fig.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
+def format_report(res, class_names, args, n_test, test_shape):
+    acc, wf1, mf1 = res["accuracy"], res["weighted_f1"], res["macro_f1"]
+    lines = [
+        "=" * 78,
+        "CNN-LSTM v2 — FULL TEST SET EVALUATION RESULTS",
+        "=" * 78,
+        f"Generated : {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}",
+        f"Model     : {display_path(args.model)}",
+        "Scaler    : model/artifacts/scaler_v2.pkl (applied when the test sequences were built)",
+        "Test set  : model/rebuild_chronological_split.py output, full chronological",
+        "            day+label stratified 80/20 split (CICIDS2017)",
+        f"Test size : {n_test:,} sequences, shape {test_shape}",
+        "=" * 78,
+        "",
+        "OVERALL METRICS",
+        "-" * 78,
+        f"Accuracy          : {acc:.4f}  ({acc * 100:.2f}%)",
+        f"Weighted F1-score : {wf1:.4f}  ({wf1 * 100:.2f}%)",
+        f"Macro F1-score    : {mf1:.4f}  ({mf1 * 100:.2f}%)",
+        "",
+        "Note: the large gap between weighted F1 and macro F1 is expected and",
+        "documented — weighted F1 is dominated by BENIGN and large attack classes;",
+        "macro F1 weights every class equally and exposes real weaknesses on rare,",
+        "behavior-driven attack types (Bot, Web Attack - Brute Force/XSS). See",
+        "model/MODEL_INTERFACE.md Section 6 (Known Limitations) for full detail.",
+        "",
+        "=" * 78,
+        "PER-CLASS CLASSIFICATION REPORT",
+        "-" * 78,
+        res["report"],
+        "=" * 78,
+        "CONFUSION MATRIX",
+        "-" * 78,
+        "true\\pred".ljust(28) + "".join(f"{n[:10]:>12}" for n in class_names),
+    ]
+    for i, row in enumerate(res["confusion"]):
+        lines.append(class_names[i][:26].ljust(28) + "".join(f"{v:>12,}" for v in row))
+    lines.append("=" * 78)
+    return "\n".join(lines)
 
-    tick_marks = np.arange(len(class_names))
-    ax.set_xticks(tick_marks)
-    ax.set_xticklabels(class_names, rotation=45, ha="right", fontsize=8)
-    ax.set_yticks(tick_marks)
-    ax.set_yticklabels(class_names, fontsize=8)
 
-    # Annotate each cell
-    thresh = cm.max() / 2.0
-    for i in range(cm.shape[0]):
-        for j in range(cm.shape[1]):
-            ax.text(j, i, format(cm[i, j], "d"),
-                    ha="center", va="center",
-                    color="white" if cm[i, j] > thresh else "black",
-                    fontsize=7)
+def plot_confusion(cm, class_names, path):
+    """Row-normalised, so each row shows where that class's samples went (its recall on the diagonal)."""
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
 
-    ax.set_ylabel("True Label")
-    ax.set_xlabel("Predicted Label")
+    row_totals = cm.sum(axis=1, keepdims=True)
+    shares = np.divide(cm, row_totals, out=np.zeros(cm.shape, dtype=float), where=row_totals > 0)
+    labels = [f"{n} (n={int(t):,})" for n, t in zip(class_names, row_totals.ravel())]
+
+    fig, ax = plt.subplots(figsize=(15, 12))
+    im = ax.imshow(shares, cmap="Blues", vmin=0, vmax=1)
+    fig.colorbar(im, ax=ax, fraction=0.046, pad=0.04, label="Share of the true class")
+    ax.set_xticks(range(len(class_names)))
+    ax.set_xticklabels(class_names, rotation=45, ha="right", fontsize=9)
+    ax.set_yticks(range(len(class_names)))
+    ax.set_yticklabels(labels, fontsize=9)
+    for i in range(len(class_names)):
+        for j in range(len(class_names)):
+            if shares[i, j] >= 0.005:
+                ax.text(j, i, f"{shares[i, j]:.0%}", ha="center", va="center", fontsize=7,
+                        color="white" if shares[i, j] > 0.5 else "black")
+    ax.set_xlabel("Predicted class")
+    ax.set_ylabel("True class (test samples)")
+    ax.set_title("CNN-LSTM v2 on CICIDS2017 — confusion matrix, row-normalised")
     fig.tight_layout()
-
-    png_path = os.path.join(output_dir, "cnn_lstm_confusion_matrix.png")
-    fig.savefig(png_path, dpi=150)
+    fig.savefig(path, dpi=150)
     plt.close(fig)
-    print(f"Heatmap saved to : {png_path}")
 
 
-# ------------------------------------------------------------------
-# Smoke test: end-to-end with dummy data
-# ------------------------------------------------------------------
+def main():
+    parser = argparse.ArgumentParser(description="Evaluate the CICIDS2017 CNN-LSTM v2 model on the full test set")
+    parser.add_argument("--model", default="model/artifacts/cnn_lstm_best_v2.keras")
+    parser.add_argument("--label-mapping", default="model/artifacts/label_mapping_v2.json")
+    parser.add_argument("--sequences-dir", default="datasets/verify_run_ruthwik",
+                        help="Folder with X_test_seq.npy and y_test_seq.npy (not in git - rebuild with "
+                             "model/rebuild_chronological_split.py or download from Drive)")
+    parser.add_argument("--output-dir", default="model/results")
+    parser.add_argument("--batch-size", type=int, default=2048)
+    args = parser.parse_args()
+    args.model = repo_path(args.model)
+    args.label_mapping = repo_path(args.label_mapping)
+    args.sequences_dir = repo_path(args.sequences_dir)
+    args.output_dir = repo_path(args.output_dir)
+
+    class_names = load_class_names(args.label_mapping)
+    X_test = np.load(os.path.join(args.sequences_dir, "X_test_seq.npy"))
+    y_test = np.load(os.path.join(args.sequences_dir, "y_test_seq.npy"))
+    print(f"[+] Test set: {X_test.shape}, {len(class_names)} classes")
+
+    res = evaluate(args.model, X_test, y_test, class_names, args.batch_size)
+    report = format_report(res, class_names, args, len(y_test), X_test.shape)
+
+    os.makedirs(args.output_dir, exist_ok=True)
+    report_path = os.path.join(args.output_dir, "cnn_lstm_v2_full_test_results.txt")
+    plot_path = os.path.join(args.output_dir, "cnn_lstm_v2_confusion_matrix.png")
+    with open(report_path, "w", encoding="utf-8") as f:
+        f.write(report)
+    plot_confusion(res["confusion"], class_names, plot_path)
+
+    print(report)
+    print(f"\n[+] Saved {display_path(report_path)} and {display_path(plot_path)}")
+
+
 if __name__ == "__main__":
-
-    # Ensure project root is on sys.path
-    PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    if PROJECT_ROOT not in sys.path:
-        sys.path.insert(0, PROJECT_ROOT)
-
-    from model.cnn_lstm_architecture import build_cnn_lstm_model
-    from model.sequence_reshaping import create_sequences
-
-    # ---- Dummy data ----
-    np.random.seed(42)
-    dummy_data   = np.random.rand(1000, 20).astype("float32")
-    dummy_labels = np.random.randint(0, 15, size=(1000,))
-
-    # ---- Reshape into sequences ----
-    sequence_length = 10
-    X, y = create_sequences(dummy_data, dummy_labels, sequence_length)
-    print(f"Sequences: X={X.shape}, y={y.shape}")
-
-    # ---- Train / test split (no shuffle — sequential data) ----
-    split = int(0.8 * len(X))
-    X_train, X_test = X[:split], X[split:]
-    y_train, y_test = y[:split], y[split:]
-    print(f"Train: {X_train.shape}  |  Test: {X_test.shape}")
-
-    # ---- Build & quick-train ----
-    class_names = ['BENIGN', 'Bot', 'DDoS', 'DoS GoldenEye', 'DoS Hulk',
-                   'DoS Slowhttptest', 'DoS slowloris', 'FTP-Patator',
-                   'Heartbleed', 'Infiltration', 'PortScan', 'SSH-Patator',
-                   'Web Attack - Brute Force', 'Web Attack - Sql Injection',
-                   'Web Attack - XSS']
-    model = build_cnn_lstm_model(
-        input_shape=(sequence_length, 20),
-        num_classes=len(class_names),
-    )
-
-    model.fit(X_train, y_train, epochs=2, batch_size=32,
-              validation_split=0.1, verbose=1)
-
-    # ---- Evaluate ----
-    evaluate_model(model, X_test, y_test, class_names,
-                   output_dir="model/results")
-
-    print("\nEvaluation module test completed successfully.")
+    main()

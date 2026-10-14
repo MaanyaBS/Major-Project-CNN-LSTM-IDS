@@ -1,0 +1,58 @@
+==============================================================================
+RANDOM FOREST (single rows) vs CNN-LSTM (20-row windows) ON MU-IoT
+==============================================================================
+Generated : 2026-10-02 07:09 UTC
+Package   : /content/drive/MyDrive/Major_Project/handoff_v3
+Forest    : RandomForestClassifier(n_estimators=100, random_state=42), 2,171,995 training rows, 404 s
+Examples  : the forest classifies the last row of each CNN-LSTM test window, so both
+            models are scored on identical examples with identical labels
+
+CHECKS
+  test_within: CNN-LSTM accuracy 0.9672 / macro F1 0.9372 vs committed 0.9672 / 0.9372 - matches
+  test_within: unseen-only windows 528,967 vs committed 528,967 - matches
+  test_heldout: CNN-LSTM accuracy 0.6416 / macro F1 0.6469 vs committed 0.6416 / 0.6469 - matches
+  test_heldout: unseen-only windows 686,566 vs committed 686,566 - matches
+
+------------------------------------------------------------------------------
+TEST_WITHIN: later traffic from recordings used in training
+------------------------------------------------------------------------------
+                                   all windows        unseen-only windows   
+                                      RF    CNN-LSTM          RF    CNN-LSTM
+  windows                        586,631     586,631     528,967     528,967
+  accuracy                        0.9030      0.9672      0.9035      0.9640
+  weighted F1                     0.8978      0.9674      0.8978      0.9642
+  macro F1                        0.8142      0.9372      0.8160      0.9361
+  normal flagged as attack        0.1702      0.0921      0.1715      0.0932
+  attacks called normal           0.0462      0.0150      0.0515      0.0165
+
+  per-class F1 (all windows)          RF    CNN-LSTM
+  DDoS                            0.9275      0.9804
+  Injection                       0.9583      0.9780
+  MiTM                            0.8620      0.9630
+  Password_Hacking                0.9546      0.9898
+  Scan                            0.9487      0.9935
+  Spyware                         0.2593      0.7466
+  normal                          0.7890      0.9093
+
+------------------------------------------------------------------------------
+TEST_HELDOUT: four whole recordings never seen in training
+------------------------------------------------------------------------------
+                                   all windows        unseen-only windows   
+                                      RF    CNN-LSTM          RF    CNN-LSTM
+  windows                        731,358     731,358     686,566     686,566
+  accuracy                        0.3858      0.6416      0.4068      0.6801
+  weighted F1                     0.3543      0.6220      0.3810      0.6629
+  macro F1                        0.3999      0.6469      0.4043      0.6763
+  attacks called normal           0.0231      0.0008      0.0246      0.0009
+
+  per-class F1 (all windows)          RF    CNN-LSTM
+  DDoS                            0.0005      0.4463
+  Injection                       0.8974      0.9180
+  Password_Hacking                0.3786      0.8036
+  Scan                            0.3232      0.4197
+
+  per-recording accuracy              RF    CNN-LSTM   class
+  MU_SESSION_013                  0.3607      0.9982   Password_Hacking
+  MU_SESSION_021                  0.4954      0.4461   Scan
+  MU_SESSION_026                  0.8391      0.8823   Injection
+  MU_SESSION_031                  0.0002      0.3209   DDoS

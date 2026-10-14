@@ -1,0 +1,190 @@
+{
+  "dataset": "mu_iot",
+  "model": "model/artifacts/mu_iot/best.keras",
+  "tracks": {
+    "test_within": {
+      "windows": 586631,
+      "accuracy": 0.967209370115115,
+      "benign": {
+        "windows": 84729,
+        "auto_action": 1352,
+        "held_for_review": 6450,
+        "no_action": 76927
+      },
+      "attack": {
+        "windows": 501902,
+        "auto_action": 472095,
+        "held_for_review": 22271,
+        "no_action": 7536
+      },
+      "benign_auto_executable": 1352,
+      "auto_decisions": {
+        "total": 473447,
+        "on_predicted_attack": 469602,
+        "on_other_attack": 2493,
+        "on_benign": 1352
+      },
+      "per_true_class": {
+        "DDoS": {
+          "windows": 149566,
+          "auto_action": 145319,
+          "held_for_review": 1714,
+          "no_action": 2533
+        },
+        "Injection": {
+          "windows": 35340,
+          "auto_action": 35322,
+          "held_for_review": 14,
+          "no_action": 4
+        },
+        "MiTM": {
+          "windows": 3954,
+          "auto_action": 0,
+          "held_for_review": 3898,
+          "no_action": 56
+        },
+        "Password_Hacking": {
+          "windows": 148851,
+          "auto_action": 148697,
+          "held_for_review": 122,
+          "no_action": 32
+        },
+        "Scan": {
+          "windows": 143875,
+          "auto_action": 142755,
+          "held_for_review": 1007,
+          "no_action": 113
+        },
+        "Spyware": {
+          "windows": 20316,
+          "auto_action": 2,
+          "held_for_review": 15516,
+          "no_action": 4798
+        },
+        "normal": {
+          "windows": 84729,
+          "auto_action": 1352,
+          "held_for_review": 6450,
+          "no_action": 76927
+        }
+      },
+      "auto_by_predicted_class": {
+        "DDoS": {
+          "action": "block_ip",
+          "threshold": 0.84,
+          "auto_action": 144476,
+          "on_predicted_attack": 144031,
+          "on_other_attack": 289,
+          "on_benign": 156
+        },
+        "Injection": {
+          "action": "block_ip",
+          "threshold": 0.63,
+          "auto_action": 36424,
+          "on_predicted_attack": 35312,
+          "on_other_attack": 227,
+          "on_benign": 885
+        },
+        "Password_Hacking": {
+          "action": "block_ip",
+          "threshold": 0.71,
+          "auto_action": 150840,
+          "on_predicted_attack": 148662,
+          "on_other_attack": 1882,
+          "on_benign": 296
+        },
+        "Scan": {
+          "action": "block_ip",
+          "threshold": 0.84,
+          "auto_action": 141707,
+          "on_predicted_attack": 141597,
+          "on_other_attack": 95,
+          "on_benign": 15
+        }
+      }
+    },
+    "test_heldout": {
+      "windows": 731358,
+      "accuracy": 0.6416378845927713,
+      "benign": {
+        "windows": 0,
+        "auto_action": 0,
+        "held_for_review": 0,
+        "no_action": 0
+      },
+      "attack": {
+        "windows": 731358,
+        "auto_action": 690651,
+        "held_for_review": 40100,
+        "no_action": 607
+      },
+      "benign_auto_executable": 0,
+      "auto_decisions": {
+        "total": 690651,
+        "on_predicted_attack": 449191,
+        "on_other_attack": 241460,
+        "on_benign": 0
+      },
+      "per_true_class": {
+        "DDoS": {
+          "windows": 199620,
+          "auto_action": 179555,
+          "held_for_review": 19991,
+          "no_action": 74
+        },
+        "Injection": {
+          "windows": 132498,
+          "auto_action": 129355,
+          "held_for_review": 2742,
+          "no_action": 401
+        },
+        "Password_Hacking": {
+          "windows": 199620,
+          "auto_action": 199329,
+          "held_for_review": 291,
+          "no_action": 0
+        },
+        "Scan": {
+          "windows": 199620,
+          "auto_action": 182412,
+          "held_for_review": 17076,
+          "no_action": 132
+        }
+      },
+      "auto_by_predicted_class": {
+        "DDoS": {
+          "action": "block_ip",
+          "threshold": 0.84,
+          "auto_action": 72871,
+          "on_predicted_attack": 54027,
+          "on_other_attack": 18844,
+          "on_benign": 0
+        },
+        "Injection": {
+          "action": "block_ip",
+          "threshold": 0.63,
+          "auto_action": 121212,
+          "on_predicted_attack": 116048,
+          "on_other_attack": 5164,
+          "on_benign": 0
+        },
+        "Password_Hacking": {
+          "action": "block_ip",
+          "threshold": 0.71,
+          "auto_action": 290885,
+          "on_predicted_attack": 199112,
+          "on_other_attack": 91773,
+          "on_benign": 0
+        },
+        "Scan": {
+          "action": "block_ip",
+          "threshold": 0.84,
+          "auto_action": 205683,
+          "on_predicted_attack": 80004,
+          "on_other_attack": 125679,
+          "on_benign": 0
+        }
+      }
+    }
+  }
+}

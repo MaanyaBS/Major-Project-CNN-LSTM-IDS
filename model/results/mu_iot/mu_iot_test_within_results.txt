@@ -1,0 +1,74 @@
+==============================================================================
+CNN-LSTM MU-IoT - TEST_WITHIN EVALUATION
+==============================================================================
+Generated : 2026-09-29 17:21 UTC
+Windows   : 586,631  (sequence length 20, 38 features)
+Classes   : DDoS, Injection, MiTM, Password_Hacking, Scan, Spyware, normal
+==============================================================================
+
+OVERALL METRICS (macro/weighted F1 over the classes present in this track)
+------------------------------------------------------------------------------
+Accuracy          : 0.9672
+Weighted F1-score : 0.9674
+Macro F1-score    : 0.9372
+Normal traffic flagged as attack (false alarms): 0.0921
+Attacks classified as normal (missed attacks)  : 0.0150
+
+PER-CLASS CLASSIFICATION REPORT
+------------------------------------------------------------------------------
+                  precision    recall  f1-score   support
+
+            DDoS       0.99      0.97      0.98    149566
+       Injection       0.96      1.00      0.98     35340
+            MiTM       0.94      0.98      0.96      3954
+Password_Hacking       0.98      1.00      0.99    148851
+            Scan       1.00      0.99      0.99    143875
+         Spyware       0.73      0.76      0.75     20316
+          normal       0.91      0.91      0.91     84729
+
+        accuracy                           0.97    586631
+       macro avg       0.93      0.94      0.94    586631
+    weighted avg       0.97      0.97      0.97    586631
+
+PER-SESSION ACCURACY
+------------------------------------------------------------------------------
+MU_SESSION_001         DDoS               windows=   29,943  accuracy=0.9992
+MU_SESSION_002         DDoS               windows=      618  accuracy=0.0000
+MU_SESSION_003         DDoS               windows=    4,181  accuracy=0.7603
+MU_SESSION_004         DDoS               windows=   13,293  accuracy=0.9932
+MU_SESSION_005         DDoS               windows=   22,530  accuracy=0.9322
+MU_SESSION_006         Password_Hacking   windows=   19,962  accuracy=0.9994
+MU_SESSION_007         Password_Hacking   windows=   19,962  accuracy=0.9987
+MU_SESSION_008         Password_Hacking   windows=   17,664  accuracy=0.9985
+MU_SESSION_009         Password_Hacking   windows=   19,962  accuracy=0.9995
+MU_SESSION_010         Password_Hacking   windows=   11,004  accuracy=0.9995
+MU_SESSION_011         Password_Hacking   windows=    9,981  accuracy=0.9989
+MU_SESSION_012         Password_Hacking   windows=   20,373  accuracy=0.9987
+MU_SESSION_014         Password_Hacking   windows=    9,981  accuracy=0.9992
+MU_SESSION_015         Password_Hacking   windows=   19,962  accuracy=1.0000
+MU_SESSION_016         Injection          windows=    1,554  accuracy=0.9968
+MU_SESSION_017         MiTM               windows=    3,816  accuracy=0.9950
+MU_SESSION_018         Injection          windows=   26,992  accuracy=0.9993
+MU_SESSION_019         Scan               windows=   83,949  accuracy=0.9852
+MU_SESSION_020         Scan               windows=   59,926  accuracy=0.9939
+MU_SESSION_022         DDoS               windows=   22,530  accuracy=0.9322
+MU_SESSION_023         Spyware            windows=   20,316  accuracy=0.7633
+MU_SESSION_024         DDoS               windows=   21,485  accuracy=0.9999
+MU_SESSION_025         Injection          windows=    6,794  accuracy=1.0000
+MU_SESSION_027         MiTM               windows=      138  accuracy=0.6957
+MU_SESSION_028         DDoS               windows=   32,630  accuracy=1.0000
+MU_SESSION_029         DDoS               windows=      118  accuracy=1.0000
+MU_SESSION_030         DDoS               windows=    2,238  accuracy=0.9933
+MU_SESSION_032         normal             windows=   84,729  accuracy=0.9079
+
+CONFUSION MATRIX (rows = true, columns = predicted, all classes)
+------------------------------------------------------------------------------
+true\pred                   DDoS   Injection        MiTM  Password_H        Scan     Spyware      normal
+DDoS                     144,760         315          10       1,347         177         424       2,533
+Injection                      8      35,315           0           2          11           0           4
+MiTM                           0           0       3,893           0           0           5          56
+Password_Hacking              45           5           1     148,724          39           5          32
+Scan                         459           1          14       1,015     142,268           5         113
+Spyware                        0           0           5           5           0      15,508       4,798
+normal                       471       1,244         208         570          27       5,282      76,927
+==============================================================================

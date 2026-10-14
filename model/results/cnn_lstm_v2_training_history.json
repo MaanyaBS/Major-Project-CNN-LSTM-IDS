@@ -1,0 +1,17 @@
+{
+  "model": "model/artifacts/cnn_lstm_best_v2.keras",
+  "source": "Keras training log of the original Colab cell that trained the deployed model (notebooks/v2_training_cells.txt, cell 169). The history object itself was not saved; values are transcribed from the log, which prints 4 decimals.",
+  "settings": {
+    "class_weights": "sqrt of sklearn 'balanced' weights, no cap",
+    "validation": "10% stratified split of the training windows, random_state=42",
+    "batch_size": 512,
+    "max_epochs": 25,
+    "early_stopping": "monitor val_loss, patience 5, restore_best_weights"
+  },
+  "stopped_after_epoch": 6,
+  "best_epoch": 1,
+  "loss":         [0.1798, 0.1072, 0.0844, 0.0704, 0.0642, 0.0612],
+  "accuracy":     [0.9435, 0.9513, 0.9654, 0.9739, 0.9764, 0.9767],
+  "val_loss":     [0.1525, 0.3387, 0.2021, 0.2457, 0.2792, 0.1588],
+  "val_accuracy": [0.9539, 0.8386, 0.9313, 0.9346, 0.9123, 0.9559]
+}

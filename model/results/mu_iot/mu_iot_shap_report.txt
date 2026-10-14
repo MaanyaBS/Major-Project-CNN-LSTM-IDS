@@ -1,0 +1,103 @@
+==============================================================================
+MU-IoT CNN-LSTM - SHAP ANALYSIS OF THE MAIN ERRORS
+==============================================================================
+Generated  : 2026-10-01 02:15 UTC
+Model      : model/artifacts/mu_iot/best.keras
+Method     : expected gradients (the shap.GradientExplainer estimator), 500 samples per window
+Background : 350 real training windows, 50 per class
+Windows    : up to 200 per group, chosen at random (seed 42)
+Check      : vs shap.GradientExplainer on 10 windows (spyware: false alarm: normal -> Spyware): feature-profile r = 0.990, per-window r = 0.914
+Additivity : 'gap' = mean output minus the background mean; 'SHAP sum' = mean of each
+             window's summed SHAP values, which must match the gap (the group averages
+             the findings rest on). 'error' = mean |SHAP sum - gap| per window, the
+             sampling noise of single-window explanations. All in probability units.
+
+------------------------------------------------------------------------------
+SPYWARE: Why is normal traffic flagged as Spyware?
+------------------------------------------------------------------------------
+Explained output: probability of Spyware (background mean 0.137; SHAP values push a window above or below it)
+
+  group                                                      windows  mean P     gap  SHAP sum   error
+  false alarm: normal -> Spyware                         200 of 5,282   0.756  +0.619    +0.610   0.112
+  detection: Spyware -> Spyware                          200 of 15,508  0.927  +0.790    +0.792   0.128
+  correct: normal -> normal                              200 of 76,927  0.018  -0.119    -0.123   0.095
+
+  Similarity of the error's SHAP profile to each group (cosine; 1 = same features, same direction):
+    detection: Spyware -> Spyware                         0.866
+    correct: normal -> normal                             0.292
+
+  G1 = false alarm: normal -> Spyware   G2 = detection: Spyware -> Spyware   G3 = correct: normal -> normal
+
+  Top 10 features of the error group (by mean |SHAP|):
+  feature           SHAP G1    SHAP G2    SHAP G3        value G1     value G2     value G3
+  FAMax              0.1212     0.0749     0.0134          0.0114      0.04794      0.05008
+  TCPWS_Mode         0.0769     0.1281    -0.0142            4183         8354         4897
+  DNS_RCUL           0.1003     0.1214     0.0181            0.45          0.3          0.2
+  FAMean            -0.0894    -0.0434    -0.0554        0.004904      0.02029      0.01993
+  DNSQTL             0.0729     0.0626     0.0199             0.1          0.1          0.1
+  TCPWS_Mean         0.0436    -0.0207     0.0279            8675    1.128e+04         6367
+  DNS_QTUL          -0.0343    -0.0058    -0.0300             0.1          0.1          0.1
+  FD                 0.0563     0.0577     0.0020         0.01432      0.06346       0.1145
+  FH_M               0.0468     0.0722    -0.0516           65.65        70.38        140.8
+  FIMin              0.0432     0.0357     0.0018       -0.003059     -0.02203     -0.03709
+  (SHAP: mean over windows, summed over the 20 rows; value: median of each window's mean raw value)
+
+------------------------------------------------------------------------------
+HPING3: Why is the held-out hping3 UDP flood called Scan?
+------------------------------------------------------------------------------
+Explained output: probability of Scan (background mean 0.143; SHAP values push a window above or below it)
+
+  group                                                      windows  mean P     gap  SHAP sum   error
+  error: hping3 flood (DDoS) -> Scan                     200 of 135,327 0.973  +0.830    +0.793   0.350
+  detection: Scan -> Scan                                200 of 142,268 0.999  +0.857    +0.855   0.158
+  detection: DDoS -> DDoS                                200 of 144,760 0.000  -0.142    -0.141   0.149
+
+  Similarity of the error's SHAP profile to each group (cosine; 1 = same features, same direction):
+    detection: Scan -> Scan                               0.586
+    detection: DDoS -> DDoS                              -0.637
+
+  G1 = error: hping3 flood (DDoS) -> Scan   G2 = detection: Scan -> Scan   G3 = detection: DDoS -> DDoS
+
+  Top 10 features of the error group (by mean |SHAP|):
+  feature           SHAP G1    SHAP G2    SHAP G3        value G1     value G2     value G3
+  TCPWS_Mode         0.1451     0.0786    -0.0448      -3.457e-05         2075   -3.457e-05
+  TCPWS_Mean         0.1714     0.0757    -0.0709      -0.0003353         2126   -0.0003353
+  HL_Mode            0.1004     0.0711    -0.0066              30         26.1           30
+  PLM                0.0927     0.0878    -0.0066              64         60.2           74
+  FAMean             0.0906    -0.0583     0.0093       9.936e-08    2.458e-06      0.01681
+  FH_M               0.0912     0.0883    -0.0077              64         60.2           74
+  FIMin              0.0626     0.0763    -0.0017      -2.831e-10     -3.8e-06   -2.831e-10
+  DNS_RCUL          -0.0469     0.0863     0.0049       3.211e-09    3.211e-09    3.211e-09
+  TCPWS_Sum          0.0543     0.0475     0.0077        0.000402         2228     0.000402
+  HTTP_SCL           0.0177     0.0657     0.0143      -3.382e-10   -3.382e-10   -3.382e-10
+  (SHAP: mean over windows, summed over the 20 rows; value: median of each window's mean raw value)
+
+------------------------------------------------------------------------------
+VULNSCAN: Why is the held-out vulnerability scan called Password_Hacking?
+------------------------------------------------------------------------------
+Explained output: probability of Password_Hacking (background mean 0.143; SHAP values push a window above or below it)
+
+  group                                                      windows  mean P     gap  SHAP sum   error
+  error: vulnerability scan (Scan) -> Password_Hacking   200 of 81,731  0.960  +0.818    +0.805   0.137
+  detection: Password_Hacking -> Password_Hacking        200 of 148,724 1.000  +0.857    +0.844   0.139
+  detection: Scan -> Scan                                200 of 142,268 0.001  -0.142    -0.132   0.066
+
+  Similarity of the error's SHAP profile to each group (cosine; 1 = same features, same direction):
+    detection: Password_Hacking -> Password_Hacking       0.204
+    detection: Scan -> Scan                              -0.047
+
+  G1 = error: vulnerability scan (Scan) -> Password_Hacking   G2 = detection: Password_Hacking -> Password_Hacking   G3 = detection: Scan -> Scan
+
+  Top 10 features of the error group (by mean |SHAP|):
+  feature           SHAP G1    SHAP G2    SHAP G3        value G1     value G2     value G3
+  TCPWS_Mean         0.3623     0.0578     0.0083       2.513e+04         3947         3484
+  TCPWS_Mode        -0.1486     0.1401    -0.0191       2.372e+04        376.8         3458
+  FH_M               0.0980     0.0504    -0.0240           72.95           70         60.2
+  HL_Mode            0.0977     0.0401    -0.0307            38.7           36         26.2
+  PLM                0.0977     0.0526    -0.0234           72.95           70         60.2
+  DNS_RCUL           0.0889     0.1142     0.0013       3.211e-09    3.211e-09    3.211e-09
+  FD                 0.0882     0.0077     0.0012      -4.328e-09        0.119    6.846e-06
+  SDuration          0.0786     0.0079     0.0023      -4.328e-09        0.119    6.846e-06
+  DNS_QTUL           0.0530     0.0067     0.0023       1.348e-09    1.348e-09    1.348e-09
+  HTTP_SCL           0.0278     0.0574     0.0003      -3.382e-10   -3.382e-10   -3.382e-10
+  (SHAP: mean over windows, summed over the 20 rows; value: median of each window's mean raw value)

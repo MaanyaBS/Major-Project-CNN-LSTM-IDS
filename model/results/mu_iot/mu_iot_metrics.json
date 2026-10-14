@@ -1,0 +1,268 @@
+{
+  "test_within": {
+    "track": "test_within",
+    "windows": 586631,
+    "accuracy": 0.967209370115115,
+    "weighted_f1": 0.9673735945594466,
+    "macro_f1": 0.9372296780942715,
+    "macro_over_classes": [
+      "DDoS",
+      "Injection",
+      "MiTM",
+      "Password_Hacking",
+      "Scan",
+      "Spyware",
+      "normal"
+    ],
+    "normal_false_alarm_rate": 0.09208181378276623,
+    "attack_called_normal_rate": 0.015014883383608752,
+    "per_class": {
+      "DDoS": {
+        "precision": 0.9932552506809933,
+        "recall": 0.9678670286027573,
+        "f1": 0.9803968047028706,
+        "support": 149566
+      },
+      "Injection": {
+        "precision": 0.9575650759219089,
+        "recall": 0.9992925863044708,
+        "f1": 0.9779839379673221,
+        "support": 35340
+      },
+      "MiTM": {
+        "precision": 0.9423868312757202,
+        "recall": 0.9845725847243298,
+        "f1": 0.9630179344465059,
+        "support": 3954
+      },
+      "Password_Hacking": {
+        "precision": 0.9806215095309997,
+        "recall": 0.9991467978045159,
+        "f1": 0.9897974803170567,
+        "support": 148851
+      },
+      "Scan": {
+        "precision": 0.9982178190033819,
+        "recall": 0.9888305821025195,
+        "f1": 0.9935020269067064,
+        "support": 143875
+      },
+      "Spyware": {
+        "precision": 0.7305101512082529,
+        "recall": 0.7633392400078756,
+        "f1": 0.7465639667830064,
+        "support": 20316
+      },
+      "normal": {
+        "precision": 0.9107775002071913,
+        "recall": 0.9079181862172337,
+        "f1": 0.909345595536432,
+        "support": 84729
+      }
+    },
+    "per_session_accuracy": {
+      "MU_SESSION_001": {
+        "class": "DDoS",
+        "windows": 29943,
+        "accuracy": 0.9991650803192733
+      },
+      "MU_SESSION_002": {
+        "class": "DDoS",
+        "windows": 618,
+        "accuracy": 0.0
+      },
+      "MU_SESSION_003": {
+        "class": "DDoS",
+        "windows": 4181,
+        "accuracy": 0.7603444152116718
+      },
+      "MU_SESSION_004": {
+        "class": "DDoS",
+        "windows": 13293,
+        "accuracy": 0.99322951929587
+      },
+      "MU_SESSION_005": {
+        "class": "DDoS",
+        "windows": 22530,
+        "accuracy": 0.9322237017310253
+      },
+      "MU_SESSION_006": {
+        "class": "Password_Hacking",
+        "windows": 19962,
+        "accuracy": 0.9993988578298768
+      },
+      "MU_SESSION_007": {
+        "class": "Password_Hacking",
+        "windows": 19962,
+        "accuracy": 0.9986975252980663
+      },
+      "MU_SESSION_008": {
+        "class": "Password_Hacking",
+        "windows": 17664,
+        "accuracy": 0.9984714673913043
+      },
+      "MU_SESSION_009": {
+        "class": "Password_Hacking",
+        "windows": 19962,
+        "accuracy": 0.999499048191564
+      },
+      "MU_SESSION_010": {
+        "class": "Password_Hacking",
+        "windows": 11004,
+        "accuracy": 0.9994547437295529
+      },
+      "MU_SESSION_011": {
+        "class": "Password_Hacking",
+        "windows": 9981,
+        "accuracy": 0.9988979060214407
+      },
+      "MU_SESSION_012": {
+        "class": "Password_Hacking",
+        "windows": 20373,
+        "accuracy": 0.9986747165365926
+      },
+      "MU_SESSION_014": {
+        "class": "Password_Hacking",
+        "windows": 9981,
+        "accuracy": 0.9991984771065023
+      },
+      "MU_SESSION_015": {
+        "class": "Password_Hacking",
+        "windows": 19962,
+        "accuracy": 1.0
+      },
+      "MU_SESSION_016": {
+        "class": "Injection",
+        "windows": 1554,
+        "accuracy": 0.9967824967824968
+      },
+      "MU_SESSION_017": {
+        "class": "MiTM",
+        "windows": 3816,
+        "accuracy": 0.995020964360587
+      },
+      "MU_SESSION_018": {
+        "class": "Injection",
+        "windows": 26992,
+        "accuracy": 0.9992590397154713
+      },
+      "MU_SESSION_019": {
+        "class": "Scan",
+        "windows": 83949,
+        "accuracy": 0.985205303219812
+      },
+      "MU_SESSION_020": {
+        "class": "Scan",
+        "windows": 59926,
+        "accuracy": 0.9939091546240363
+      },
+      "MU_SESSION_022": {
+        "class": "DDoS",
+        "windows": 22530,
+        "accuracy": 0.9322237017310253
+      },
+      "MU_SESSION_023": {
+        "class": "Spyware",
+        "windows": 20316,
+        "accuracy": 0.7633392400078756
+      },
+      "MU_SESSION_024": {
+        "class": "DDoS",
+        "windows": 21485,
+        "accuracy": 0.9999069117989294
+      },
+      "MU_SESSION_025": {
+        "class": "Injection",
+        "windows": 6794,
+        "accuracy": 1.0
+      },
+      "MU_SESSION_027": {
+        "class": "MiTM",
+        "windows": 138,
+        "accuracy": 0.6956521739130435
+      },
+      "MU_SESSION_028": {
+        "class": "DDoS",
+        "windows": 32630,
+        "accuracy": 1.0
+      },
+      "MU_SESSION_029": {
+        "class": "DDoS",
+        "windows": 118,
+        "accuracy": 1.0
+      },
+      "MU_SESSION_030": {
+        "class": "DDoS",
+        "windows": 2238,
+        "accuracy": 0.9932975871313673
+      },
+      "MU_SESSION_032": {
+        "class": "normal",
+        "windows": 84729,
+        "accuracy": 0.9079181862172337
+      }
+    }
+  },
+  "test_heldout": {
+    "track": "test_heldout",
+    "windows": 731358,
+    "accuracy": 0.6416378845927713,
+    "weighted_f1": 0.6220342485814034,
+    "macro_f1": 0.6469157090506563,
+    "macro_over_classes": [
+      "DDoS",
+      "Injection",
+      "Password_Hacking",
+      "Scan"
+    ],
+    "attack_called_normal_rate": 0.0008299628909508066,
+    "per_class": {
+      "DDoS": {
+        "precision": 0.7328055644533932,
+        "recall": 0.3208896904117824,
+        "f1": 0.44633350985256,
+        "support": 199620
+      },
+      "Injection": {
+        "precision": 0.9567249069110847,
+        "recall": 0.8823302993252728,
+        "f1": 0.9180228745980454,
+        "support": 132498
+      },
+      "Password_Hacking": {
+        "precision": 0.6725612040653068,
+        "recall": 0.9981715258992085,
+        "f1": 0.8036371482789287,
+        "support": 199620
+      },
+      "Scan": {
+        "precision": 0.3962012306624488,
+        "recall": 0.446092575894199,
+        "f1": 0.4196693034730911,
+        "support": 199620
+      }
+    },
+    "per_session_accuracy": {
+      "MU_SESSION_013": {
+        "class": "Password_Hacking",
+        "windows": 199620,
+        "accuracy": 0.9981715258992085
+      },
+      "MU_SESSION_021": {
+        "class": "Scan",
+        "windows": 199620,
+        "accuracy": 0.446092575894199
+      },
+      "MU_SESSION_026": {
+        "class": "Injection",
+        "windows": 132498,
+        "accuracy": 0.8823302993252728
+      },
+      "MU_SESSION_031": {
+        "class": "DDoS",
+        "windows": 199620,
+        "accuracy": 0.3208896904117824
+      }
+    }
+  }
+}

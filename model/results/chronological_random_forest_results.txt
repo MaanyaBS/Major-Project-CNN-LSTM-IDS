@@ -1,0 +1,42 @@
+==============================================================================
+RANDOM FOREST ON THE CHRONOLOGICAL SPLIT (the CNN-LSTM's split)
+==============================================================================
+Generated  : 2026-10-02 06:36 UTC
+Source     : /content/drive/MyDrive/Major_Project_Dataset/dataset/merged/cicids2017_cleaned_with_day.csv
+Split      : rebuild_chronological_split.chronological_split (first 80% of each
+             (day, class) group trains, the rest tests), same code as the CNN-LSTM
+Model      : RandomForestClassifier(n_estimators=100, random_state=42);
+             baseline_full_dataset.py used 100; 20 features, unscaled
+Training   : 2,124,037 rows in 542 s
+Alignment  : passed - the 530,951 window-end labels equal y_test_seq.npy exactly, so this is the CNN-LSTM's split
+
+                                       RF, all test rows    RF, window-aligned     CNN-LSTM, windows
+  examples                                       531,023               530,951               530,951
+  accuracy                                        0.9911                0.9911                0.9842
+  weighted F1                                     0.9908                0.9908                0.9864
+  macro F1                                        0.7857                0.7803                0.5857
+
+PER-CLASS F1 (window-aligned: same examples, same labels for RF and CNN-LSTM)
+  class                              support     RF, all test rows    RF, window-aligned     CNN-LSTM, windows
+  BENIGN                             439,987                0.9966                0.9966                0.9912
+  Bot                                    381                0.0309                0.0314                0.0564
+  DDoS                                25,595                0.9984                0.9984                0.9897
+  DoS GoldenEye                        2,058                0.9880                0.9880                0.8159
+  DoS Hulk                            35,038                0.9528                0.9528                0.9898
+  DoS Slowhttptest                     1,046                0.8995                0.8995                0.8857
+  DoS slowloris                        1,083                0.8432                0.8417                0.7249
+  FTP-Patator                          1,219                0.9943                0.9942                0.7732
+  Heartbleed                               3                1.0000                1.0000                0.8000
+  Infiltration                             0                0.8571                     -                     -
+  PortScan                            23,378                0.9666                0.9666                0.9711
+  SSH-Patator                            739                0.9454                0.9454                0.6562
+  Web Attack - Brute Force               288                0.6930                0.6878                0.1249
+  Web Attack - Sql Injection               5                0.2857                0.2857                0.0000
+  Web Attack - XSS                       131                0.3347                0.3361                0.0064
+
+'-' = no test examples of that class in that column. Support is for the window-aligned
+examples; the all-rows column has a few more rows per class.
+'RF, all test rows' scores every test flow; 'window-aligned' scores only the last
+flow of each CNN-LSTM test window, so it differs from 'all rows' only by the few
+rows at the start of each day that no window ends on.
+For the earlier random-split numbers see full_dataset_random_forest_results.txt.

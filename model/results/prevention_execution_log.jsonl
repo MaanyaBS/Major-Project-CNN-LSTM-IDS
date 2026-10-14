@@ -1,0 +1,1 @@
+{"timestamp": "2026-09-02T10:14:59.788699+00:00", "action": "block_ip", "target_ip": "192.0.2.10", "predicted_class": "DDoS", "confidence": 0.99, "executed": true, "rule_name": "IDS_DEMO_block_ip_192-0-2-10", "auto_expires_in_seconds": 8}
