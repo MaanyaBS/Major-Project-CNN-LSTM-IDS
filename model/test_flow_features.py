@@ -150,6 +150,39 @@ def test_scapy_lengths_include_ethernet_padding():
     assert ff.packet_from_scapy(Ether() / IP(src=A, dst=B, proto=1)) is None, "non TCP/UDP ignored"
 
 
+def test_fast_reader_matches_scapy_decoding():
+    from scapy.layers.inet import IP, TCP, UDP
+    from scapy.layers.inet6 import IPv6
+    from scapy.layers.l2 import Dot1Q, Ether
+    from scapy.utils import PcapNgWriter, PcapReader, wrpcap
+
+    E = lambda **kw: Ether(src="02:00:00:00:00:01", dst="02:00:00:00:00:02", **kw)   # no MAC lookups
+    frames = [
+        E() / IP(src=A, dst=B) / TCP(sport=40000, dport=443, flags="S", options=[("MSS", 1460)]),
+        E() / IP(src=B, dst=A) / TCP(sport=443, dport=40000, flags="RA"),
+        E() / IP(src=B, dst=A, options=b"\x01" * 4) / TCP(sport=443, dport=40000, flags="PA") / (b"y" * 300),
+        E() / Dot1Q(vlan=5) / IP(src=A, dst=B) / UDP(sport=5353, dport=53) / (b"q" * 40),
+        E() / IP(src=A, dst=B, frag=10) / (b"z" * 40),                 # later fragment: skipped
+        E(type=0x0806) / (b"\x00" * 28),                              # ARP, not IP: skipped
+        E() / IPv6() / TCP(),                                          # IPv6: skipped
+        E() / IP(src=A, dst=B, proto=1) / (b"i" * 8),                  # ICMP: skipped
+    ]
+    for i, f in enumerate(frames):
+        f.time = 1700000000 + i * 0.123457
+    with tempfile.TemporaryDirectory() as tmp:
+        for name, write in (("a.pcap", lambda p: wrpcap(p, frames)),
+                            ("a.pcapng", lambda p: PcapNgWriter(p).write(frames))):
+            path = os.path.join(tmp, name)
+            write(path)
+            with PcapReader(path) as r:
+                slow = [p for p in (ff.packet_from_scapy(x) for x in r) if p is not None]
+            fast = list(ff.iter_packets(path))
+            assert fast == slow, f"{name}: fast reader differs from scapy decoding"
+            assert len(fast) == 4, f"{name}: expected the 4 IPv4 TCP/UDP packets, got {len(fast)}"
+    raw_ip = bytes(IP(src=A, dst=B) / TCP(sport=1, dport=2, flags="S"))
+    assert ff.packet_from_bytes(raw_ip, ff.LINKTYPE_RAW, 0.0).payload == 6, "raw-IP link type, padded to Ethernet minimum"
+
+
 def test_pcap_round_trip():
     from scapy.layers.inet import IP, TCP
     from scapy.layers.l2 import Ether
