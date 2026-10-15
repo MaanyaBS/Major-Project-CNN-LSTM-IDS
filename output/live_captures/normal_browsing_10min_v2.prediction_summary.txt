@@ -1,0 +1,22 @@
+NORMAL-BROWSING CAPTURE: CNN-LSTM INFERENCE
+Input: D:\Major_Project\output\live_captures\normal_browsing_10min_v2.flows.csv
+Valid flows: 3010
+Rows excluded for invalid feature values: 0
+Window length: 10
+Window stride: 1 flow (overlapping windows)
+Prediction windows: 3001
+Mean maximum-class confidence: 0.776876
+Median maximum-class confidence: 0.758773
+Windows predicted BENIGN: 2431
+
+Predicted class counts:
+  BENIGN: 2431
+  FTP-Patator: 544
+  Web Attack - Sql Injection: 24
+  DoS slowloris: 1
+  Web Attack - XSS: 1
+
+Caution: this capture has no ground-truth labels.
+These are model predictions, not an accuracy or false-positive-rate evaluation.
+Confidence is the model's maximum softmax probability, not a guarantee of correctness.
+Predictions CSV: D:\Major_Project\output\live_captures\normal_browsing_10min_v2.predictions.csv
