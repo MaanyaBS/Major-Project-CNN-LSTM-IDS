@@ -410,7 +410,7 @@ The established 40-file to 32-session mapping was retained for the final handoff
 - 124 columns
 - DDoS category
 
-Its relatively small representation in the held-out evaluation is therefore attributable to the small size of the original recording rather than an unexplained preprocessing loss.
+MU_SESSION_002 belongs to test_within, not test_heldout, and is represented by 618 windows. Its small representation reflects the limited size of the original recording; it must not be described as part of the held-out evaluation.
 
 ---
 
@@ -443,3 +443,4 @@ The large feature arrays are kept outside Git tracking where appropriate.
 | MU-IoT | 7 | 3,936,753 | 38 | IoT validation and temporal/generalization evaluation |
 
 The prepared datasets preserve the required labels, temporal/session information, selected features, and split metadata for integration with the CNN-LSTM model and downstream explainability/dashboard components.
+
