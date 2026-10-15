@@ -44,6 +44,8 @@ import {
 } from "recharts";
 import {
   analyzeCsv,
+  analyzePcap,
+  isPcapFile,
   explainWindow,
   getHealth,
   type CsvAnalysisResponse,
@@ -145,7 +147,9 @@ function Dashboard() {
     setAnalysis(null);
     setExplanation(null);
     try {
-      const res = await analyzeCsv(file);
+      // .pcap/.pcapng go to the converter endpoint, CSVs to the flow endpoint;
+      // both return the same body, so everything downstream is unchanged.
+      const res = isPcapFile(file) ? await analyzePcap(file) : await analyzeCsv(file);
       setAnalysis(res);
       setStatus("done");
       const firstAttack = res.results.findIndex((r) => r.predicted_class !== "BENIGN");
@@ -269,9 +273,12 @@ function Dashboard() {
                   <span className="absolute inset-0 rounded-2xl ping-slow bg-primary/40" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <h2 className="heading-card">Drag &amp; Drop Network Traffic CSV</h2>
+                  <h2 className="heading-card">Drag &amp; Drop Network Traffic Capture</h2>
                   <p className="text-sm text-muted-foreground mt-1">
-                    Must include the 20 model feature columns · windows of 10 flows per prediction.
+                    A Wireshark <span className="font-mono">.pcap</span>/
+                    <span className="font-mono">.pcapng</span> capture or a CSV with the 20 model
+                    feature columns · captures are converted to flows server-side · windows of 10
+                    flows per prediction.
                   </p>
 
                   {file ? (
@@ -280,7 +287,9 @@ function Dashboard() {
                       <div className="min-w-0 flex-1">
                         <div className="truncate text-sm font-medium">{file.name}</div>
                         <div className="text-xs text-muted-foreground font-mono">
-                          {(file.size / 1024).toFixed(1)} KB · Ready
+                          {(file.size / 1024).toFixed(1)} KB ·{" "}
+                          {isPcapFile(file) ? "capture · will be converted to flows" : "flow CSV"} ·
+                          Ready
                         </div>
                       </div>
                       <span className="h-2 w-2 rounded-full bg-success animate-pulse" />
@@ -298,13 +307,13 @@ function Dashboard() {
                       className="mt-4 w-full sm:w-auto inline-flex items-center gap-2 rounded-xl glass px-4 py-2.5 text-sm font-medium hover:bg-white/5 transition-colors"
                     >
                       <FileText className="h-4 w-4 text-primary" />
-                      Browse CSV
+                      Browse Capture / CSV
                     </button>
                   )}
                   <input
                     ref={inputRef}
                     type="file"
-                    accept=".csv"
+                    accept=".csv,.pcap,.pcapng"
                     className="hidden"
                     onChange={(e) => setFile(e.target.files?.[0] ?? null)}
                   />
@@ -624,6 +633,21 @@ function ResultView({
               </div>
             </div>
           ))}
+          {/* Only a capture upload has a flow count: the backend reports how
+              many flows the .pcap/.pcapng was converted to. */}
+          {analysis.flows != null && (
+            <div className="glass rounded-2xl p-5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_15px_40px_-15px_rgba(79,70,229,0.4)]">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-mono uppercase tracking-widest text-muted-foreground">
+                  Flows in Capture
+                </span>
+                <FileText className="h-4 w-4 text-primary" />
+              </div>
+              <div className="mt-3 font-display text-2xl sm:text-3xl uppercase tracking-wide">
+                {analysis.flows.toLocaleString()}
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -1103,7 +1127,7 @@ function ShapPanel({
         <div className="mt-8 flex flex-col items-center gap-3 pb-8">
           <Loader2 className="h-6 w-6 animate-spin text-primary" />
           <p className="text-xs font-mono text-muted-foreground uppercase tracking-widest">
-            GradientExplainer · computing attributions...
+            KernelExplainer · 20 grouped features · computing attributions...
           </p>
         </div>
       </div>
@@ -1156,7 +1180,7 @@ function ShapPanel({
           <Sparkles className="h-4 w-4 text-primary" />
           <h3 className="heading-card">SHAP Explanation</h3>
           <span className="ml-2 text-[10px] font-mono uppercase tracking-widest text-success">
-            GradientExplainer · Window #{explanation.window}
+            KernelExplainer · 20 grouped features · Window #{explanation.window}
           </span>
         </div>
 

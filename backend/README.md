@@ -55,6 +55,61 @@ etc. also accepted) is used as the target for any prevention action. The value
 is taken from the **first flow row of each window**. Blank / `null` / `n/a` /
 non-IP values become `None`, and `None` targets are never executed.
 
+### `POST /api/predict_pcap`
+Multipart form with a `file` field containing a Wireshark **`.pcap` or
+`.pcapng`** capture. The capture is converted to bidirectional flows and the
+20 CICIDS2017 feature columns with `model/flow_features.py` (needs
+`scapy>=2.6`), then analysed by the *same* code path as `/api/predict_csv`
+(`analyze_frame()`), so the response is identical plus `"flows"`: how many
+flows the capture became.
+
+Equivalence check:
+
+```bash
+python model/flow_features.py capture.pcap -o x.csv
+# uploading x.csv and uploading capture.pcap give identical results
+```
+
+The body is streamed to a temp file in chunks and the temp file is always
+deleted. A capture over the size limit is refused with HTTP 413 while it is
+being read. The limit defaults to **200 MB** and is configurable:
+
+```powershell
+$env:IDS_MAX_PCAP_MB = "500"
+```
+
+An upload is rejected with HTTP 400 if no IPv4 TCP/UDP flows are found (an
+empty or non-IP capture cannot be analysed).
+
+### Live capture (Person B's `backend/live_capture.py`)
+The UI polls these; until the capture engine lands, a stub in `app.py` answers
+with deterministic demo data and the responses carry `"stub": true`.
+
+| Endpoint | Body / query | Returns |
+| --- | --- | --- |
+| `GET /api/live/interfaces` | – | `{ interfaces: [{name, description, ip}], stub }` |
+| `POST /api/live/start` | `{ "interface": "Wi-Fi" }` | `{ running: true, interface }` |
+| `GET /api/live/poll` | `?after=<last window>&limit=<≤50>` | `{ running, packets, flows, windows, results, skipped, queue_depth, dropped }` |
+| `POST /api/live/stop` | – | `{ running: false }` |
+
+`after` is exclusive and defaults to `-1` (nothing seen yet, so window 0 is
+included). A poll returns at most 50 windows so a busy scan cannot freeze the
+page, and `queue_depth` tells the page more are waiting. Each result is one
+`/api/predict_csv` result plus `window`, `source_ip` and `time`; real-engine
+results go through the same execution bookkeeping as a CSV upload. `stop()` is
+also called on server shutdown.
+
+> Live capture needs **Npcap** (installed with Wireshark) and the backend
+> running **as administrator**.
+
+### `GET /api/prevention/active`
+Lists the firewall rules currently in force — the dashboard's "Blocked
+devices" panel, refreshed on every live poll. Read-only, so it needs no kill
+switch. Uses Person B's `pe.active_rules()` once it exists (`engine_ready:
+true`); until then it reads the engine's own in-process registry so a rule
+created by a real execution is still listed and revocable (`engine_ready:
+false`).
+
 ### `POST /api/prevention/revoke`
 Body: `{ "action": "block_ip", "target_ip": "192.0.2.50" }`.
 Removes a demo firewall rule previously created by the execution engine and
