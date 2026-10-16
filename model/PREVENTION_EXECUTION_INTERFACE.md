@@ -31,6 +31,15 @@ code, not just a policy statement.
    ranges permanently reserved for documentation/testing, guaranteed to never
    route on the real internet. Real execution can never reach a real
    destination, by construction.
+
+   **Opt-in for a live demo:** single devices on the local network may be
+   added with the environment variable `IDS_PREVENTION_DEMO_TARGETS`, e.g.
+   `IDS_PREVENTION_DEMO_TARGETS=192.168.43.57` (comma-separated for more).
+   Only exact, single private (RFC 1918) IPv4 addresses are accepted: no
+   ranges or CIDR, no public, loopback, multicast, network/broadcast
+   addresses, and never this machine's own addresses. Anything else in the
+   variable is ignored and listed by `pe.demo_target_status()`. Never list a
+   device you don't own, and never the hotspot/router (it is the gateway).
 3. **Explicit deny-list** — loopback/broadcast/unspecified addresses are
    always refused, defense in depth even if a bug got them past the
    allow-list.
@@ -93,12 +102,16 @@ result = pe.execute_action(
 )
 # result = {"executed": True/False, "reason": "..." (if False),
 #           "rule_name": "..." (if True), "auto_expires_in_seconds": int|None}
-# If the same action is already in force for this target:
-#   {"executed": False, "already_active": True, "rule_name": "...", "reason": "..."}
+# If this device is already blocked by a rule in force:
+#   {"executed": False, "already_active": True, "rule_name": "<the rule in force>", "reason": "..."}
 #   Nothing is added again - show it as "already blocked", not as a failure.
 
+# Rules currently in force (for a "Blocked devices" panel):
+pe.active_rules()
+# -> [{"rule_name", "action", "target_ip", "persistent", "created", "expires_in_seconds"}, ...]
+
 # To manually lift an action after human review. Works with the kill switch
-# OFF (undoing must stay possible), but only for TEST-NET targets:
+# OFF (undoing must stay possible), but only for TEST-NET or listed LAN targets:
 outcome = pe.revoke_action(action="block_ip", target_ip=source_ip)
 # outcome = {"revoked": True, "rule_name": "..."} or {"revoked": False, "reason": "..."}
 # Return this outcome to the caller as-is; do not report success without it.
@@ -107,10 +120,14 @@ outcome = pe.revoke_action(action="block_ip", target_ip=source_ip)
 pe.sweep_expired_rules()
 ```
 
-**One rule per target.** One attacker IP is usually flagged in many
-consecutive windows. The engine remembers which rules are in force and adds
-each (action, target) rule once; repeats return `already_active`. Measured: 500
-windows from one IP give 1 firewall rule, not 500 (1,000 `netsh` calls).
+**One rule per device.** One attacker IP is usually flagged in many
+consecutive windows, often as different classes (after a block, a scan can
+look like a flood, because the laptop stops answering). Every executable
+action is a full block of the IP, so the engine keeps one rule per device: a
+persistent block covers every later action for that IP; a temporary block
+covers later temporary actions, while a persistent action still replaces it.
+Repeats return `already_active`. Measured: 500 windows from one IP give 1
+firewall rule, not 500 (1,000 `netsh` calls).
 
 **Why the startup sweep matters:** expiry timers live inside the process that
 called `execute_action()` and die with it. On startup, `sweep_expired_rules()`
@@ -146,11 +163,12 @@ requires the kill switch to be on.
 - `sweep_expired_rules()` tested against 4 synthetic scenarios (expired /
   not-yet-expired / persistent / already-revoked) — correct in all four, and
   confirmed idempotent (safe to call repeatedly).
-- Committed tests: `python model/test_prevention.py` (31 tests, no real
+- Committed tests: `python model/test_prevention.py` (35 tests, no real
   firewall access — OS calls are replaced with recorders). They cover both
   policies (thresholds, review-only classes, fallback, per-class F1 matching
-  the committed results, the two datasets kept apart), one rule per target,
-  revoke with the kill switch off, restart recovery, and every refusal path,
+  the committed results, the two datasets kept apart), one rule per device
+  across actions, the opt-in LAN target list, the active-rules list, revoke
+  with the kill switch off, restart recovery, and every refusal path,
   including adversarial targets such as `192.0.2.10,8.8.8.8` (netsh list
   syntax), CIDR ranges, IPv6 and non-string input. Run them after any change
   to the engine or the policy.

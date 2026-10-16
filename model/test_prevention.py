@@ -78,6 +78,7 @@ def sandbox(enabled=True, admin=True, add_error=None, durations=None):
         pe.EXECUTION_LOG_PATH = Path(tmp) / "log.jsonl"
         pe.ACTION_DURATIONS = dict(saved["ACTION_DURATIONS"], **(durations or {}))
         pe._active_rules = {}
+        saved_env = os.environ.pop(pe.DEMO_TARGETS_ENV, None)   # the tester's own setting must not leak in
         try:
             yield calls
         finally:
@@ -86,6 +87,23 @@ def sandbox(enabled=True, admin=True, add_error=None, durations=None):
                     entry["timer"].cancel()
             for k, v in saved.items():
                 setattr(pe, k, v)
+            os.environ.pop(pe.DEMO_TARGETS_ENV, None)
+            if saved_env is not None:
+                os.environ[pe.DEMO_TARGETS_ENV] = saved_env
+
+
+@contextlib.contextmanager
+def demo_env(value):
+    """Temporarily set (or clear, with None) the demo-target environment variable."""
+    old = os.environ.pop(pe.DEMO_TARGETS_ENV, None)
+    if value is not None:
+        os.environ[pe.DEMO_TARGETS_ENV] = value
+    try:
+        yield
+    finally:
+        os.environ.pop(pe.DEMO_TARGETS_ENV, None)
+        if old is not None:
+            os.environ[pe.DEMO_TARGETS_ENV] = old
 
 
 def log_records():
@@ -340,10 +358,75 @@ def test_same_target_flagged_repeatedly_adds_one_rule():
         assert results[0]["executed"] is True
         assert all(r["executed"] is False and r["already_active"] for r in results[1:])
         assert sum(1 for r in log_records() if r.get("executed")) == 1
-        # A different action or target is a different rule.
+        # A different target is a different rule; a different action on a
+        # device that is already blocked is not (one rule per device).
         pe.execute_action("block_ip", "192.0.2.11", "DDoS", 0.99)
-        pe.execute_action("rate_limit", "192.0.2.10", "DoS Hulk", 0.99)
-        assert len(calls["added"]) == 3
+        again = pe.execute_action("rate_limit", "192.0.2.10", "DoS Hulk", 0.99)
+        assert again["already_active"] and again["rule_name"] == pe._rule_name("block_ip", "192.0.2.10")
+        assert len(calls["added"]) == 2
+
+
+def test_one_rule_per_device_across_actions():
+    with sandbox(durations={"rate_limit": 30, "drop_connection": 30}) as calls:
+        ip = "192.0.2.30"
+        assert pe.execute_action("rate_limit", ip, "DoS Hulk", 0.99)["executed"] is True
+        # temporary rule in force: another temporary action is covered
+        assert pe.execute_action("drop_connection", ip, "DoS slowloris", 0.99)["already_active"]
+        # but a persistent block still replaces it
+        assert pe.execute_action("block_ip", ip, "PortScan", 0.99)["executed"] is True
+        # and then covers everything
+        for action in ("rate_limit", "drop_connection", "isolate_host", "block_ip"):
+            assert pe.execute_action(action, ip, "X", 0.99)["already_active"], action
+        assert len(calls["added"]) == 2
+
+
+def test_active_rules_lists_what_is_in_force():
+    with sandbox(durations={"rate_limit": 30}):
+        assert pe.active_rules() == []
+        pe.execute_action("block_ip", "192.0.2.40", "PortScan", 0.99)
+        pe.execute_action("rate_limit", "192.0.2.41", "DoS Hulk", 0.99)
+        rules = {r["target_ip"]: r for r in pe.active_rules()}
+        assert set(rules) == {"192.0.2.40", "192.0.2.41"}
+        assert rules["192.0.2.40"]["persistent"] is True and rules["192.0.2.40"]["expires_in_seconds"] is None
+        assert rules["192.0.2.41"]["persistent"] is False and 0 < rules["192.0.2.41"]["expires_in_seconds"] <= 30
+        assert rules["192.0.2.40"]["rule_name"] == pe._rule_name("block_ip", "192.0.2.40")
+        pe.revoke_action("block_ip", "192.0.2.40")
+        assert [r["target_ip"] for r in pe.active_rules()] == ["192.0.2.41"]
+
+
+def test_demo_target_list_accepts_only_single_private_lan_addresses():
+    accepted, rejected = pe.parse_demo_targets(
+        "192.168.43.57, 10.0.0.7;172.20.10.3, 192.168.43.0/24, 192.168.43.1-192.168.43.9, 8.8.8.8, "
+        "224.0.0.251, 127.0.0.1, 192.168.43.255, 192.168.43.0, 192.168.043.5, fe80::1, nonsense, 192.168.43.10",
+        local_addresses={"192.168.43.10"})
+    assert accepted == {"192.168.43.57", "10.0.0.7", "172.20.10.3"}
+    reasons = dict(rejected)
+    assert "ranges" in reasons["192.168.43.0/24"] and "ranges" in reasons["192.168.43.1-192.168.43.9"]
+    assert "RFC 1918" in reasons["8.8.8.8"] and "RFC 1918" in reasons["224.0.0.251"]
+    assert "RFC 1918" in reasons["127.0.0.1"]
+    assert "broadcast" in reasons["192.168.43.255"] and "broadcast" in reasons["192.168.43.0"]
+    assert "own address" in reasons["192.168.43.10"]
+    assert "192.168.043.5" in reasons and "fe80::1" in reasons and "nonsense" in reasons
+
+
+def test_lan_device_blockable_only_when_listed():
+    lan = "192.168.43.57"
+    with sandbox() as calls:
+        with demo_env(None):
+            assert pe.execute_action("block_ip", lan, "PortScan", 0.99)["executed"] is False
+        with demo_env("192.168.43.99"):
+            assert pe.execute_action("block_ip", lan, "PortScan", 0.99)["executed"] is False, "another device listed"
+        with demo_env("192.168.43.0/24"):
+            assert pe.execute_action("block_ip", lan, "PortScan", 0.99)["executed"] is False, "ranges never count"
+        assert not calls["added"]
+        with demo_env(lan):
+            assert pe.execute_action("block_ip", lan, "PortScan", 0.99)["executed"] is True
+            assert pe.execute_action("block_ip", "192.168.43.58", "PortScan", 0.99)["executed"] is False
+        assert calls["added"] == [(pe._rule_name("block_ip", lan), lan)]
+        # once listed and blocked, it can be lifted again - even after the switch is turned off
+        pe.PREVENTION_EXECUTION_ENABLED = False
+        with demo_env(lan):
+            assert pe.revoke_action("block_ip", lan)["revoked"] is True
 
 
 def test_rule_can_be_applied_again_after_revoke_or_expiry():
