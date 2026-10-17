@@ -366,6 +366,9 @@ The processed capture `normal_browsing_10min_v2.flows.csv` was generated from th
 | Observed flow-time span | 617.41 seconds |
 | Mean maximum-class confidence | 0.776876 |
 | Median maximum-class confidence | 0.758773 |
+| Network environment | Mobile hotspot |
+| Capture file size | 69,646,284 bytes |
+| Capture file timestamp interval | 10 minutes 20 seconds (file creation to last modification; not proof of uninterrupted capture) |
 
 Predicted class counts:
 
