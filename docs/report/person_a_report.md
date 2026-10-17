@@ -444,12 +444,14 @@ The large feature arrays are kept outside Git tracking where appropriate.
 
 The prepared datasets preserve the required labels, temporal/session information, selected features, and split metadata for integration with the CNN-LSTM model and downstream explainability/dashboard components.
 
-### 15.Normal-Browsing Traffic Capture and CNN–LSTM Inference
+# 15. Normal-Browsing Traffic Capture and CNN–LSTM Inference
 
 A normal-browsing network capture was collected for approximately 10 minutes using Wireshark/Npcap. The capture lasted 619.78 seconds and contained 83,894 packets, with zero reported dropped packets.
 
+**Network environment:** The capture was collected over Wi-Fi during normal browsing. The exact network name used at capture time was not independently recorded and could not be confirmed retrospectively.
+
 The captured traffic was converted into 3,010 network flows using the project's flow-feature extraction script. All 3,010 rows contained valid values for the model's 20 input features. The trained CNN–LSTM model was then used to generate predictions using overlapping sequences of 10 flows with a stride of one flow, producing 3,001 prediction windows.
 
-With the converter's original flow-end ordering preserved, 2,431 windows (81.01%) were classified as BENIGN, 544 (18.13%) as FTP-Patator, 24 (0.80%) as Web Attack - Sql Injection, one as DoS slowloris, and one as Web Attack - XSS. Mean maximum-class soft max confidence was approximately 0.777.
+With the converter's original flow-end ordering preserved, 2,431 windows (81.01%) were classified as BENIGN, 544 (18.13%) as FTP-Patator, 24 (0.80%) as Web Attack - Sql Injection, one as DoS slowloris, and one as Web Attack - XSS. Mean maximum-class softmax confidence was approximately 0.777.
 
 **Limitations:** The capture was collected during normal browsing but does not have independent, ground-truth labels for every flow or sequence. Consequently, non-BENIGN predictions cannot be confirmed as attacks, and these results do not establish the model's false-positive rate or accuracy. Predictions also changed materially when the flow ordering method changed, highlighting the need to verify temporal preprocessing consistency between training and live inference. The results should therefore be interpreted as a preliminary live-traffic inference experiment, not a validated performance evaluation.
