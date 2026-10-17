@@ -350,7 +350,7 @@ The historical results below are retained as dashboard observations. Their origi
 | `normal_web_browsing.flows.csv` | 423 | 362 | 61 | 14.4% |
 | `normal_youtube.flows.csv` | 33 | 30 | 3 | 9.1% |
 
-**Sequence-count clarification:** the current inference implementation uses windows of 10 consecutive flows with a stride of one flow. For a file containing *N* valid flows, it generates *N - 9* windows when *N* is at least 10. Therefore, 423 flows would produce 414 windows, and 33 flows would produce 24 windows. These are expected counts under the current implementation, not verified replacements for the historical results.
+**Sequence-count clarification:** The current inference implementation uses windows of 10 consecutive flows with a stride of one flow. A capture containing *N* valid flows produces *N − 9* prediction windows when *N* ≥ 10. Thus, 423 flows would produce 414 windows, and 33 flows would produce 24 windows. The historical prediction totals of 423 and 33 do not match those expected window counts if the reported row counts represent flows. Because the original historical flow CSVs are unavailable for independent verification, those historical prediction totals are retained only as unverified dashboard observations and must not be interpreted as validated sequence counts.
 
 ### 6.1 Normal Browsing Capture — October 15, 2026
 
