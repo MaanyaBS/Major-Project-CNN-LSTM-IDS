@@ -446,3 +446,7 @@ Do not commit private network captures, credentials, session tokens, personal in
 The report records the observed results and limitations so that the project team can reproduce the evaluation and distinguish pipeline validation from verified model-performance measurement.
 
 **Current evaluation status:** Public-capture pipeline testing completed for the five captures documented above. Full-capture processing, independent ground-truth validation, source-licence confirmation, and formal performance-metric calculation remain outstanding.
+
+### CTU-13 Botnet CSV: Licensing and Provenance Status
+
+The source and applicable licence for the local `botnet_neris_verified.flows.csv` have not yet been independently verified. The derived CSV is kept local and untracked and must not be committed or redistributed until its source capture, provenance, and applicable usage terms have been confirmed. No licensing compliance is claimed at this stage.
