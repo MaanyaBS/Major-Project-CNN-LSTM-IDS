@@ -422,22 +422,19 @@ MU_SESSION_002 belongs to test_within, not test_heldout, and is represented by 6
 
 # 13. Final Handoff Package
 
-The final MU-IoT V3 handoff is located at:
+The committed MU-IoT V3 metadata is located at:
+
+`output/mu_iot/handoff_v3/`
+
+This directory contains the README, class counts, block manifest, session regions, and split regions.
+
+The repository also tracks selected metadata under:
 
 `dataset/processed/mu_iot/handoff_v3/`
 
-Important metadata files include:
+The two directories share five metadata files with identical contents. The `dataset/processed` directory additionally tracks the feature list and label mapping. The complete local handoff also includes large feature arrays, preprocessing artifacts, and pilot data. These local artifacts must be preserved and must not be deleted as part of repository cleanup.
 
-- `README.md`
-- `class_counts_by_split.csv`
-- `block_manifest.csv`
-- `session_regions.json`
-- `split_regions.json`
-- `feature_list_38.json`
-- `label_mapping.json`
-- `scaler_38.pkl`
-
-The large feature arrays are kept outside Git tracking where appropriate.
+Large generated arrays are kept outside Git tracking where appropriate. Refer to the README and `PERSON_A_HANDOFF.md` for package details.
 
 ---
 
