@@ -338,42 +338,46 @@ The evaluation confirms that the current feature extraction and dashboard pipeli
 The predicted attack ratios are descriptive dashboard outputs. They must not be compared directly as model accuracy metrics because the captures differ in source, traffic composition, sample size, and processing completeness.
 ## 6. Earlier Locally Captured Traffic Tests
 
-In addition to the public and candidate-public captures described above, locally generated traffic was captured with Wireshark and processed using `model/flow_features.py`. These tests were used to check basic compatibility between the flow extractor, ThreatLens Batch Analysis, and the prediction pipeline.
+In addition to the public and candidate-public captures described above, locally generated traffic was captured with Wireshark and processed using `model/flow_features.py`. These tests were used to check compatibility between the flow extractor, ThreatLens Batch Analysis, and the prediction pipeline.
 
-The results below are historical dashboard observations. Predictions were not independently validated against packet-level ground truth.
+The historical results below are retained as dashboard observations. Their original flow CSV files were not available during the latest audit, so the recorded row counts and prediction counts could not be independently reproduced.
 
-| Capture or derived CSV | CSV rows / sequences recorded | Predicted normal | Predicted attacks | Predicted attack ratio | Recommended actions | Held for review | Executed actions |
-|---|---:|---:|---:|---:|---:|---:|---:|
-| `tcp_fresh.flows.csv` | 59 rows / 5 sequences | 5 | 0 | 0.0% | 0 | 0 | 0 |
-| `tcp_window_scale.flows.csv` | 59 rows / 5 sequences | 5 | 0 | 0.0% | 0 | 0 | 0 |
-| `dns_fresh.flows.csv` | 59 rows / 5 sequences | 5 | 0 | 0.0% | 0 | 0 | 0 |
-| `normal_download_new.flows.csv` | 9 rows / 3 sequences | 3 | 0 | 0.0% | 0 | 0 | 0 |
-| `normal_web_browsing.flows.csv` | 423 rows / 423 sequences recorded | 362 | 61 | 14.4% | 43 | 18 | 0 |
-| `normal_youtube.flows.csv` | 33 rows / 33 sequences recorded | 30 | 3 | 9.1% | 3 | 0 | 0 |
+| Capture CSV | Historical row count | Historical BENIGN predictions | Historical attack predictions | Reported attack ratio |
+|---|---:|---:|---:|---:|
+| `tcp_window_scale.flows.csv` | 59 | 5 | 0 | 0.0% |
+| `dns_fresh.flows.csv` | 59 | 5 | 0 | 0.0% |
+| `normal_download_new.flows.csv` | 9 | 3 | 0 | 0.0% |
+| `normal_web_browsing.flows.csv` | 423 | 362 | 61 | 14.4% |
+| `normal_youtube.flows.csv` | 33 | 30 | 3 | 9.1% |
 
-**Interpretation and limitations**
+**Sequence-count clarification:** the current inference implementation uses windows of 10 consecutive flows with a stride of one flow. For a file containing *N* valid flows, it generates *N - 9* windows when *N* is at least 10. Therefore, 423 flows would produce 414 windows, and 33 flows would produce 24 windows. These are expected counts under the current implementation, not verified replacements for the historical results.
 
-- The fresh TCP and DNS tests were predicted as BENIGN for all recorded sequences.
-- The download test was very small, with only three recorded sequences; it cannot support broad conclusions.
-- The web-browsing test produced 61 attack predictions, including FTP-Patator and Web Attack classes.
-- The YouTube test produced three FTP-Patator predictions.
-- If the underlying browsing or YouTube traffic was benign, these predictions could be false positives. That cannot be established without independent labels and further flow-level verification.
-- `tcp_window_scale.flows.csv` was regenerated from `tcp_fresh.pcapng`. These are two processing outputs from the same underlying capture, not independent traffic samples.
-- The recorded row and sequence counts are retained as reported during testing; they should not be interpreted as independently validated model-performance metrics.
+### 6.1 Normal Browsing Capture — October 15, 2026
 
-### Earlier SHAP check on a TCP test
+The processed capture `normal_browsing_10min_v2.flows.csv` was generated from the local capture file `captures/normal_browsing_10min_v2.pcapng`.
 
-An earlier TCP example recorded a base value of 0.4552, displayed feature contributions summing to approximately 0.3970, and a model output of 0.8522. These values are consistent with the expected additive relationship, subject to rounding.
+| Measurement | Observed result |
+|---|---:|
+| Valid flow records | 3,010 |
+| Rows excluded for invalid feature values | 0 |
+| Window length | 10 flows |
+| Window stride | 1 flow |
+| Prediction windows | 3,001 |
+| Observed flow-time span | 617.41 seconds |
+| Mean maximum-class confidence | 0.776876 |
+| Median maximum-class confidence | 0.758773 |
 
-The exact historical additivity-error value was stored with corrupted text encoding in the earlier report, so it is not reproduced here as a verified number. This example illustrates explanation consistency only; it does not demonstrate prediction accuracy.
+Predicted class counts:
 
-### Rejected small samples
+| Predicted class | Windows |
+|---|---:|
+| BENIGN | 2,431 |
+| FTP-Patator | 544 |
+| Web Attack - Sql Injection | 24 |
+| DoS slowloris | 1 |
+| Web Attack - XSS | 1 |
 
-The earlier files `dns_sample.flows.csv` and `tcp_sample.flows.csv` were rejected by Batch Analysis with the message that at least 10 valid rows were required after cleaning. The earlier `normal_download.flows.csv` was also considered too small for the intended evaluation, and a newer download sample was used.
-
-### Local-capture privacy
-
-Local PCAP and PCAPNG files may contain private network metadata. They must remain outside version control unless they have been reviewed and explicitly approved for sharing. Derived CSVs should also be checked for sensitive information before any redistribution or commit.
+**Limitations:** this capture has no ground-truth labels. These figures describe model outputs, not accuracy, precision, recall, or a measured false-positive rate. The observed flow-time span does not by itself establish uninterrupted packet capture. The capture's network environment and exact capture start/end times should be recorded only if supported by capture metadata or contemporaneous notes. Local packet captures and derived flow CSVs must be reviewed for sensitive information before sharing or committing them.
 ## 7. SHAP and Prevention Behaviour
 
 SHAP explanations were inspected for selected windows from the five captures. The recorded additivity errors were very small, ranging from approximately 1.8e-10 to 1.9e-9 in the selected checks.
