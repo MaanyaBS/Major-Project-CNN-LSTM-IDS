@@ -33,12 +33,18 @@ The preprocessing pipeline included:
 
 ## 2.2 Cleaning Results
 
-The main cleaning statistics were:
+The following table summarizes the recorded cleaning statistics for all eight CICIDS2017 capture files, as documented in `output/cleaning_report.csv`. The values are reported as recorded in the existing project artifacts.
 
-| Capture | Raw Rows | Missing Rows Removed | Duplicate Rows Removed | Constant Columns Removed | Cleaned Rows |
+| Capture file | Original Rows | Missing Values Removed | Duplicate Rows Removed | Constant Columns Removed | Cleaned Rows |
 |---|---:|---:|---:|---:|---:|
-| Monday | 529,918 | 874 | 14,278 | 11 | 515,203 |
-| Wednesday | 692,703 | 2,594 | 66,975 | 10 | 624,431 |
+| Friday-WorkingHours-Afternoon-DDos | 225,745 | 68 | 1,570 | 10 | 224,141 |
+| Friday-WorkingHours-Afternoon-PortScan | 286,467 | 742 | 44,734 | 10 | 241,362 |
+| Friday-WorkingHours-Morning | 191,033 | 244 | 4,456 | 10 | 186,455 |
+| Monday-WorkingHours | 529,918 | 874 | 14,278 | 10 | 515,203 |
+| Thursday-WorkingHours-Afternoon-Infilteration | 288,602 | 414 | 23,225 | 10 | 265,170 |
+| Thursday-WorkingHours-Morning-WebAttacks | 170,366 | 270 | 3,719 | 10 | 166,512 |
+| Tuesday-WorkingHours | 445,909 | 528 | 13,859 | 10 | 431,786 |
+| Wednesday-workingHours | 692,703 | 2,594 | 66,975 | 10 | 624,431 |
 
 The final day-aware CICIDS2017 file is:
 
