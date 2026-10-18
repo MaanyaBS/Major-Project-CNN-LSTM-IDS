@@ -36,6 +36,14 @@ and ends flows on RST: a scan flow (SYN -> RST/ACK) has the same feature
 values whether it ends at the RST or at the timeout, so scans are reported
 within seconds while long benign flows still end on FIN or the timeout.
 
+IPv4 and IPv6 are both read (ipv6=False reads IPv4 only). On a phone hotspot
+most traffic is IPv6, much of it QUIC (UDP 443), so leaving it out would hide
+most of what the model is asked to judge. IPv6 lengths are the transport
+payload after any extension headers, exactly as for IPv4; the 20 features
+contain no addresses. An IPv6 packet is never shorter than Ethernet's minimum,
+so padding never changes it. How well the 2017-trained model judges IPv6 and
+QUIC traffic is measured on real captures, not assumed.
+
 Usage:
     python model/flow_features.py capture.pcapng -o flows.csv
 The CSV has the 20 feature columns plus "Source IP" and can be uploaded to
@@ -44,6 +52,7 @@ the dashboard like any other flow CSV.
 
 import argparse
 import math
+import socket
 import sys
 from dataclasses import dataclass
 from pathlib import Path
@@ -57,10 +66,16 @@ ACTIVE_TIMEOUT_S = 120.0
 ETHERNET_MIN_IP_BYTES = 46          # 60-byte minimum frame - 14-byte Ethernet header
 INFO_COLS = ["Source IP", "Source Port", "Destination IP", "Protocol", "Flow Start", "Flow End", "Packets"]
 
+# IPv6 extension headers that can sit between the IPv6 header and TCP/UDP.
+# Hop-by-hop, routing, destination options, mobility, HIP, shim6: next header
+# in byte 0, length in byte 1 as 8-byte units after the first 8 bytes.
+IPV6_EXT_HEADERS = {0, 43, 60, 135, 139, 140}
+IPV6_FRAGMENT, IPV6_AH = 44, 51     # fixed 8 bytes / length in 4-byte units minus 2
+
 
 @dataclass(frozen=True)
 class Packet:
-    """The fields of one IPv4 TCP/UDP packet that flow features need."""
+    """The fields of one IPv4 or IPv6 TCP/UDP packet that flow features need."""
     ts: float          # seconds
     src: str
     dst: str
@@ -71,12 +86,12 @@ class Packet:
     flags: int = 0     # TCP flags
 
 
-def packet_from_scapy(pkt, pad_to_ethernet=True):
-    """scapy packet -> Packet, or None for anything that is not IPv4 TCP/UDP."""
+def packet_from_scapy(pkt, pad_to_ethernet=True, ipv6=True):
+    """scapy packet -> Packet, or None for anything that is not IPv4/IPv6 TCP/UDP."""
     from scapy.layers.inet import IP, TCP as STCP, UDP as SUDP
 
     if IP not in pkt:
-        return None
+        return _ipv6_from_scapy(pkt, pad_to_ethernet) if ipv6 else None
     ip = pkt[IP]
     if ip.frag:                                   # later fragments carry no ports
         return None
@@ -95,34 +110,115 @@ def packet_from_scapy(pkt, pad_to_ethernet=True):
                   TCP if STCP in ip else UDP, payload, flags)
 
 
-# Fast path: read only the IPv4 and TCP/UDP headers straight from the bytes.
+def _ipv6_from_scapy(pkt, pad_to_ethernet):
+    from scapy.layers.inet import TCP as STCP, UDP as SUDP
+    from scapy.layers.inet6 import IPv6, IPv6ExtHdrFragment
+
+    if IPv6 not in pkt:
+        return None
+    ip6 = pkt[IPv6]
+    frag = ip6.getlayer(IPv6ExtHdrFragment)
+    if frag is not None and frag.offset:          # later fragments carry no ports
+        return None
+    if STCP in ip6:
+        l4 = ip6[STCP]
+        header, flags = (l4.dataofs or 5) * 4, int(l4.flags)
+    elif SUDP in ip6:
+        l4, header, flags = ip6[SUDP], 8, 0
+    else:
+        return None
+    raw = bytes(ip6)                              # may also hold an Ethernet trailer
+    l4_offset = len(raw) - len(bytes(l4))         # 40 + extension headers
+    ip_len = 40 + ip6.plen if ip6.plen else len(raw)
+    if pad_to_ethernet:
+        ip_len = max(ip_len, ETHERNET_MIN_IP_BYTES)
+    payload = max(0, ip_len - l4_offset - header)
+    return Packet(float(pkt.time), ip6.src, ip6.dst, int(l4.sport), int(l4.dport),
+                  TCP if STCP in ip6 else UDP, payload, flags)
+
+
+# Fast path: read only the IP and TCP/UDP headers straight from the bytes.
 # About 30x faster than full scapy decoding (which also decodes TLS, DNS,
 # ...); gives identical Packet values (checked in the tests).
-LINKTYPE_NULL, LINKTYPE_ETHERNET, LINKTYPE_RAW, LINKTYPE_LINUX_SLL, LINKTYPE_IPV4 = 0, 1, 101, 113, 228
+LINKTYPE_NULL, LINKTYPE_ETHERNET, LINKTYPE_RAW, LINKTYPE_LINUX_SLL = 0, 1, 101, 113
+LINKTYPE_IPV4, LINKTYPE_IPV6 = 228, 229
+ETHERTYPES_IP = (b"\x08\x00", b"\x86\xdd")
+# Loopback (NULL) captures store the address family in the capturing host's
+# byte order: AF_INET is 2 everywhere, AF_INET6 is 23 on Windows (Npcap),
+# 24 on NetBSD/OpenBSD, 28 on FreeBSD, 30 on macOS.
+NULL_FAMILIES_IP = {2, 23, 24, 28, 30}
 
 
 def _ip_offset(data, linktype):
-    """Byte offset of the IPv4 header in a captured frame, or None if not IPv4."""
+    """Byte offset of the IP header in a captured frame, or None if not IP."""
     if linktype == LINKTYPE_ETHERNET:
         off, ethertype = 14, data[12:14]
         while ethertype in (b"\x81\x00", b"\x88\xa8") and len(data) >= off + 4:   # VLAN tags
             ethertype, off = data[off + 2:off + 4], off + 4
-        return off if ethertype == b"\x08\x00" else None
-    if linktype in (LINKTYPE_RAW, LINKTYPE_IPV4):
-        return 0 if data[:1] and data[0] >> 4 == 4 else None
+        return off if ethertype in ETHERTYPES_IP else None
+    if linktype in (LINKTYPE_RAW, LINKTYPE_IPV4, LINKTYPE_IPV6):
+        return 0
     if linktype == LINKTYPE_LINUX_SLL:
-        return 16 if data[14:16] == b"\x08\x00" else None
+        return 16 if data[14:16] in ETHERTYPES_IP else None
     if linktype == LINKTYPE_NULL:                 # BSD/Npcap loopback: 4-byte address family
-        return 4 if data[:4] in (b"\x02\x00\x00\x00", b"\x00\x00\x00\x02") else None
+        family = data[:4]
+        if (int.from_bytes(family, "little") in NULL_FAMILIES_IP
+                or int.from_bytes(family, "big") in NULL_FAMILIES_IP):
+            return 4
     return None
 
 
-def packet_from_bytes(data, linktype, ts, pad_to_ethernet=True):
-    """Captured frame bytes -> Packet, or None for anything that is not IPv4 TCP/UDP."""
+def _ipv6_transport(ip):
+    """IPv6 packet bytes -> (offset of its TCP/UDP header, protocol), or None."""
+    nh, off = ip[6], 40
+    while nh not in (TCP, UDP):
+        if len(ip) < off + 8:
+            return None
+        if nh in IPV6_EXT_HEADERS:
+            nh, off = ip[off], off + (ip[off + 1] + 1) * 8
+        elif nh == IPV6_FRAGMENT:
+            if int.from_bytes(ip[off + 2:off + 4], "big") & 0xFFF8:   # later fragments carry no ports
+                return None
+            nh, off = ip[off], off + 8
+        elif nh == IPV6_AH:
+            nh, off = ip[off], off + (ip[off + 1] + 2) * 4
+        else:                                     # ESP (encrypted), ICMPv6, no next header, ...
+            return None
+    return off, nh
+
+
+def _packet_from_ipv6(ip, ts, pad_to_ethernet):
+    if len(ip) < 40:
+        return None
+    found = _ipv6_transport(ip)
+    if found is None:
+        return None
+    off, proto = found
+    l4 = ip[off:]
+    if proto == TCP and len(l4) >= 14:
+        header, flags = ((l4[12] >> 4) or 5) * 4, l4[13]
+    elif proto == UDP and len(l4) >= 8:
+        header, flags = 8, 0
+    else:
+        return None
+    plen = int.from_bytes(ip[4:6], "big")
+    ip_len = 40 + plen if plen else len(ip)       # 0 = jumbogram: no Ethernet trailer possible
+    if pad_to_ethernet:
+        ip_len = max(ip_len, ETHERNET_MIN_IP_BYTES)
+    return Packet(ts, socket.inet_ntop(socket.AF_INET6, ip[8:24]),
+                  socket.inet_ntop(socket.AF_INET6, ip[24:40]),
+                  int.from_bytes(l4[0:2], "big"), int.from_bytes(l4[2:4], "big"), proto,
+                  max(0, ip_len - off - header), flags)
+
+
+def packet_from_bytes(data, linktype, ts, pad_to_ethernet=True, ipv6=True):
+    """Captured frame bytes -> Packet, or None for anything that is not IPv4/IPv6 TCP/UDP."""
     off = _ip_offset(data, linktype)
     if off is None or len(data) < off + 20:
         return None
     ip = data[off:]
+    if ip[0] >> 4 == 6:
+        return _packet_from_ipv6(ip, ts, pad_to_ethernet) if ipv6 else None
     if ip[0] >> 4 != 4:
         return None
     ihl = (ip[0] & 0x0F) * 4
@@ -289,9 +385,9 @@ def flows_from_packets(packets, end_on_rst=False, live_flow_timeout_s=None, tick
     return ended + table.flush()
 
 
-def iter_packets(path, pad_to_ethernet=True, max_packets=None):
+def iter_packets(path, pad_to_ethernet=True, max_packets=None, ipv6=True):
     """
-    Wireshark .pcap/.pcapng -> Packet stream (IPv4 TCP/UDP only), read lazily
+    Wireshark .pcap/.pcapng -> Packet stream (IPv4 and IPv6 TCP/UDP), read lazily
     from the raw bytes (fast path). Timestamps are an exact integer count of
     ticks divided once, i.e. correctly rounded - the same value scapy's
     PcapReader computes with Decimal, without its per-packet cost.
@@ -309,14 +405,15 @@ def iter_packets(path, pad_to_ethernet=True, max_packets=None):
                 linktype = reader.linktype
                 scale = 10 ** 9 if reader.nano else 10 ** 6
                 ts = (meta.sec * scale + meta.usec) / scale
-            p = packet_from_bytes(data, linktype, ts, pad_to_ethernet)
+            p = packet_from_bytes(data, linktype, ts, pad_to_ethernet, ipv6)
             if p is not None:
                 yield p
 
 
-def flows_from_pcap(path, pad_to_ethernet=True, end_on_rst=False, live_flow_timeout_s=None, max_packets=None):
+def flows_from_pcap(path, pad_to_ethernet=True, end_on_rst=False, live_flow_timeout_s=None, max_packets=None,
+                    ipv6=True):
     """Wireshark .pcap/.pcapng -> DataFrame of flows (20 features + flow info)."""
-    packets = iter_packets(path, pad_to_ethernet, max_packets)
+    packets = iter_packets(path, pad_to_ethernet, max_packets, ipv6)
     return flows_to_frame(flows_from_packets(packets, end_on_rst, live_flow_timeout_s))
 
 
@@ -327,9 +424,11 @@ def main():
     parser.add_argument("--no-ethernet-padding", action="store_true",
                         help="use the captured lengths as they are (not recommended for Wi-Fi captures)")
     parser.add_argument("--end-on-rst", action="store_true", help="also end TCP flows at the first RST")
+    parser.add_argument("--ipv4-only", action="store_true", help="skip IPv6 packets")
     args = parser.parse_args()
 
-    df = flows_from_pcap(args.pcap, pad_to_ethernet=not args.no_ethernet_padding, end_on_rst=args.end_on_rst)
+    df = flows_from_pcap(args.pcap, pad_to_ethernet=not args.no_ethernet_padding, end_on_rst=args.end_on_rst,
+                         ipv6=not args.ipv4_only)
     out = Path(args.output or f"{args.pcap}.flows.csv")
     df.to_csv(out, index=False)
     print(f"{len(df):,} flows -> {out}  ({len(df) // 10} model windows of 10 flows)")
