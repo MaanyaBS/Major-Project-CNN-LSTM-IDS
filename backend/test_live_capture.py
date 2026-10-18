@@ -275,6 +275,29 @@ def test_a_failing_prediction_does_not_stop_the_capture():
         e.stop()
 
 
+def test_interfaces_are_listed_where_npcap_is_installed():
+    # Only checkable on a machine with Npcap (or libpcap): the demo laptop.
+    import scapy.arch  # noqa: F401
+    from scapy.config import conf
+
+    if sys.platform == "win32" and not conf.use_pcap:
+        print("      (skipped: no Npcap on this machine)")
+        return
+    found = lc.list_interfaces()
+    assert found and all(i["name"] for i in found)
+    assert found[0]["ip"], "an interface with an address is offered first"
+    local, gateways = lc._local_and_gateway_ips(lc._find_interface(found[0]["name"]))
+    assert found[0]["ip"] in local, "this machine's own address is never a target"
+    default_gw = conf.route.route("0.0.0.0")[2]
+    if default_gw != "0.0.0.0":                  # connected to a network
+        assert default_gw in gateways, "the hotspot / router is never a target"
+    try:
+        lc._find_interface("no-such-adapter")
+        raise AssertionError("unknown interface accepted")
+    except ValueError:
+        pass
+
+
 def test_start_refuses_before_the_model_is_loaded():
     class Closed:
         closed = False

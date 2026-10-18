@@ -76,6 +76,21 @@ def _utc(ts):
     return datetime.fromtimestamp(ts, timezone.utc).isoformat()
 
 
+def _scapy_conf():
+    """
+    scapy's conf with its platform layer and routing table loaded: Npcap is
+    only detected by scapy.arch, and conf.route (where the gateway comes
+    from) stays empty until scapy.route is imported.
+    """
+    import scapy.arch  # noqa: F401
+    import scapy.route  # noqa: F401
+    from scapy.config import conf
+
+    if sys.platform == "win32" and not conf.use_pcap:
+        raise RuntimeError("Npcap was not found - install it from https://npcap.com and restart the backend")
+    return conf
+
+
 # ============================================================
 # Packet sources
 # ============================================================
@@ -90,10 +105,7 @@ class NpcapSource:
     speed = 1.0
 
     def __init__(self, iface):
-        from scapy.config import conf
-
-        if sys.platform == "win32" and not conf.use_pcap:
-            raise RuntimeError("Npcap was not found - install it from https://npcap.com and restart the backend")
+        conf = _scapy_conf()
         # 100 ms read timeout, so the capture thread sees stop() promptly.
         self._sock = conf.L2listen(iface=iface, promisc=False, filter=BPF_FILTER)
         fd = getattr(self._sock, "pcap_fd", None)
@@ -406,11 +418,9 @@ class LiveEngine:
 
 
 def _interfaces():
-    from scapy.config import conf
+    _scapy_conf()
     from scapy.interfaces import get_working_ifaces
 
-    if sys.platform == "win32" and not conf.use_pcap:
-        raise RuntimeError("Npcap was not found - install it from https://npcap.com and restart the backend")
     return list(get_working_ifaces())
 
 
@@ -420,9 +430,7 @@ def _usable(ip):
 
 def list_interfaces():
     """[{"name", "description", "ip", "default"}], usable ones (with an IPv4 address) first."""
-    from scapy.config import conf
-
-    default = getattr(conf.iface, "name", None)
+    default = getattr(_scapy_conf().iface, "name", None)
     found = [{"name": i.name, "description": i.description or i.name, "ip": i.ip or None,
               "default": i.name == default} for i in _interfaces()]
     return sorted(found, key=lambda i: (not _usable(i["ip"]), not i["default"], i["name"]))
@@ -437,8 +445,7 @@ def _find_interface(name):
 
 def _local_and_gateway_ips(iface):
     """This machine's IPv4 addresses and every gateway in the routing table: never targets."""
-    from scapy.config import conf
-
+    conf = _scapy_conf()
     local = {i.ip for i in _interfaces() if i.ip}
     if getattr(iface, "ip", None):
         local.add(iface.ip)
