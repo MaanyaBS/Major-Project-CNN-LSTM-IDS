@@ -27,6 +27,12 @@ Matching
 - Our extractor reads from MARGIN_S before the slice to MARGIN_S after it, so
   flows that start inside the slice are complete; only those are compared.
 
+Values are compared twice: strictly (within 1e-4 relative) and at the
+precision the CSV printed. The official CSV writes large values with three
+significant digits ("1.02E+07"), so a strictly correct 10,154,600 cannot
+equal its row; the main figures use the printed precision, the strict ones
+are shown next to them.
+
 Both end_on_rst settings are run (CICFlowMeter-V3's handling of RST is not
 documented); the report shows which agrees better.
 
@@ -75,9 +81,9 @@ def read_official(path, pattern="PortScan"):
                 raise SystemExit(f"Expected one CSV matching '{pattern}' in {path.name}, found {names}")
             print(f"  using {names[0]} from {path.name}")
             raw = z.read(names[0])
-        df = pd.read_csv(io.BytesIO(raw), encoding="latin-1", low_memory=False, skipinitialspace=True)
+        df = pd.read_csv(io.BytesIO(raw), encoding="latin-1", dtype=str, skipinitialspace=True)
     else:
-        df = pd.read_csv(path, encoding="latin-1", low_memory=False, skipinitialspace=True)
+        df = pd.read_csv(path, encoding="latin-1", dtype=str, skipinitialspace=True)
     df.columns = [c.strip() for c in df.columns]
     df = df.dropna(subset=["Timestamp", "Source IP", "Source Port", "Destination Port"]).reset_index(drop=True)
     for c in ("Source Port", "Destination Port", "Protocol"):
@@ -208,6 +214,16 @@ def in_slice(official, cands, offset_h, start, end):
 
 # ---------- comparison ----------
 
+NUMBER_RE = re.compile(r"^[-+]?\d*(?:\.(\d*))?(?:[eE]([-+]?\d+))?$")
+
+
+def printed_tolerance(text):
+    """Half a unit in the last digit the CSV printed: '1.02E+07' -> 50000, '516.25' -> 0.005, '52' -> 0.5."""
+    m = NUMBER_RE.match(str(text).strip())
+    if not m:
+        return 0.0
+    return 0.5 * 10.0 ** (int(m.group(2) or 0) - len(m.group(1) or ""))
+
 def compare(ours, official, pairs):
     a = ours.iloc[[i for _, i in pairs]]
     b = official.iloc[[j for j, _ in pairs]]
@@ -216,9 +232,12 @@ def compare(ours, official, pairs):
         x = a[col].to_numpy(float)
         y = pd.to_numeric(b[col], errors="coerce").to_numpy(float)
         diff = np.abs(x - y)
-        ok = diff <= np.maximum(1e-6, 1e-4 * np.abs(y))
+        strict = diff <= np.maximum(1e-6, 1e-4 * np.abs(y))
+        printed = np.array([printed_tolerance(t) for t in b[col]]) * (1 + 1e-9)
+        ok = strict | (diff <= printed)
         rel = diff / np.maximum(np.abs(y), 1e-9)
-        out[col] = {"agree": ok, "diff": diff, "rel": rel, "ours": x, "theirs": y}
+        out[col] = {"agree": ok, "strict": strict, "diff": diff, "rel": rel, "ours": x, "theirs": y,
+                    "printed": b[col].astype(str).str.strip().to_numpy()}
     return a.reset_index(drop=True), b.reset_index(drop=True), out
 
 
@@ -246,10 +265,12 @@ def run(pcap, csv, start_text, minutes, out_path, sample):
                                  reverse=True)[0])
         a, b, cmp_ = compare(ours, official, pairs)
         all_ok = np.all([cmp_[c]["agree"] for c in FEATURES], axis=0) if pairs else np.array([])
+        all_strict = np.all([cmp_[c]["strict"] for c in FEATURES], axis=0) if pairs else np.array([])
         results[rst] = dict(ours=ours, offset=offset, scores=scores, rows=rows, pairs=pairs, dropped=dropped,
-                            reverse_only=reverse_only, a=a, b=b, cmp=cmp_, all_ok=all_ok)
+                            reverse_only=reverse_only, a=a, b=b, cmp=cmp_, all_ok=all_ok, all_strict=all_strict)
         print(f"  {len(ours):,} flows; offset UTC{offset:+d}; {len(rows):,} official rows in the slice; "
-              f"{len(pairs):,} matched one-to-one; all 20 features agree on {all_ok.mean():.1%}")
+              f"{len(pairs):,} matched one-to-one; all 20 features agree on {all_ok.mean():.1%} "
+              f"({all_strict.mean():.1%} strictly)")
 
     best = max(results, key=lambda r: (results[r]["all_ok"].mean() if len(results[r]["all_ok"]) else 0,
                                        len(results[r]["pairs"])))
@@ -284,23 +305,24 @@ def write_report(results, best, pcap, csv, start, end, formats, orders):
          f"| Time-zone offset found | UTC{r['offset']:+d} (most matches of all whole-hour offsets) |", "",
          "## Matching", "",
          "| end_on_rst | Our flows | Official rows in slice | One-to-one matches | Left out (2+ candidates) "
-         "| Matched only reversed | All 20 features agree |",
-         "|---|---|---|---|---|---|---|"]
+         "| Matched only reversed | All 20 features agree (as printed) | Strictly |",
+         "|---|---|---|---|---|---|---|---|"]
     for rst, x in results.items():
         n = len(x["pairs"])
         L.append(f"| {rst} | {len(x['ours']):,} | {len(x['rows']):,} | {n:,} ({n / max(1, len(x['rows'])):.1%}) "
-                 f"| {x['dropped']:,} | {x['reverse_only']:,} | {x['all_ok'].mean():.2%} |")
+                 f"| {x['dropped']:,} | {x['reverse_only']:,} | {x['all_ok'].mean():.2%} | {x['all_strict'].mean():.2%} |")
     L += ["", f"Details below use end_on_rst={best} (the better agreement).", "",
           "## Per Feature", "",
-          "| Feature | Agree | Median abs. difference where they differ | Median rel. difference where they differ |",
-          "|---|---|---|---|"]
+          "| Feature | Agree (as printed) | Strictly | Median abs. difference where they differ "
+          "| Median rel. difference where they differ |",
+          "|---|---|---|---|---|"]
     for col in FEATURES + DIAGNOSTIC:
         c = cmp_[col]
         bad = ~c["agree"]
         med_abs = f"{np.median(c['diff'][bad]):.6g}" if bad.any() else "-"
         med_rel = f"{np.median(c['rel'][bad]):.2%}" if bad.any() else "-"
         name = col + (" *(diagnostic, not a model feature)*" if col in DIAGNOSTIC else "")
-        L.append(f"| {name} | {c['agree'].mean():.2%} | {med_abs} | {med_rel} |")
+        L.append(f"| {name} | {c['agree'].mean():.2%} | {c['strict'].mean():.2%} | {med_abs} | {med_rel} |")
     L += ["", "## By Official Label", "", "| Label | Matched flows | All 20 features agree |", "|---|---|---|"]
     for lab, idx in labels.groupby(labels).groups.items():
         L.append(f"| {lab} | {len(idx):,} | {r['all_ok'][list(idx)].mean():.2%} |")
@@ -311,15 +333,16 @@ def write_report(results, best, pcap, csv, start, end, formats, orders):
         if not len(bad):
             continue
         order = bad[np.argsort(-cmp_[col]["rel"][bad])][:5]
-        L += [f"**{col}**", "", "| Flow | Label | Ours | Official | Fwd/Bwd packets (ours / official) |",
+        L += [f"**{col}**", "", "| Flow | Label | Ours | Official (as printed) | Fwd/Bwd packets (ours / official) |",
               "|---|---|---|---|---|"]
         for k in order:
             flow = f"{a.at[k, 'Source IP']}:{a.at[k, 'Source Port']} -> {a.at[k, 'Destination IP']}:{int(a.at[k, 'Destination Port'])}"
-            L.append(f"| {flow} | {labels.iat[k]} | {cmp_[col]['ours'][k]:.6g} | {cmp_[col]['theirs'][k]:.6g} "
+            L.append(f"| {flow} | {labels.iat[k]} | {cmp_[col]['ours'][k]:.6g} | {cmp_[col]['printed'][k]} "
                      f"| {int(a.at[k, 'Total Fwd Packets'])}/{int(a.at[k, 'Total Backward Packets'])} / "
                      f"{int(b.at[k, 'Total Fwd Packets'])}/{int(b.at[k, 'Total Backward Packets'])} |")
         L.append("")
-    L += ["Agreement: equal within 1e-4 relative (1e-6 absolute), since the official CSV stores rounded values. "
+    L += ["Agreement: equal at the precision the official CSV printed (it writes large values with three "
+          "significant digits, e.g. 1.02E+07); 'Strictly': within 1e-4 relative (1e-6 absolute). "
           "Rows left out (2+ candidate flows in the same minute, mostly reused nmap source ports) are not "
           "evidence either way.", ""]
     return "\n".join(L)

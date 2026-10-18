@@ -34,7 +34,8 @@ def _frames():
     for i in range(10):                                       # web: request, response, FIN
         t = T0 + 2 + i * 3
         out += [(E() / IP(src=WEB, dst=VIC) / TCP(sport=50000 + i, dport=80, flags="PA") / (b"g" * 300), t),
-                (E() / IP(src=VIC, dst=WEB) / TCP(sport=80, dport=50000 + i, flags="PA") / (b"r" * 900), t + 0.01),
+                (E() / IP(src=VIC, dst=WEB) / TCP(sport=80, dport=50000 + i, flags="PA") / (b"r" * 900),
+                 t + (0.012345 if i == 5 else 0.01)),
                 (E() / IP(src=WEB, dst=VIC) / TCP(sport=50000 + i, dport=80, flags="FA"), t + 0.02)]
     for k in range(2):                                        # same 5-tuple twice in one minute
         t = T0 + 50 + k * 2
@@ -63,6 +64,8 @@ def _official_csv(path, flows, perturb=5):
         feats = f.features()
         if n < perturb:
             feats["Flow IAT Max"] *= 1.5
+        if f.sport == 50005:                                  # UNB prints big values with 3 digits
+            feats["Flow IAT Max"] = f"{feats['Flow IAT Max']:.2E}"
         rows.append({"Flow ID": "x", "Source IP": f.src, "Source Port": f.sport, "Destination IP": f.dst,
                      "Destination Port": f.dport, "Protocol": f.proto,
                      "Timestamp": f"{local.month}/{local.day}/{local.year} {local.hour % 12 or 12}:{local.minute:02d}",
@@ -97,12 +100,19 @@ def test_end_to_end_on_a_synthetic_day():
     assert len(r["rows"]) == len(truth), "the row outside the slice is not counted"
     assert len(r["pairs"]) == len(truth) - 2, "the two same-minute flows on one 5-tuple are left out"
     assert r["dropped"] == 2
-    iat = r["cmp"]["Flow IAT Max"]["agree"]
-    assert (~iat).sum() == 5, "the five perturbed rows disagree on Flow IAT Max"
+    iat = r["cmp"]["Flow IAT Max"]
+    assert (~iat["agree"]).sum() == 5, "the five perturbed rows disagree on Flow IAT Max"
+    assert (~iat["strict"]).sum() == 6, "12345 vs the printed 1.23E+04 agrees only at printed precision"
     others = [c for c in ff.FEATURE_COLS if c != "Flow IAT Max"]
     assert all(r["cmp"][c]["agree"].all() for c in others), "every other feature agrees exactly"
     assert abs(r["all_ok"].mean() - (len(r["pairs"]) - 5) / len(r["pairs"])) < 1e-12
     assert "UTC-3" in report and "Flow IAT Max" in report and "PortScan" in report
+
+
+def test_printed_tolerance():
+    assert v.printed_tolerance("1.02E+07") == 50000 and abs(v.printed_tolerance("516.25") - 0.005) < 1e-15
+    assert v.printed_tolerance("52") == 0.5 and v.printed_tolerance("4.12083e+06") == 5.0
+    assert v.printed_tolerance("Infinity") == 0.0 and v.printed_tolerance("nan") == 0.0
 
 
 def test_timestamp_readings():
