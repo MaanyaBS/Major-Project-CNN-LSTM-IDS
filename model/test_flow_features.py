@@ -71,6 +71,15 @@ def test_fwd_iat_std_is_sample_std_in_microseconds():
     assert two["Fwd IAT Std"] == 0.0, "a single interval has no spread"
 
 
+def test_times_are_whole_microseconds_at_real_dates():
+    # 2017 epoch seconds as floats resolve ~0.24 us; CICFlowMeter-V3 counts whole microseconds.
+    t = 1499446860.123456
+    f = one_flow([pkt(t, A, B, 1000, 80), pkt(t + 0.0001, B, A, 80, 1000), pkt(t + 0.000103, A, B, 1000, 80)])
+    assert f["Flow IAT Max"] == 100 and f["Fwd IAT Std"] == 0.0
+    flow = ff.flows_from_packets([pkt(t, A, B, 1000, 80), pkt(t + 0.0001, B, A, 80, 1000)])[0]
+    assert flow.duration_us == 100
+
+
 def test_fin_ends_the_flow_and_later_packets_start_a_new_one():
     flows = ff.flows_from_packets([pkt(0.0, A, B, 1000, 80, 0), pkt(0.1, A, B, 1000, 80, 0, ff.FIN),
                                    pkt(0.2, B, A, 80, 1000, 0)])

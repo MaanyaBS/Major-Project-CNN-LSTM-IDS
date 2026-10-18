@@ -252,31 +252,38 @@ class Flow:
     """One bidirectional flow; forward = the direction of its first packet."""
 
     __slots__ = ("src", "dst", "sport", "dport", "proto", "start", "last",
-                 "fwd", "bwd", "fwd_ts", "all_ts", "first_len")
+                 "fwd", "bwd", "fwd_us", "all_us", "first_len")
 
     def __init__(self, p):
         self.src, self.dst, self.sport, self.dport, self.proto = p.src, p.dst, p.sport, p.dport, p.proto
         self.start = self.last = p.ts
-        self.fwd, self.bwd, self.fwd_ts, self.all_ts = [], [], [], []
+        self.fwd, self.bwd, self.fwd_us, self.all_us = [], [], [], []
         self.first_len = p.payload
         self.add(p)
 
     def add(self, p):
+        # Whole microseconds, as CICFlowMeter-V3 timestamps packets. Epoch
+        # seconds as a float resolve only ~0.24 us, so a 100 us gap would
+        # otherwise come out as 99.9 us; rounding restores the captured value.
+        us = round(p.ts * 1_000_000)
         if p.src == self.src and p.sport == self.sport:
             self.fwd.append(p.payload)
-            self.fwd_ts.append(p.ts)
+            self.fwd_us.append(us)
         else:
             self.bwd.append(p.payload)
-        self.all_ts.append(p.ts)
+        self.all_us.append(us)
         self.last = p.ts
 
+    @property
+    def duration_us(self):
+        return self.all_us[-1] - self.all_us[0]
+
     def features(self):
-        us = 1e6
         fwd, bwd = self.fwd, self.bwd
         lengths = fwd + bwd
         doubled = [self.first_len] + lengths       # CICFlowMeter-V3 counts the first packet twice
-        flow_iat = [(b - a) * us for a, b in zip(self.all_ts, self.all_ts[1:])]
-        fwd_iat = [(b - a) * us for a, b in zip(self.fwd_ts, self.fwd_ts[1:])]
+        flow_iat = [b - a for a, b in zip(self.all_us, self.all_us[1:])]
+        fwd_iat = [b - a for a, b in zip(self.fwd_us, self.fwd_us[1:])]
         pl_std = _sample_std(doubled)
         fwd_mean = sum(fwd) / len(fwd)
         bwd_mean = sum(bwd) / len(bwd) if bwd else 0.0
@@ -308,7 +315,7 @@ class Flow:
     def info(self):
         return {"Source IP": self.src, "Source Port": self.sport, "Destination IP": self.dst,
                 "Protocol": self.proto, "Flow Start": self.start, "Flow End": self.last,
-                "Packets": len(self.all_ts)}
+                "Packets": len(self.all_us)}
 
 
 class FlowTable:
