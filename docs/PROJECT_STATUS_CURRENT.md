@@ -41,10 +41,9 @@ live capture; Varshini D N — dashboard and backend.
 | Dashboard: CSV upload, replay, SHAP, prevention panel | Done | `main` |
 | Packet -> flow extractor (IPv4 + IPv6), validated on the original CICIDS2017 pcap | Done | `person-b-model` |
 | Opt-in LAN demo targets, one rule per device, `active_rules()` | Done | `person-b-model` |
-| Live capture engine `backend/live_capture.py` (detect + block) | Done, replay-tested | `person-b-model` |
+| Live capture engine `backend/live_capture.py` (detect + block) | Done; live run on a real network passed (2026-10-18) | `person-b-model` |
 | Backend: `/api/predict_pcap`, `/api/live/*`, Live capture UI, Blocked devices panel | Done (against a stub until the merge below) | `varshini-dashboard` |
 | Merge `person-b-model` into `varshini-dashboard` | **Pending** (tested locally: clean) | — |
-| Live run on a real network (not a replay) | **Pending** | — |
 | PR to `main` and a new tag | **Pending**, after the live run | — |
 
 ---
@@ -81,6 +80,7 @@ microseconds, and V3's rule that a FIN which *starts* a flow does not end it.
 | `nmap -sT` scan from the tablet | 98% of windows PortScan; live replay: first detection 1.6 s after the first SYN, every automatic action against the scanner only |
 | Laptop browsing (IPv4 + IPv6) | 11.1% of windows not BENIGN, 7.6% recommend automatic action, **0** with a target that could be blocked |
 | Tablet reloading a page on the laptop | 0 automatic actions against the tablet (Bot predictions, held for review) |
+| **Live run, shared router** | Scan blocked about 2 s after the first probes; three scan -> block -> revoke cycles; another person's device flagged and refused 10 times |
 
 ---
 
@@ -98,8 +98,8 @@ microseconds, and V3's rule that a FIN which *starts* a flow does not end it.
 - **Targets in live mode** (`model/target_selection.py`): the most frequent
   private IPv4 source in the window that is not this machine or the gateway;
   none -> recommendation only.
-- Tests: 35 (policy + engine), 22/22 on the real firewall, 13 live engine,
-  20 extractor, 3 validator, 7 target selection.
+- Tests: 35 (policy + engine), 22/22 on the real firewall, 14 live engine,
+  20 extractor, 3 validator, 8 target selection.
 
 ---
 
@@ -111,11 +111,12 @@ microseconds, and V3's rule that a FIN which *starts* a flow does not end it.
    `revoke()` comment (TEST-NET or listed devices).
 2. **Data teammate:** label the 10-minute browsing run as IPv4-only and
    re-run it with the current extractor (`--end-on-rst`, IPv6 included).
-3. **Live run on a real network** (phone hotspot or a router whose owner
-   agrees): laptop + tablet; browse, then scan; confirm block, Blocked
-   devices panel, revoke. The tablet must not be the hotspot (the gateway is
-   never a target).
-4. Rehearsal, then PR `varshini-dashboard` -> `main` and a new tag.
+3. **Dashboard teammate, from the live run:** the Live detection log shows
+   some window numbers more than once (the engine's are unique), and the
+   armed-execution banner names only the TEST-NET ranges (listed LAN devices
+   can be acted on too).
+4. Rehearsal on the merged dashboard branch (`docs/LIVE_DEMO_CHECKLIST.md`),
+   then PR `varshini-dashboard` -> `main` and a new tag.
 5. **After the project:** remove `DisableStealthMode` from the three Windows
    Firewall profiles (then reboot) and delete any `IDS_TEST_allow_scanner`
    rule.

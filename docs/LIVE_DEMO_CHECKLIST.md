@@ -61,8 +61,10 @@ router as a target. Ask the network owner first if it is not your network.**
 7. **Test page** (a second, normal PowerShell window; leave it running):
    ```powershell
    mkdir D:\httptest -Force; Set-Content D:\httptest\index.html "hello from laptop"
-   python -m http.server 8000 --directory D:\httptest
+   & "D:\Data\Ruthwik\Desktop\MAJOR-PROJECT-CNN-LSTM-IDS\venv\Scripts\python.exe" -m http.server 8000 --directory D:\httptest
    ```
+   It must print `Serving HTTP on :: port 8000` and keep running (a bare
+   `python` on this laptop resolves to a file that does nothing).
 8. **Check the path:** on the tablet open `http://LAPTOP_IP:8000` (Samsung
    Internet, or Chrome with *Always use secure connections* off). It must show
    *hello from laptop*. If not: wrong IP, VPN on, or the router isolates
@@ -101,9 +103,9 @@ router as a target. Ask the network owner first if it is not your network.**
 |---|---|---|
 | 1 | Browse a few sites on the laptop for a minute | Mostly BENIGN. Some "recommended, no target" items can appear (IPv6/QUIC); nothing is executed |
 | 2 | Tablet: reload `http://LAPTOP_IP:8000` a few times | Page loads. Windows from the tablet may say Bot, **held for review**; nothing is executed |
-| 3 | Tablet, in Termux: `nmap -sT LAPTOP_IP`. Note the time nmap prints | Within about 2 s: **PortScan**, *executed: firewall rule added* for TABLET_IP; **Blocked devices** lists it. Ports nmap had not reached yet may come back *filtered* |
+| 3 | Tablet, in Termux: `nmap -sT LAPTOP_IP`. Note the time nmap prints | Within about 2 s: **PortScan**, *executed: firewall rule added* for TABLET_IP; **Blocked devices** lists it. nmap still lists most ports *closed* (probed before the block); services it reached afterwards show *filtered* |
 | 4 | Administrator window: `Get-NetFirewallRule -DisplayName 'IDS_DEMO_*' \| Select DisplayName` | `IDS_DEMO_block_ip_<tablet>_in` and `_out` |
-| 5 | Tablet: reload the page; run `nmap -sT LAPTOP_IP` again | Page fails; nmap reports the host down or every port filtered. Dashboard: *already blocked — traffic dropped by firewall* |
+| 5 | Tablet: reload the page; optionally run `nmap -sT LAPTOP_IP` again | Page fails. In nmap the laptop's services (8000, 8080, ...) show *filtered*; ports with no service still show *closed* while stealth mode is off. Dashboard: *already blocked — dropped* |
 | 6 | Dashboard: **Revoke** on the tablet in Blocked devices | Panel empties; step 4's command prints nothing; the page loads again |
 | 7 | **Stop** the capture | Counters stop |
 
@@ -142,4 +144,5 @@ foreach ($p in 'DomainProfile','PrivateProfile','PublicProfile') { Remove-ItemPr
 | *outside the allowed demo scope* | `IDS_PREVENTION_DEMO_TARGETS` does not match the tablet | Re-check TABLET_IP (C3), restart the backend |
 | *Administrator privileges required* | Backend not elevated | Start it from the Administrator window |
 | PortScan but **no target** | The scanner is the gateway (hotspot), or traffic comes through a VPN | Use a separate hotspot / router; VPN off |
-| Tablet cannot open the page | Wrong IP, VPN, or client isolation on the router | C2, C3, C8 |
+| Tablet cannot open the page | Test page not running, wrong IP, VPN, or client isolation on the router | C7 must say *Serving HTTP*; C2, C3, C8 |
+| A stranger's device is flagged | Its broadcasts reach the laptop | Expected: it is never listed, so the engine refuses; it is not even a target unless it sends traffic to the laptop |

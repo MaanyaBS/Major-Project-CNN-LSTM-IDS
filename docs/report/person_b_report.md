@@ -373,12 +373,13 @@ waits for the model:
    itself, so blocking does not depend on the dashboard being open.
 
 The target is the most frequent private IPv4 source in the window that is
-neither this machine nor the gateway; with none, the action stays a
-recommendation (`model/target_selection.py`, 7 tests). Live mode ends flows
+neither this machine nor the gateway and that sent traffic to this machine;
+with none, the action stays a recommendation (`model/target_selection.py`,
+8 tests). Live mode ends flows
 on RST on purpose: a scan flow (SYN -> RST) has the same features either
 way, and a scan is reported in about a second instead of 120 s, at the cost
 of 0.9 points of agreement on other traffic (8.2). A saved capture can be
-replayed through the same engine. 13 tests, without network, model or
+replayed through the same engine. 14 tests, without network, model or
 firewall.
 
 ### 8.4 Real Traffic
@@ -407,9 +408,27 @@ Four findings:
   (mostly DoS GoldenEye). Their sources are the laptop and internet servers,
   never a LAN device, so nothing is executed. IPv4-only analysis gives 3.6%
   and 0%, but ignores 98% of the browsing packets.
-- **The laptop sees only its own traffic.** Another device appears only
-  when it talks to the laptop, which is also the only case where blocking it
-  on the laptop's firewall means anything.
+- **The laptop sees its own traffic plus others' broadcasts.** Only a
+  device that talks to the laptop can be a target (see 8.5).
+
+### 8.5 Live Run
+
+On 2026-10-18 the whole system ran live on a home router used daily by 20-30
+people (with the owner's permission), the tablet the only listed device:
+
+| | |
+|---|---|
+| Detection | PortScan at 0.99, **about 2 s after nmap's first probes**; 13 consecutive PortScan windows |
+| Prevention | Tablet blocked automatically, one rule; 18 repeat detections answered "already blocked" |
+| Effect | The laptop's services (test page, dashboard, AnyDesk) became unreachable from the tablet |
+| Revoke | Page reachable again; three full scan -> block -> revoke cycles |
+| Normal use | The tablet's page reloads read as Bot, held for review, never executed |
+| Bystander | Another person's device, flagged DoS Slowhttptest at 0.996 from its SSDP broadcasts, refused 10 times (not listed) |
+
+Most of nmap's 1,000 ports were probed in the second before the block
+landed, so nmap still listed them as closed: a block stops an attacker from
+then on. The bystander led to one change: a device now becomes a target only
+if it sent traffic to this machine, since discovery broadcasts never do.
 
 ---
 
@@ -442,10 +461,11 @@ the evaluated model was kept.
   their scores are optimistic.
 - Prevention acts only on TEST-NET addresses and LAN devices listed by hand;
   thresholds are calibrated on test-set F1.
-- **The live engine has been verified by replay, not yet on a live
-  network.** Saved real captures were replayed through it with the real
-  model, and the real adapter was read; a full live run (scan -> block ->
-  revoke) is pending.
+- **One live run, on one network, with one attacker tool** (`nmap -sT`
+  from one tablet; 8.5). Other scan types, other attacks and longer runs
+  were not tried live.
+- **Blocking follows detection by about 2 s**: a fast scan has already
+  probed most ports by then.
 - **The model is from 2017.** It needs the victim to answer a scan (8.4),
   reads repeated polling as Bot, and raises recommendation-only false alarms
   on today's IPv6 and QUIC traffic (7.6% of browsing windows), which it never
