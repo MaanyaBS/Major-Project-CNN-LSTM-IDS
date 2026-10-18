@@ -25,12 +25,12 @@ nor the gateway) listed in `IDS_PREVENTION_DEMO_TARGETS`.
 
 | Capture (about 3 min each) | Measure | IPv4 only | IPv4 + IPv6 |
 |---|---|---|---|
-| **Scan** (`nmap -sT` from the tablet, 1,051 SYNs in 7 s) | windows targeting the tablet: PortScan | 98.1% | 98.0% |
-| | ... auto-action (block) | 97.5% | 97.4% |
-| **Browsing** (laptop, ordinary websites) | windows not BENIGN | 3.3% | 10.0% |
-| | windows auto-action | 0% | 7.4% |
+| **Scan** (`nmap -sT` from the tablet, 1,051 SYNs in 7 s) | windows targeting the tablet: PortScan | 98.2% | 97.8% |
+| | ... auto-action (block) | 97.6% | 97.5% |
+| **Browsing** (laptop, ordinary websites) | windows not BENIGN | 3.6% | 11.1% |
+| | windows auto-action | 0% | 7.6% |
 | | auto-actions with a LAN target | 0 | **0** |
-| **Device use** (tablet reloads a page on the laptop every few seconds) | windows not BENIGN | 61.4% (Bot) | 38.4% (Bot) |
+| **Device use** (tablet reloads a page on the laptop every few seconds) | windows not BENIGN | 61.7% (Bot) | 38.0% (Bot) |
 | | auto-actions against the tablet | **0** | **0** |
 
 Traffic mix: IPv6 (HTTPS and QUIC) was 98% of the packets while browsing,
@@ -39,7 +39,8 @@ Traffic mix: IPv6 (HTTPS and QUIC) was 98% of the packets while browsing,
 **Live engine, end to end** (`backend/live_capture.py`, saved captures
 replayed at 4x through the real model and backend modules, kill switch off):
 
-- Scan: first PortScan window **1.56 s after the tablet's first SYN**; all 7
+- Scan: first PortScan window **1.6 s after the tablet's first SYN** (one
+  prediction per second); all 7
   auto-actions targeted 10.66.33.57 (refused only because execution was off).
   No packets dropped.
 - Device use: 0 firewall attempts.
@@ -58,11 +59,11 @@ replayed at 4x through the real model and backend modules, kill switch off):
    because Bot is locked out of automatic action (after its test-set actions
    all hit benign traffic). The lock, not the model, kept the tablet safe.
 3. **IPv6 browsing raises false alarms, none of them actionable.** With IPv6
-   included, 7.4% of browsing windows say DoS GoldenEye or FTP-Patator with
+   included, 7.6% of browsing windows say DoS GoldenEye or FTP-Patator with
    enough confidence for automatic action. Their sources are the laptop
    itself and internet servers, so there is no LAN target and nothing is
    executed; the dashboard shows "recommended, no target". IPv4-only analysis
-   (`IDS_LIVE_IPV6=0`) gives 3.3% / 0%, but ignores 98% of the browsing packets.
+   (`IDS_LIVE_IPV6=0`) gives 3.6% / 0%, but ignores 98% of the browsing packets.
 4. **The laptop sees only its own traffic** (promiscuous mode off; Wi-Fi does
    not show other devices' unicast). Another device appears only when it
    talks to the laptop, which is also the only case where blocking it on the
@@ -74,13 +75,14 @@ replayed at 4x through the real model and backend modules, kill switch off):
 |---|---|---|
 | Scan: >= 80% PortScan at >= 0.60 | 98% | met |
 | Device use: 0 auto-actions against the listed device | 0 | met |
-| Browsing: <= 10% not BENIGN | 3.3% (IPv4) / 10.0% (with IPv6) | met / at the limit |
-| Browsing: <= 2% auto-action | 0% (IPv4) / 7.4% (with IPv6) | met / **not met**, but 0 executable |
+| Browsing: <= 10% not BENIGN | 3.6% (IPv4) / 11.1% (with IPv6) | met / **not met** |
+| Browsing: <= 2% auto-action | 0% (IPv4) / 7.6% (with IPv6) | met / **not met**, but 0 executable |
 
-Go for the live demo, with finding 3 stated: with IPv6 analysed, the
-false-alarm criterion fails on recommendations, while the safety criterion
+Go for the live demo, with finding 3 stated: with IPv6 analysed, both
+false-alarm criteria fail on recommendations, while the safety criterion
 (nothing executable against benign traffic) holds in every capture.
 
-Not yet measured: agreement of the extractor with CICFlowMeter-V3 on the
-original CICIDS2017 pcap (`model/validate_against_cicids.py`, pending), and a
-live run on the network rather than a replay.
+Numbers above use the extractor after the CICFlowMeter-V3 FIN rule found by
+`model/validate_against_cicids.py` (a flow whose first packet carries FIN
+stays open); before it, every figure was within 1.1 points of these. Not yet
+measured: a live run on the network rather than a replay.

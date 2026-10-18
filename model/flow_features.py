@@ -342,9 +342,12 @@ class FlowTable:
             ended.append(self.flows.pop(key))
             flow = None
         if flow is None:
-            flow = self.flows[key] = Flow(p)
-        else:
-            flow.add(p)
+            # CICFlowMeter-V3 checks FIN only on a flow that already exists: a
+            # flow whose FIRST packet carries FIN (the tail of an earlier
+            # connection's teardown) stays open, and the reply joins it.
+            self.flows[key] = Flow(p)
+            return ended
+        flow.add(p)
         if p.proto == TCP and (p.flags & FIN or (self.end_on_rst and p.flags & RST)):
             ended.append(self.flows.pop(key))
         return ended

@@ -98,6 +98,17 @@ def test_rst_ends_the_flow_only_when_enabled():
         assert close(f["Flow IAT Max"], 50.0, 1e-6)
 
 
+def test_a_flow_that_starts_with_fin_keeps_its_reply():
+    # Seen on the original CICIDS2017 pcap: a teardown tail (server FIN, client ACK)
+    # is ONE official flow of 1 fwd + 1 bwd packet, not a 1-packet flow.
+    for rst in (False, True):
+        flows = ff.flows_from_packets([pkt(0.0, B, A, 80, 55448, 0, ff.FIN | 0x10),
+                                       pkt(0.000052, A, B, 55448, 80, 6, 0x10)], end_on_rst=rst)
+        assert len(flows) == 1, f"end_on_rst={rst}"
+        f = flows[0].features()
+        assert (f["Total Length of Bwd Packets"], f["Flow IAT Max"]) == (6, 52)
+
+
 def test_fin_ends_the_flow_under_both_settings():
     pk = [pkt(0.0, A, B, 1000, 80), pkt(0.1, A, B, 1000, 80, 0, ff.FIN), pkt(0.2, A, B, 1000, 80)]
     for rst in (False, True):

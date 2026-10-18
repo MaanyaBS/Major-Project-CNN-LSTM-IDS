@@ -139,7 +139,7 @@ def test_the_laptop_and_gateway_are_never_targets():
     rows = []
     for i in range(5):                        # flows the laptop and the gateway start
         rows += [frame(LAP, TAB, 1 + i, 40000 + i, "S"), frame(TAB, LAP, 40000 + i, 1 + i, "RA"),
-                 frame(GW, LAP, 53, 6000 + i, "RA")]
+                 frame(GW, LAP, 6000 + i, 53, "S"), frame(LAP, GW, 53, 6000 + i, "RA")]
     feed(e, [(d, 1000.0 + i * 0.01) for i, d in enumerate(rows)])
     r = e._predict_step(1001.0)
     assert r is not None and r["source_ip"] is None, "10 flows from the laptop and the gateway: no target"
