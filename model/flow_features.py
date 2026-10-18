@@ -20,21 +20,24 @@ must be reproduced:
     CICIDS2017 was captured on wired Ethernet; Wi-Fi frames carry no such
     padding, so pad_to_ethernet=True pads every packet to Ethernet's 60-byte
     minimum frame, as if captured there.
-  - Times are microseconds.
+  - Times are whole microseconds.
 
-Flow termination follows CICFlowMeter-V3: a flow ends at its first FIN
-packet (included), or when a packet arrives more than 120 s after the flow
-started (the 120 s "flow timeout"). There is no idle termination: V3's 5 s
-"activity timeout" only feeds the Active/Idle statistics, which are not among
-the 20 features. Whether V3 also ended flows on RST is not certain, so
-end_on_rst is a parameter (default False until the CICIDS validation,
-model/validate_against_cicids.py, decides).
+Flow termination follows CICFlowMeter-V3: a flow ends at a FIN packet
+(included) - unless the FIN is the flow's first packet, which V3 does not
+check, so a teardown tail stays open and the reply joins it - or when a
+packet arrives more than 120 s after the flow started (the 120 s "flow
+timeout"). There is no idle termination: V3's 5 s "activity timeout" only
+feeds the Active/Idle statistics, which are not among the 20 features. V3 did
+not end flows on RST: on UNB's original Friday pcap, end_on_rst=False agrees
+with the official rows on all 20 features for 99.8% of matched flows,
+end_on_rst=True for 98.9% (model/results/extractor_validation.md).
 
 Live capture (flows_from_packets(..., live_flow_timeout_s=...), used by the
 backend's live engine) checks the flow timeout every second from flow start
-and ends flows on RST: a scan flow (SYN -> RST/ACK) has the same feature
-values whether it ends at the RST or at the timeout, so scans are reported
-within seconds while long benign flows still end on FIN or the timeout.
+and ends flows on RST, deliberately: a scan flow (SYN -> RST/ACK) has the same
+feature values whether it ends at the RST or at the timeout, so scans are
+reported within seconds instead of 120 s, at the measured cost of 0.9 points
+of agreement on other traffic.
 
 IPv4 and IPv6 are both read (ipv6=False reads IPv4 only). On a phone hotspot
 most traffic is IPv6, much of it QUIC (UDP 443), so leaving it out would hide
