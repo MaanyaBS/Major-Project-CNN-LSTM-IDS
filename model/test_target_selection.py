@@ -46,6 +46,16 @@ def test_tie_goes_to_the_most_recent_source():
     assert select_target([ATTACKER, OTHER, ATTACKER, OTHER], [LAPTOP]) == OTHER
 
 
+def test_only_devices_that_address_this_machine_count():
+    # Seen on a shared router: a phone's SSDP broadcasts (private source, multicast destination).
+    ssdp = "239.255.255.250"
+    srcs, dsts = [OTHER] * 9 + [ATTACKER], [ssdp] * 9 + [LAPTOP]
+    assert select_target(srcs, [LAPTOP], [GATEWAY]) == OTHER, "without destinations: the old behaviour"
+    assert select_target(srcs, [LAPTOP], [GATEWAY], dsts) == ATTACKER
+    assert select_target([OTHER] * 10, [LAPTOP], [GATEWAY], [ssdp] * 10) is None
+    assert select_target([OTHER] * 10, [LAPTOP], [GATEWAY], ["192.168.43.255"] * 10) is None
+
+
 def test_no_candidate_gives_none_not_a_random_address():
     assert select_target([], [LAPTOP]) is None
     assert select_target([LAPTOP, "8.8.8.8", "224.0.0.251"], [LAPTOP], [GATEWAY]) is None

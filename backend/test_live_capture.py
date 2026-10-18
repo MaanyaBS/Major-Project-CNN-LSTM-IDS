@@ -148,6 +148,17 @@ def test_the_laptop_and_gateway_are_never_targets():
     assert r["source_ip"] == TAB, "one flow from the tablet among them: the tablet is the only candidate"
 
 
+def test_a_device_that_only_broadcasts_is_never_a_target():
+    # Seen on a shared router: another phone's SSDP discovery (UDP 1900 to a multicast group).
+    other = "10.66.33.91"
+    e = engine()
+    ssdp = [(frame(other, "239.255.255.250", 40000 + i, 1900, payload=b"M-SEARCH" * 20, proto="udp"),
+             1000.0 + i * 0.1) for i in range(12)]
+    feed(e, ssdp, now=1200.0)
+    r = e._predict_step(1200.0)
+    assert r is not None and r["source_ip"] is None, r and r["source_ip"]
+
+
 def test_nothing_is_predicted_before_ten_flows():
     e = engine()
     feed(e, scan_frames(9))

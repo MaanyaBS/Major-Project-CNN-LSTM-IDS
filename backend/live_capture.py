@@ -29,9 +29,10 @@ Three threads, so a burst of packets never waits for the model:
 
 A port scan's flows end at the victim's RST, so a scan is classified within
 about a second. Only traffic to and from this machine is read (promiscuous
-mode off). Only a private IPv4 address that is not this machine or the
-gateway can become a target, and the firewall engine still blocks it only if
-it is listed in IDS_PREVENTION_DEMO_TARGETS and execution is switched on.
+mode off), plus other devices' broadcasts and multicasts. Only a private IPv4
+address that is not this machine or the gateway, and that sent traffic to
+this machine, can become a target, and the firewall engine still blocks it
+only if it is listed in IDS_PREVENTION_DEMO_TARGETS and execution is on.
 
 Without a network (tests, rehearsal), start_replay(path, speed) plays a saved
 Wireshark capture through the same engine at its recorded pace.
@@ -283,7 +284,10 @@ class LiveEngine:
         X = np.array([[row[c] for c in ff.FEATURE_COLS] for row, _ in window], dtype="float32")
         result = service._build_result(service.predict_matrix(X)[0])
         sources = [info["Source IP"] for _, info in window]
-        target = select_target(sources, self.local_ips, self.gateway_ips)
+        dests = [info["Destination IP"] for _, info in window]
+        # Only devices that sent traffic TO this machine: discovery broadcasts
+        # (SSDP, mDNS) from other devices are seen too, but never addressed here.
+        target = select_target(sources, self.local_ips, self.gateway_ips, dests)
         result["source_ip"] = target
         result["time"] = _utc(now)
         result["window_flows"] = [

@@ -14,8 +14,12 @@ A candidate must be a unicast private IPv4 address (RFC 1918: 10/8,
   - one of this machine's own addresses,
   - the gateway (the hotspot / router),
   - loopback, link-local, multicast, broadcast or unspecified.
-mDNS / SSDP / LLMNR chatter from other devices on the hotspot comes from
-multicast or link-local addresses, so it never becomes a target.
+With the flows' destinations given (the live engine always gives them),
+only flows sent TO this machine count. Another device's discovery chatter
+(SSDP, mDNS: a private source, but sent to a multicast group every device
+receives) never addresses this machine, so blocking it here would mean
+nothing; found on a shared router, where a phone's SSDP broadcasts were
+classified as an attack with 99.6% confidence.
 
 No valid candidate -> None, and the window's action stays a recommendation
 with no target. This only chooses; whether the address may really be
@@ -42,12 +46,17 @@ def is_candidate(ip, excluded=()):
     return addr.version == 4 and any(addr in net for net in RFC1918) and not ip.endswith(".255")
 
 
-def select_target(source_ips, local_ips=(), gateway_ips=()):
+def select_target(source_ips, local_ips=(), gateway_ips=(), dest_ips=None):
     """
     source_ips: the Source IP of each flow in the window, oldest first.
+    dest_ips: their Destination IPs; when given, only flows addressed to one
+    of local_ips count.
     Returns the most frequent candidate; ties go to the one seen most recently.
     """
     excluded = set(local_ips) | set(gateway_ips)
+    if dest_ips is not None:
+        local = set(local_ips)
+        source_ips = [s if d in local else None for s, d in zip(source_ips, dest_ips)]
     counts = Counter(ip for ip in source_ips if is_candidate(ip, excluded))
     if not counts:
         return None
