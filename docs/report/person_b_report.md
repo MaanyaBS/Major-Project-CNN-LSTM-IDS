@@ -1,7 +1,7 @@
 # Ruthwik Sai Ganesh — Model, Evaluation, Explainability Analysis and Prevention
 
 Report sections for the model side of the project. Every number below comes
-from a committed results file; Section 10 lists them and the commands that
+from a committed results file; Section 11 lists them and the commands that
 regenerate them.
 
 ---
@@ -12,8 +12,11 @@ I designed, trained and evaluated the CNN-LSTM models on CICIDS2017 and
 MU-IoT, built the fair baselines they are compared against, analysed the
 MU-IoT model's errors with SHAP, measured inference speed, and designed the
 prevention layer: a per-class policy and a safety-bounded execution engine,
-with automated tests. Data preparation (Maanya B S) and the dashboard and
-backend (Varshini D N) are described in their own sections.
+with automated tests. After the first demo I built the live path: a
+packet-to-flow extractor checked against the original CICIDS2017 capture,
+and a capture engine that detects and blocks while traffic happens. Data
+preparation (Maanya B S) and the dashboard and backend (Varshini D N) are
+described in their own sections.
 
 ---
 
@@ -255,22 +258,26 @@ datasets have a `DDoS` class) and rejects an unknown dataset.
 rules through `netsh`, behind independent checks:
 
 1. a global kill switch, off by default;
-2. an allow-list of RFC 5737 TEST-NET ranges, so no real address can be
-   touched;
+2. an allow-list: RFC 5737 TEST-NET ranges, plus single LAN devices listed
+   by hand for a live demo (`IDS_PREVENTION_DEMO_TARGETS`; exact private
+   IPv4 addresses only, never this machine's own);
 3. a deny-list (loopback, broadcast, unspecified) and an administrator check.
 
-Each rule is added once per target, however many windows flag it (500
-windows from one IP give 1 rule). Temporary actions expire on a timer; on
-startup, a sweep removes rules a crash left behind, restarts timers that are
-not yet due and remembers rules still in force. Revoking works with the kill
-switch off, so an action can always be undone, but only for TEST-NET targets.
+One rule is kept per device, however many windows flag it and under
+whichever class (500 windows from one IP give 1 rule; a scan that looks like
+a flood once blocked does not add a second). Temporary actions expire on a
+timer; on startup, a sweep removes rules a crash left behind, restarts timers
+that are not yet due and remembers rules still in force. `active_rules()`
+lists what is in force for the dashboard. Revoking works with the kill switch
+off, so an action can always be undone, but only for allowed targets.
 Every attempt is logged. Rate limiting is approximated by a
 temporary block; input sanitisation for XSS stays recommendation-only.
 
 ### 7.3 Verification
 
-- **31 automated tests** (`model/test_prevention.py`) cover both policies,
-  one rule per target, revoking, restart recovery and every refusal path, including adversarial targets such as
+- **35 automated tests** (`model/test_prevention.py`) cover both policies,
+  one rule per device, the listed-device allow-list, revoking, restart
+  recovery and every refusal path, including adversarial targets such as
   `192.0.2.10,8.8.8.8` (netsh list syntax), CIDR ranges, IPv6 and
   non-string input. They never call the real firewall.
 - **Mutation check:** the code was broken deliberately in 26 ways (kill
@@ -311,7 +318,121 @@ its true label (`model/evaluate_prevention_policy.py`):
 
 ---
 
-## 8. Inference Speed
+## 8. Live Capture and Real Traffic
+
+After the first demo, the guide asked for live input and for real captures
+(Wireshark) instead of prepared test data. Live prevention was added to the
+same requirement. Both live traffic and uploaded `.pcap`/`.pcapng` files now
+run through one pipeline: packets -> flows -> 20 features -> CNN-LSTM ->
+policy -> firewall. No model was retrained.
+
+### 8.1 Packets to Flows
+
+`model/flow_features.py` groups packets into bidirectional flows and computes
+the 20 features with CICFlowMeter-V3's definitions, including the quirks the
+model learned: the first packet counted twice in the packet-length
+statistics, sample standard deviations, Ethernet padding counted as payload
+(Wi-Fi frames are padded to Ethernet's minimum, as if captured on the wired
+CICIDS2017 network), whole-microsecond times, and V3's flow termination. It
+reads IPv4 and IPv6 from raw bytes, about 68,000 packets per second in Colab
+(6 million packets in 88 s). 20 tests.
+
+### 8.2 Checked Against the Original Data
+
+UNB's original Friday capture went through our extractor, and every flow
+was compared with CICFlowMeter-V3's official row for it
+(`model/validate_against_cicids.py`, `model/results/extractor_validation.md`;
+10 minutes inside the PortScan period):
+
+| | |
+|---|---|
+| Flows matched one-to-one with official rows | 5,957 of 7,332 (81%; the rest share a 5-tuple within a minute, mostly reused nmap ports) |
+| All 20 features agree, at the precision the CSV printed | **99.8%** (strictly within 1e-4: 86.3%; the CSV prints large values with three digits) |
+| PortScan flows | **49 / 49** |
+| Flows ending on RST (`end_on_rst=True`) | 98.9%, so V3 did not end flows on RST |
+
+The comparison found two differences, both now fixed: times must be whole
+microseconds (float epoch seconds turned a 100 us gap into 99.9 us), and a
+FIN that *starts* a flow does not end it, so the reply joins that flow
+(agreement rose from 77.5% to 86.3% strict). Flows that start with a FIN
+are the "TCP appendix" artefact Engelen, Rimmer and Joosen describe in "Troubleshooting
+an Intrusion Detection Dataset: the CICIDS2017 Case Study" (IEEE Security
+and Privacy Workshops, 2021); the model learned from flows built this way,
+so the extractor reproduces it.
+
+### 8.3 Live Engine
+
+`backend/live_capture.py` runs three threads, so a burst of packets never
+waits for the model:
+
+1. capture: raw frames from Npcap (TCP and UDP only, promiscuous mode off),
+   parsed and queued; a full queue drops and counts;
+2. flows: ends a flow at FIN, at RST, or 120 s after it started;
+3. worker: once a second, if a flow has ended, predicts on the 10 most
+   recently ended flows, picks the target, and calls the firewall engine
+   itself, so blocking does not depend on the dashboard being open.
+
+The target is the most frequent private IPv4 source in the window that is
+neither this machine nor the gateway and that sent traffic to this machine;
+with none, the action stays a recommendation (`model/target_selection.py`,
+8 tests). Live mode ends flows
+on RST on purpose: a scan flow (SYN -> RST) has the same features either
+way, and a scan is reported in about a second instead of 120 s, at the cost
+of 0.9 points of agreement on other traffic (8.2). A saved capture can be
+replayed through the same engine. 14 tests, without network, model or
+firewall.
+
+### 8.4 Real Traffic
+
+A laptop (the IDS) and an Android tablet (`nmap -sT` in Termux) on a phone
+hotspot; three captures of about three minutes each
+(`model/results/hotspot_live_results.md`; the captures themselves contain
+personal traffic and are not committed):
+
+| Capture | Result |
+|---|---|
+| Scan from the tablet | 98% of the windows pointing at the tablet say PortScan; replayed through the live engine, the first detection came 1.6 s after the first SYN, and every automatic action targeted the tablet |
+| Laptop browsing (IPv4 + IPv6) | 11.1% of windows not BENIGN; 7.6% recommend an automatic action, **none** with a target that could be blocked |
+| Tablet reloading a page on the laptop | 0 automatic actions against the tablet |
+
+Four findings:
+
+- **A scan is recognised only if the victim answers.** CICIDS2017's victims
+  replied to every probe; Windows' stealth mode replies to nothing, and the
+  scan then looks benign. The demo turns stealth mode off and allows the
+  tablet in, so the laptop answers like the 2017 servers.
+- **Repeated polling of one web server reads as Bot** (CICIDS2017's Ares bot
+  polls its server the same way). All 127 such windows were held for review
+  by the Bot lock from 7.1: the lock, not the model, kept the tablet safe.
+- **IPv6 and QUIC browsing raises recommendation-only false alarms**
+  (mostly DoS GoldenEye). Their sources are the laptop and internet servers,
+  never a LAN device, so nothing is executed. IPv4-only analysis gives 3.6%
+  and 0%, but ignores 98% of the browsing packets.
+- **The laptop sees its own traffic plus others' broadcasts.** Only a
+  device that talks to the laptop can be a target (see 8.5).
+
+### 8.5 Live Run
+
+On 2026-10-18 the whole system ran live on a home router used daily by 20-30
+people (with the owner's permission), the tablet the only listed device:
+
+| | |
+|---|---|
+| Detection | PortScan at 0.99, **about 2 s after nmap's first probes**; 13 consecutive PortScan windows |
+| Prevention | Tablet blocked automatically, one rule; 18 repeat detections answered "already blocked" |
+| Effect | The laptop's services (test page, dashboard, AnyDesk) became unreachable from the tablet |
+| Revoke | Page reachable again; three full scan -> block -> revoke cycles |
+| Normal use | The tablet's page reloads read as Bot, held for review, never executed |
+| Bystander | Another person's device, flagged DoS Slowhttptest at 0.996 from its SSDP broadcasts, refused 10 times (not listed) |
+
+Most of nmap's 1,000 ports were probed in the second before the block
+landed, so nmap still listed them as closed: a block stops an attacker from
+then on. The bystander led to one change: a device now becomes a target only
+if it sent traffic to this machine, since discovery broadcasts never do.
+
+---
+
+## 9. Inference Speed
 
 On a Ryzen 3 5300U laptop CPU, plugged in
 (`model/results/inference_benchmark.txt`):
@@ -331,16 +452,26 @@ the evaluated model was kept.
 
 ---
 
-## 9. Limitations
+## 10. Limitations
 
 - On CICIDS2017 a single-flow random forest outperforms the CNN-LSTM; the
   CNN-LSTM loses web-attack signal that single flows carry.
 - Generalisation to unseen attack tools is weak (held-out macro F1 0.68).
 - Normal traffic in MU-IoT comes from one recording, as does Spyware, so
   their scores are optimistic.
-- Prevention runs only against TEST-NET addresses; thresholds are calibrated
-  on test-set F1.
-- The live feed replays recorded traffic; nothing is captured from a network.
+- Prevention acts only on TEST-NET addresses and LAN devices listed by hand;
+  thresholds are calibrated on test-set F1.
+- **One live run, on one network, with one attacker tool** (`nmap -sT`
+  from one tablet; 8.5). Other scan types, other attacks and longer runs
+  were not tried live.
+- **Blocking follows detection by about 2 s**: a fast scan has already
+  probed most ports by then.
+- **The model is from 2017.** It needs the victim to answer a scan (8.4),
+  reads repeated polling as Bot, and raises recommendation-only false alarms
+  on today's IPv6 and QUIC traffic (7.6% of browsing windows), which it never
+  saw in training.
+- **The extractor check covers one 10-minute slice of one day**, and only
+  49 PortScan flows could be matched one-to-one (nmap reuses source ports).
 - The deployed CICIDS2017 model kept its first-epoch weights; longer or
   slower training has not been explored.
 - **Feature selection saw test rows.** The 20 CICIDS2017 features were
@@ -361,13 +492,14 @@ the evaluated model was kept.
   recordings (macro F1 0.68) measure attacks from recordings never seen.
 - **One training run per model.** No repeated seeds, so the reported scores
   carry no error margin.
-- **Input is pre-extracted flow features.** Turning raw packets into
-  CICFlowMeter-style flow records is outside the system; "real-time" here
-  means per-window inference on flow records as they arrive.
+- **"Real time" means one prediction per second** on the 10 most recently
+  ended flows: during a fast scan most windows are never classified (the
+  first one that is triggers the block), and a quiet flow is classified only
+  when it ends (FIN, RST or 120 s).
 
 ---
 
-## 10. Reproducing the Results
+## 11. Reproducing the Results
 
 | Result | File | Command |
 |---|---|---|
@@ -378,4 +510,6 @@ the evaluated model was kept.
 | SHAP analysis | `model/results/mu_iot/mu_iot_shap_report.txt` | `python model/explain_mu_iot.py --data-dir …` (Colab) |
 | Policy outcomes | `model/results/prevention_policy_*.txt` | `python model/evaluate_prevention_policy.py --dataset cicids2017` (MU-IoT in Colab) |
 | Speed | `model/results/inference_benchmark.txt` | `python model/benchmark_inference.py` |
-| Tests | — | `python model/test_prevention.py`, `python model/test_mu_iot_windows.py` |
+| Extractor against the original pcap | `model/results/extractor_validation.md` | `python model/validate_against_cicids.py --pcap … --csv …` (Colab) |
+| Real hotspot captures | `model/results/hotspot_live_results.md` | captures not committed (personal traffic) |
+| Tests | — | `python model/test_prevention.py`, `model/test_mu_iot_windows.py`, `model/test_flow_features.py`, `model/test_target_selection.py`, `model/test_validate_against_cicids.py`, `backend/test_live_capture.py` |

@@ -71,6 +71,15 @@ def test_fwd_iat_std_is_sample_std_in_microseconds():
     assert two["Fwd IAT Std"] == 0.0, "a single interval has no spread"
 
 
+def test_times_are_whole_microseconds_at_real_dates():
+    # 2017 epoch seconds as floats resolve ~0.24 us; CICFlowMeter-V3 counts whole microseconds.
+    t = 1499446860.123456
+    f = one_flow([pkt(t, A, B, 1000, 80), pkt(t + 0.0001, B, A, 80, 1000), pkt(t + 0.000103, A, B, 1000, 80)])
+    assert f["Flow IAT Max"] == 100 and f["Fwd IAT Std"] == 0.0
+    flow = ff.flows_from_packets([pkt(t, A, B, 1000, 80), pkt(t + 0.0001, B, A, 80, 1000)])[0]
+    assert flow.duration_us == 100
+
+
 def test_fin_ends_the_flow_and_later_packets_start_a_new_one():
     flows = ff.flows_from_packets([pkt(0.0, A, B, 1000, 80, 0), pkt(0.1, A, B, 1000, 80, 0, ff.FIN),
                                    pkt(0.2, B, A, 80, 1000, 0)])
@@ -87,6 +96,17 @@ def test_rst_ends_the_flow_only_when_enabled():
         f = one_flow(scan, end_on_rst=rst)
         assert (f["Total Length of Fwd Packets"], f["Total Length of Bwd Packets"]) == (2, 6)
         assert close(f["Flow IAT Max"], 50.0, 1e-6)
+
+
+def test_a_flow_that_starts_with_fin_keeps_its_reply():
+    # Seen on the original CICIDS2017 pcap: a teardown tail (server FIN, client ACK)
+    # is ONE official flow of 1 fwd + 1 bwd packet, not a 1-packet flow.
+    for rst in (False, True):
+        flows = ff.flows_from_packets([pkt(0.0, B, A, 80, 55448, 0, ff.FIN | 0x10),
+                                       pkt(0.000052, A, B, 55448, 80, 6, 0x10)], end_on_rst=rst)
+        assert len(flows) == 1, f"end_on_rst={rst}"
+        f = flows[0].features()
+        assert (f["Total Length of Bwd Packets"], f["Flow IAT Max"]) == (6, 52)
 
 
 def test_fin_ends_the_flow_under_both_settings():
@@ -164,7 +184,7 @@ def test_fast_reader_matches_scapy_decoding():
         E() / Dot1Q(vlan=5) / IP(src=A, dst=B) / UDP(sport=5353, dport=53) / (b"q" * 40),
         E() / IP(src=A, dst=B, frag=10) / (b"z" * 40),                 # later fragment: skipped
         E(type=0x0806) / (b"\x00" * 28),                              # ARP, not IP: skipped
-        E() / IPv6() / TCP(),                                          # IPv6: skipped
+        E() / IPv6() / TCP(),                                          # IPv6 TCP: read
         E() / IP(src=A, dst=B, proto=1) / (b"i" * 8),                  # ICMP: skipped
     ]
     for i, f in enumerate(frames):
@@ -178,9 +198,100 @@ def test_fast_reader_matches_scapy_decoding():
                 slow = [p for p in (ff.packet_from_scapy(x) for x in r) if p is not None]
             fast = list(ff.iter_packets(path))
             assert fast == slow, f"{name}: fast reader differs from scapy decoding"
-            assert len(fast) == 4, f"{name}: expected the 4 IPv4 TCP/UDP packets, got {len(fast)}"
+            assert len(fast) == 5, f"{name}: expected the 5 TCP/UDP packets, got {len(fast)}"
     raw_ip = bytes(IP(src=A, dst=B) / TCP(sport=1, dport=2, flags="S"))
     assert ff.packet_from_bytes(raw_ip, ff.LINKTYPE_RAW, 0.0).payload == 6, "raw-IP link type, padded to Ethernet minimum"
+
+
+V6A, V6B = "2001:db8::66", "2001:db8::1"   # IPv6 documentation prefix
+
+
+def test_ipv6_fast_reader_matches_scapy_decoding():
+    from scapy.layers.inet import TCP, UDP
+    from scapy.layers.inet6 import (ICMPv6EchoRequest, IPv6, IPv6ExtHdrDestOpt, IPv6ExtHdrFragment,
+                                    IPv6ExtHdrHopByHop)
+    from scapy.layers.l2 import Dot1Q, Ether
+    from scapy.packet import Padding, Raw
+    from scapy.utils import PcapNgWriter, PcapReader, wrpcap
+
+    E = lambda **kw: Ether(src="02:00:00:00:00:01", dst="02:00:00:00:00:02", **kw)
+    frames = [
+        E() / IPv6(src="2001:0db8:0:0:0:0:0:0066", dst=V6B)               # written long, read compressed
+        / TCP(sport=40000, dport=443, flags="S", options=[("MSS", 1440)]),
+        E() / IPv6(src=V6B, dst=V6A) / TCP(sport=443, dport=40000, flags="PA") / (b"y" * 1200),
+        E() / IPv6(src=V6A, dst=V6B) / UDP(sport=50000, dport=443) / (b"q" * 1252),   # QUIC-like
+        E() / IPv6(src=V6A, dst=V6B) / IPv6ExtHdrHopByHop() / IPv6ExtHdrDestOpt()
+        / UDP(sport=5353, dport=53) / (b"d" * 50),                         # extension headers skipped over
+        E() / Dot1Q(vlan=7) / IPv6(src=V6A, dst=V6B) / TCP(sport=1, dport=22, flags="A") / (b"v" * 10),
+        E() / IPv6(src=V6A, dst=V6B) / UDP(sport=7, dport=7) / (b"p" * 2) / Padding(b"\x00" * 12),  # trailer
+        E() / IPv6(src=V6A, dst=V6B) / IPv6ExtHdrFragment(offset=0, m=1, id=9)
+        / UDP(sport=9, dport=9) / (b"f" * 64),                             # first fragment: read
+        E() / IPv6(src=V6A, dst=V6B) / IPv6ExtHdrFragment(offset=8, id=9, nh=17) / Raw(b"f" * 64),  # later: skipped
+        E() / IPv6(src=V6A, dst=V6B) / ICMPv6EchoRequest(),                  # ICMPv6: skipped
+        E() / IPv6(src=V6A, dst=V6B, nh=50) / Raw(b"\x00" * 40),             # ESP (encrypted): skipped
+    ]
+    for i, f in enumerate(frames):
+        f.time = 1700000000 + i * 0.25
+    with tempfile.TemporaryDirectory() as tmp:
+        for name, write in (("v6.pcap", lambda p: wrpcap(p, frames)),
+                            ("v6.pcapng", lambda p: PcapNgWriter(p).write(frames))):
+            path = os.path.join(tmp, name)
+            write(path)
+            with PcapReader(path) as r:
+                slow = [p for p in (ff.packet_from_scapy(x) for x in r) if p is not None]
+            fast = list(ff.iter_packets(path))
+            assert fast == slow, f"{name}: fast reader differs from scapy decoding:\n{fast}\n{slow}"
+            assert [p.payload for p in fast] == [0, 1200, 1252, 50, 10, 2, 64], [p.payload for p in fast]
+            assert fast[0].src == V6A and fast[0].flags == 0x02
+            assert list(ff.iter_packets(path, ipv6=False)) == [], "ipv6=False reads IPv4 only"
+
+
+def test_ipv6_other_link_types_and_ah():
+    from scapy.layers.inet import TCP
+    from scapy.layers.inet6 import IPv6
+
+    tcp = bytes(TCP(sport=1234, dport=80, flags="PA") / (b"h" * 30))
+    ip6 = bytes(IPv6(src=V6A, dst=V6B) / TCP(sport=1234, dport=80, flags="PA") / (b"h" * 30))
+    for linktype in (ff.LINKTYPE_RAW, ff.LINKTYPE_IPV6):
+        p = ff.packet_from_bytes(ip6, linktype, 0.0)
+        assert (p.src, p.dport, p.payload) == (V6A, 80, 30), linktype
+    for family in (23, 24, 28, 30):                                  # loopback, per OS
+        for order in ("little", "big"):
+            p = ff.packet_from_bytes(family.to_bytes(4, order) + ip6, ff.LINKTYPE_NULL, 0.0)
+            assert p is not None and p.payload == 30, (family, order)
+    assert ff.packet_from_bytes((99).to_bytes(4, "little") + ip6, ff.LINKTYPE_NULL, 0.0) is None
+    # Authentication Header (24 bytes: length field 24/4 - 2 = 4) in front of TCP
+    ah = bytes([ff.TCP, 4, 0, 0]) + b"\x00" * 20
+    hdr = bytearray(ip6[:40])
+    hdr[4:6], hdr[6] = (len(ah) + len(tcp)).to_bytes(2, "big"), ff.IPV6_AH
+    p = ff.packet_from_bytes(bytes(hdr) + ah + tcp, ff.LINKTYPE_RAW, 0.0)
+    assert (p.sport, p.dport, p.payload) == (1234, 80, 30), "AH skipped over"
+    assert ff.packet_from_bytes(ip6[:30], ff.LINKTYPE_RAW, 0.0) is None, "truncated IPv6 header"
+
+
+def test_ipv6_and_ipv4_flows_from_one_capture():
+    from scapy.layers.inet import IP, TCP, UDP
+    from scapy.layers.inet6 import IPv6
+    from scapy.layers.l2 import Ether
+    from scapy.utils import wrpcap
+
+    E = lambda: Ether(src="02:00:00:00:00:01", dst="02:00:00:00:00:02")
+    pkts = [E() / IP(src=A, dst=B) / TCP(sport=50000, dport=22, flags="S"),
+            E() / IP(src=B, dst=A) / TCP(sport=22, dport=50000, flags="RA"),
+            E() / IPv6(src=V6A, dst=V6B) / UDP(sport=50001, dport=443) / (b"q" * 1200),
+            E() / IPv6(src=V6B, dst=V6A) / UDP(sport=443, dport=50001) / (b"r" * 300)]
+    for i, p in enumerate(pkts):
+        p.time = i * 0.01
+    with tempfile.TemporaryDirectory() as tmp:
+        path = os.path.join(tmp, "mixed.pcap")
+        wrpcap(path, pkts)
+        both = ff.flows_from_pcap(path, end_on_rst=True)
+        v4 = ff.flows_from_pcap(path, end_on_rst=True, ipv6=False)
+    assert len(both) == 2 and len(v4) == 1
+    quic = both[both["Source IP"] == V6A].iloc[0]
+    assert (quic["Destination Port"], quic["Total Length of Fwd Packets"], quic["Total Length of Bwd Packets"]) \
+        == (443, 1200, 300)
+    assert v4.iloc[0]["Source IP"] == A
 
 
 def test_pcap_round_trip():

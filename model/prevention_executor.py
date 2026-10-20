@@ -27,8 +27,11 @@ Three independent layers, all of which must pass:
 
 import ipaddress
 import json
+import os
+import socket
 import subprocess
 import threading
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -58,8 +61,71 @@ NEVER_BLOCK = {
 }
 
 
+# Layer 2b (opt-in): single devices on the local network that may be blocked
+# for a live demo, e.g. IDS_PREVENTION_DEMO_TARGETS="192.168.43.57". Read from
+# the environment on every check, so nothing else needs wiring. Only exact,
+# single private (RFC 1918) IPv4 addresses are accepted - no ranges, no CIDR,
+# no public, loopback, multicast, network/broadcast or this machine's own
+# addresses. Anything else in the variable is ignored and reported by
+# demo_target_status().
+DEMO_TARGETS_ENV = "IDS_PREVENTION_DEMO_TARGETS"
+RFC1918 = [ipaddress.ip_network(n) for n in ("10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16")]
+
+
 class ExecutionNotPermitted(Exception):
     """Raised when a target/action fails the safety boundary check."""
+
+
+def _local_addresses() -> set:
+    """This machine's own IPv4 addresses (best effort)."""
+    addrs = set()
+    try:
+        for info in socket.getaddrinfo(socket.gethostname(), None, socket.AF_INET):
+            addrs.add(info[4][0])
+    except OSError:
+        pass
+    return addrs
+
+
+def parse_demo_targets(raw, local_addresses=None):
+    """Value of IDS_PREVENTION_DEMO_TARGETS -> (accepted set, [(entry, reason), ...] rejected)."""
+    local = _local_addresses() if local_addresses is None else set(local_addresses)
+    accepted, rejected = set(), []
+    for entry in (raw or "").replace(";", ",").split(","):
+        entry = entry.strip()
+        if not entry:
+            continue
+        if "/" in entry or "-" in entry:
+            rejected.append((entry, "ranges are not allowed - list single addresses"))
+            continue
+        try:
+            addr = ipaddress.IPv4Address(entry)
+        except ValueError:
+            rejected.append((entry, "not a single IPv4 address"))
+            continue
+        if str(addr) != entry:
+            rejected.append((entry, "not in canonical form"))
+        elif not any(addr in net for net in RFC1918):
+            rejected.append((entry, "not a private LAN (RFC 1918) address"))
+        elif entry.endswith((".0", ".255")):
+            rejected.append((entry, "network or broadcast address"))
+        elif entry in local:
+            rejected.append((entry, "this machine's own address"))
+        else:
+            accepted.add(entry)
+    return accepted, rejected
+
+
+def demo_targets() -> set:
+    """LAN devices currently listed in IDS_PREVENTION_DEMO_TARGETS (valid entries only)."""
+    return parse_demo_targets(os.environ.get(DEMO_TARGETS_ENV))[0]
+
+
+def demo_target_status() -> dict:
+    """What the demo-target list currently allows and ignores, for health/status output."""
+    accepted, rejected = parse_demo_targets(os.environ.get(DEMO_TARGETS_ENV))
+    return {"env_var": DEMO_TARGETS_ENV, "accepted": sorted(accepted),
+            "rejected": [{"entry": e, "reason": r} for e, r in rejected]}
 
 
 def check_safe_to_execute(target_ip: str) -> None:
@@ -80,9 +146,10 @@ def check_safe_to_execute(target_ip: str) -> None:
 def check_in_scope(target_ip: str) -> None:
     """
     Layers 2 and 3 without the kill switch: raises ExecutionNotPermitted
-    unless target_ip is a single address inside the TEST-NET demo ranges.
-    Used on its own only to UNDO an action (revoke_action), which must
-    stay possible after the kill switch is turned off again.
+    unless target_ip is a single address inside the TEST-NET demo ranges
+    or a LAN device listed in IDS_PREVENTION_DEMO_TARGETS. Used on its own
+    only to UNDO an action (revoke_action), which must stay possible after
+    the kill switch is turned off again.
     """
     if not isinstance(target_ip, str):
         raise ExecutionNotPermitted(f"Target must be an IP address string, got {type(target_ip).__name__}.")
@@ -95,11 +162,11 @@ def check_in_scope(target_ip: str) -> None:
     except ValueError:
         raise ExecutionNotPermitted(f"{target_ip} is not a valid IP address.")
 
-    if not any(addr in net for net in ALLOWED_DEMO_RANGES):
+    if not any(addr in net for net in ALLOWED_DEMO_RANGES) and target_ip not in demo_targets():
         raise ExecutionNotPermitted(
             f"{target_ip} is outside the allowed demo scope "
-            f"(RFC 5737 TEST-NET ranges only: 192.0.2.0/24, 198.51.100.0/24, "
-            f"203.0.113.0/24). Refusing to act on real, routable addresses."
+            f"(RFC 5737 TEST-NET ranges 192.0.2.0/24, 198.51.100.0/24, 203.0.113.0/24, "
+            f"or a LAN device listed in {DEMO_TARGETS_ENV}). Refusing to act on it."
         )
 
 
@@ -180,7 +247,9 @@ def _remove_block_rule(rule_name: str) -> None:
         # Non-fatal if already gone - deletion is best-effort cleanup.
 
 
-# Rules this process believes are in force: rule_name -> {"token", "timer"}.
+# Rules this process believes are in force: rule_name -> {"token", "timer",
+# "action", "target_ip", "created", "expires_at"} (wall-clock seconds;
+# expires_at None = persistent).
 # One attacker IP is usually flagged in many consecutive windows; without this
 # every window would add the same firewall rule again. The token ties each
 # expiry timer to the rule it was started for, so a stale timer can never
@@ -189,13 +258,52 @@ _active_rules = {}
 _rules_lock = threading.RLock()
 
 
-def _start_expiry(rule_name: str, action: str, target_ip: str, seconds: float) -> None:
+def _register(rule_name, action, target_ip, created, expires_at, timer=None, token=None):
+    """Record a rule in force. Caller holds _rules_lock."""
+    _active_rules[rule_name] = {"token": token or object(), "timer": timer, "action": action,
+                                "target_ip": target_ip, "created": created, "expires_at": expires_at}
+
+
+def _start_expiry(rule_name: str, action: str, target_ip: str, seconds: float, created=None) -> None:
     """Register a temporary rule and start its expiry timer. Caller holds _rules_lock."""
     token = object()
-    timer = threading.Timer(max(0.0, seconds), _expire_rule, args=(rule_name, action, target_ip, token))
+    seconds = max(0.0, seconds)
+    timer = threading.Timer(seconds, _expire_rule, args=(rule_name, action, target_ip, token))
     timer.daemon = True
-    _active_rules[rule_name] = {"token": token, "timer": timer}
+    _register(rule_name, action, target_ip, created or time.time(), time.time() + seconds, timer, token)
     timer.start()
+
+
+def _rule_covering(target_ip: str, new_duration):
+    """
+    An active rule that already covers target_ip for a new action, or None.
+    Every executable action is a full block of the IP, so one rule per device:
+    a persistent rule covers everything; a temporary one covers a new
+    temporary action, but a persistent action still replaces it (the
+    temporary rule then simply expires on its own timer). Caller holds the lock.
+    """
+    same_ip = [(name, e) for name, e in _active_rules.items() if e["target_ip"] == target_ip]
+    for name, e in same_ip:
+        if e["expires_at"] is None:
+            return name
+    if same_ip and new_duration is not None:
+        return same_ip[0][0]
+    return None
+
+
+def active_rules() -> list:
+    """Rules currently in force, oldest first - for the dashboard's Blocked devices panel."""
+    now = time.time()
+    with _rules_lock:
+        entries = sorted(_active_rules.items(), key=lambda kv: kv[1]["created"])
+        return [{
+            "rule_name": name,
+            "action": e["action"],
+            "target_ip": e["target_ip"],
+            "persistent": e["expires_at"] is None,
+            "created": datetime.fromtimestamp(e["created"], timezone.utc).isoformat(),
+            "expires_in_seconds": None if e["expires_at"] is None else max(0.0, e["expires_at"] - now),
+        } for name, e in entries]
 
 
 def _expire_rule(rule_name: str, action: str, target_ip: str, token: object) -> None:
@@ -258,13 +366,14 @@ def execute_action(action: str, target_ip: str, predicted_class: str, confidence
     # Held across check, add and log so two requests cannot both add the
     # rule, and an expiry timer cannot log "expired" before "executed".
     with _rules_lock:
-        if rule_name in _active_rules:
-            outcome = {"executed": False, "already_active": True, "rule_name": rule_name,
-                       "reason": "This rule is already in force for this target - not added again."}
+        covering = _rule_covering(target_ip, duration)
+        if covering is not None:
+            outcome = {"executed": False, "already_active": True, "rule_name": covering,
+                       "reason": "This device is already blocked by a rule in force - not added again."}
             # Logged under "active_rule", not "rule_name": only records that
             # change a rule's state carry rule_name (see sweep_expired_rules).
             _log_execution({**base_event, "executed": False, "already_active": True,
-                            "active_rule": rule_name, "reason": outcome["reason"]})
+                            "active_rule": covering, "reason": outcome["reason"]})
             return outcome
 
         try:
@@ -277,7 +386,7 @@ def execute_action(action: str, target_ip: str, predicted_class: str, confidence
         outcome = {"executed": True, "rule_name": rule_name, "auto_expires_in_seconds": duration}
         _log_execution({**base_event, **outcome})
         if duration is None:
-            _active_rules[rule_name] = {"token": object(), "timer": None}
+            _register(rule_name, action, target_ip, time.time(), None)
         else:
             _start_expiry(rule_name, action, target_ip, duration)
 
@@ -372,7 +481,9 @@ def sweep_expired_rules() -> list:
         with _rules_lock:
             if duration is None:
                 # Persistent rule still in force - only revoke_action() removes it.
-                _active_rules.setdefault(rule_name, {"token": object(), "timer": None})
+                if rule_name not in _active_rules:
+                    _register(rule_name, record.get("action"), record.get("target_ip"),
+                              datetime.fromisoformat(record["timestamp"]).timestamp(), None)
                 continue
 
             created_at = datetime.fromisoformat(record["timestamp"])
@@ -390,6 +501,7 @@ def sweep_expired_rules() -> list:
                 })
                 swept.append(rule_name)
             elif rule_name not in _active_rules:
-                _start_expiry(rule_name, record.get("action"), record.get("target_ip"), remaining)
+                _start_expiry(rule_name, record.get("action"), record.get("target_ip"), remaining,
+                              created=created_at.timestamp())
 
     return swept

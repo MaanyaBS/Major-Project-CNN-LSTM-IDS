@@ -33,12 +33,18 @@ The preprocessing pipeline included:
 
 ## 2.2 Cleaning Results
 
-The main cleaning statistics were:
+The following table summarizes the recorded cleaning statistics for all eight CICIDS2017 capture files, as documented in `output/cleaning_report.csv`. The values are reported as recorded in the existing project artifacts.
 
-| Capture | Raw Rows | Missing Rows Removed | Duplicate Rows Removed | Constant Columns Removed | Cleaned Rows |
+| Capture file | Original Rows | Missing Values Removed | Duplicate Rows Removed | Constant Columns Removed | Cleaned Rows |
 |---|---:|---:|---:|---:|---:|
-| Monday | 529,918 | 874 | 14,278 | 11 | 515,203 |
-| Wednesday | 692,703 | 2,594 | 66,975 | 10 | 624,431 |
+| Friday-WorkingHours-Afternoon-DDos | 225,745 | 68 | 1,570 | 10 | 224,141 |
+| Friday-WorkingHours-Afternoon-PortScan | 286,467 | 742 | 44,734 | 10 | 241,362 |
+| Friday-WorkingHours-Morning | 191,033 | 244 | 4,456 | 10 | 186,455 |
+| Monday-WorkingHours | 529,918 | 874 | 14,278 | 10 | 515,203 |
+| Thursday-WorkingHours-Afternoon-Infilteration | 288,602 | 414 | 23,225 | 10 | 265,170 |
+| Thursday-WorkingHours-Morning-WebAttacks | 170,366 | 270 | 3,719 | 10 | 166,512 |
+| Tuesday-WorkingHours | 445,909 | 528 | 13,859 | 10 | 431,786 |
+| Wednesday-workingHours | 692,703 | 2,594 | 66,975 | 10 | 624,431 |
 
 The final day-aware CICIDS2017 file is:
 
@@ -416,25 +422,15 @@ MU_SESSION_002 belongs to test_within, not test_heldout, and is represented by 6
 
 # 13. Final Handoff Package
 
-The final MU-IoT V3 handoff is located at:
+The committed MU-IoT V3 handoff metadata is located at:
 
-`dataset/processed/mu_iot/handoff_v3/`
+`output/mu_iot/handoff_v3/`
 
-Important metadata files include:
+This directory contains the README, class counts, block manifest, feature list, label mapping, session regions, and split regions.
 
-- `README.md`
-- `class_counts_by_split.csv`
-- `block_manifest.csv`
-- `session_regions.json`
-- `split_regions.json`
-- `feature_list_38.json`
-- `label_mapping.json`
-- `scaler_38.pkl`
+The duplicate tracked metadata copy under `dataset/processed/mu_iot/handoff_v3/` has been removed from the repository. Large feature arrays and preprocessing artifacts are local artifacts and must be preserved; repository cleanup must not delete the original local handoff data.
 
-The large feature arrays are kept outside Git tracking where appropriate.
-
----
-
+Refer to the README and `PERSON_A_HANDOFF.md` for package details.
 # 14. Final Dataset Summary
 
 | Dataset | Classes | Final Rows | Features Used | Main Purpose |
@@ -444,3 +440,14 @@ The large feature arrays are kept outside Git tracking where appropriate.
 
 The prepared datasets preserve the required labels, temporal/session information, selected features, and split metadata for integration with the CNN-LSTM model and downstream explainability/dashboard components.
 
+# 15. Normal-Browsing Traffic Capture and CNN–LSTM Inference
+
+A normal-browsing network capture was collected for approximately 10 minutes using Wireshark/Npcap. The capture lasted 619.78 seconds and contained 83,894 packets, with zero reported dropped packets.
+
+**Network environment:** The capture was collected over Wi-Fi during normal browsing. The exact network name used at capture time was not independently recorded and could not be confirmed retrospectively.
+
+The captured traffic was converted into 3,010 network flows using the project's flow-feature extraction script. All 3,010 rows contained valid values for the model's 20 input features. The trained CNN–LSTM model was then used to generate predictions using overlapping sequences of 10 flows with a stride of one flow, producing 3,001 prediction windows.
+
+With the converter's original flow-end ordering preserved, 2,431 windows (81.01%) were classified as BENIGN, 544 (18.13%) as FTP-Patator, 24 (0.80%) as Web Attack - Sql Injection, one as DoS slowloris, and one as Web Attack - XSS. Mean maximum-class softmax confidence was approximately 0.777.
+
+**Limitations:** The capture was collected during normal browsing but does not have independent, ground-truth labels for every flow or sequence. Consequently, non-BENIGN predictions cannot be confirmed as attacks, and these results do not establish the model's false-positive rate or accuracy. Predictions also changed materially when the flow ordering method changed, highlighting the need to verify temporal preprocessing consistency between training and live inference. The results should therefore be interpreted as a preliminary live-traffic inference experiment, not a validated performance evaluation.
