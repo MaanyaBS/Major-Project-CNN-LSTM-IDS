@@ -57,8 +57,10 @@ interface FeedEntry {
   executed: boolean;
   /** Rule already in force for this target - blocked, not a failed action. */
   alreadyBlocked: boolean;
-  /** Live only: which device the window came from. */
+  /** Live only: which device the window came from (null = no safe target). */
   sourceIp?: string | null;
+  /** Live only: action recommended but there was no device to aim it at. */
+  noTarget?: boolean;
 }
 
 const interfaceRank = (i: LiveInterface) => {
@@ -89,6 +91,8 @@ export function LiveFeed() {
   const [liveNote, setLiveNote] = useState<string | null>(null);
   const [livePhase, setLivePhase] = useState<LivePhase>("idle");
   const [liveError, setLiveError] = useState<string | null>(null);
+  /** Error reported by the capture engine itself (Npcap missing, capture stopped...). */
+  const [pollError, setPollError] = useState<string | null>(null);
   const [counters, setCounters] = useState({
     packets: 0,
     flows: 0,
@@ -96,13 +100,29 @@ export function LiveFeed() {
     skipped: 0,
     queue: 0,
     dropped: 0,
+    analysed: 0,
+    inProgress: 0,
+    packetQueue: 0,
+    ipv6: true,
   });
+  const [liveMeta, setLiveMeta] = useState<{
+    startedAt: string | null;
+    localIps: string[];
+    gatewayIps: string[];
+    iface: string | null;
+  }>({ startedAt: null, localIps: [], gatewayIps: [], iface: null });
   const [rules, setRules] = useState<ActiveRule[]>([]);
   const [rulesEngineReady, setRulesEngineReady] = useState(true);
   const [rulesError, setRulesError] = useState<string | null>(null);
   const [revoking, setRevoking] = useState<string | null>(null);
   const afterRef = useRef(-1); // last window number seen; -1 = nothing yet
   const liveTimerRef = useRef<number | null>(null);
+  // setInterval does not wait for the previous tick: without this, two polls
+  // can read the same `after` and return the same windows twice.
+  const pollInFlightRef = useRef(false);
+  // Every window already counted, independent of the 60-entry display cap, so
+  // a repeated poll can never double-count or re-add a detection.
+  const seenWindowsRef = useRef<Set<number>>(new Set());
 
   const stopTimer = () => {
     if (timerRef.current !== null) {
@@ -132,6 +152,7 @@ export function LiveFeed() {
     setCurrent(null);
     setFeed([]);
     setCounts({ threats: 0, normal: 0 });
+    seenWindowsRef.current.clear();
   };
 
   // ==================== replay ====================
@@ -227,6 +248,10 @@ export function LiveFeed() {
   }, []);
 
   const liveTick = useCallback(async () => {
+    // One poll at a time: overlapping polls would both use the same `after`
+    // and append the same windows twice (the duplicate #19 in the log).
+    if (pollInFlightRef.current) return;
+    pollInFlightRef.current = true;
     try {
       const res = await pollLive(afterRef.current, LIVE_BATCH);
       setCounters({
@@ -236,35 +261,49 @@ export function LiveFeed() {
         skipped: res.skipped ?? 0,
         queue: res.queue_depth ?? 0,
         dropped: res.dropped ?? 0,
+        analysed: res.packets_analysed ?? 0,
+        inProgress: res.flows_in_progress ?? 0,
+        packetQueue: res.packet_queue ?? 0,
+        ipv6: res.ipv6 !== false,
       });
+      setLiveMeta({
+        startedAt: res.started_at ?? null,
+        localIps: res.local_ips ?? [],
+        gatewayIps: res.gateway_ips ?? [],
+        iface: res.interface ?? null,
+      });
+      // The engine's own error, e.g. "capture stopped: Npcap was not found".
+      setPollError(res.error ?? null);
 
-      if (res.results.length > 0) {
-        const newest = res.results[res.results.length - 1];
-        afterRef.current = Math.max(afterRef.current, ...res.results.map((r) => r.window));
+      // Results are oldest-first and window numbers are unique, but a slow or
+      // retried poll could still hand back a window already seen: drop those
+      // before they are counted or logged (the duplicate #19 in the log).
+      const fresh = res.results.filter((r) => !seenWindowsRef.current.has(r.window));
+      if (fresh.length > 0) {
+        for (const r of fresh) seenWindowsRef.current.add(r.window);
+        const newest = fresh[fresh.length - 1];
+        afterRef.current = Math.max(afterRef.current, ...fresh.map((r) => r.window));
         setCurrent(newest);
         setCounts((c) => {
           let { threats, normal } = c;
-          for (const r of res.results) {
+          for (const r of fresh) {
             if (r.predicted_class === "BENIGN") normal += 1;
             else threats += 1;
           }
           return { threats, normal };
         });
-        setFeed((f) =>
-          [
-            ...[...res.results].reverse().map((r) => ({
-              window: r.window,
-              predicted_class: r.predicted_class,
-              cert_in_category: r.cert_in_category,
-              confidence: r.confidence,
-              status: r.prevention.status,
-              executed: r.execution?.executed === true,
-              alreadyBlocked: r.execution?.already_active === true,
-              sourceIp: r.source_ip,
-            })),
-            ...f,
-          ].slice(0, FEED_CAP),
-        );
+        const entries: FeedEntry[] = [...fresh].reverse().map((r) => ({
+          window: r.window,
+          predicted_class: r.predicted_class,
+          cert_in_category: r.cert_in_category,
+          confidence: r.confidence,
+          status: r.prevention.status,
+          executed: r.execution?.executed === true,
+          alreadyBlocked: r.execution?.already_active === true,
+          sourceIp: r.source_ip,
+          noTarget: r.prevention.status === "auto_action" && r.source_ip == null,
+        }));
+        setFeed((f) => [...entries, ...f].slice(0, FEED_CAP));
       }
 
       if (!res.running) {
@@ -279,6 +318,8 @@ export function LiveFeed() {
       stopLiveTimer();
       setLiveError(e instanceof Error ? e.message : "Live poll failed");
       setLivePhase("error");
+    } finally {
+      pollInFlightRef.current = false;
     }
   }, [refreshRules]);
 
@@ -303,7 +344,9 @@ export function LiveFeed() {
         setInterfaces(list);
         setLiveStub(!!res.stub);
         setLiveNote(res.note ?? null);
-        setIface((v) => v || list[0]?.name || "");
+        // Prefer the machine's main adapter (`default`), then the first
+        // usable one; the backend already sorts those to the front.
+        setIface((v) => v || list.find((i) => i.default)?.name || list[0]?.name || "");
       })
       .catch((e: Error) => !cancelled && setLiveError(e.message));
     getHealth()
@@ -319,8 +362,21 @@ export function LiveFeed() {
     if (!iface) return;
     clearDisplay();
     setLiveError(null);
+    setPollError(null);
     afterRef.current = -1;
-    setCounters({ packets: 0, flows: 0, windows: 0, skipped: 0, queue: 0, dropped: 0 });
+    setCounters({
+      packets: 0,
+      flows: 0,
+      windows: 0,
+      skipped: 0,
+      queue: 0,
+      dropped: 0,
+      analysed: 0,
+      inProgress: 0,
+      packetQueue: 0,
+      ipv6: true,
+    });
+    setLiveMeta({ startedAt: null, localIps: [], gatewayIps: [], iface: null });
     setLivePhase("starting");
     try {
       const res = await startLive(iface);
@@ -373,6 +429,7 @@ export function LiveFeed() {
     clearDisplay();
     setError(null);
     setLiveError(null);
+    setPollError(null);
   };
 
   // ==================== shared result pane ====================
@@ -405,9 +462,19 @@ export function LiveFeed() {
       )}
       {runtime?.execution_enabled && (
         <div className="rounded-2xl border border-warning/40 bg-warning/5 px-4 py-3 text-xs text-warning">
-          Real firewall actions are <strong>armed</strong>. Only targets inside{" "}
-          <span className="font-mono">{runtime.allowed_demo_ranges.join(", ")}</span> (RFC 5737
-          reserved, never routable) can be acted on. Persistent rules stay applied until revoked.
+          Real firewall actions are <strong>armed</strong>. Only targets inside the RFC 5737 ranges{" "}
+          <span className="font-mono">{runtime.allowed_demo_ranges.join(", ")}</span> (never
+          routable), or devices listed in{" "}
+          <span className="font-mono">
+            {runtime.demo_targets_env_var ?? "IDS_PREVENTION_DEMO_TARGETS"}
+          </span>
+          {runtime.demo_targets && runtime.demo_targets.length > 0 ? (
+            <>
+              {" "}
+              (<span className="font-mono">{runtime.demo_targets.join(", ")}</span>)
+            </>
+          ) : null}
+          , can be acted on. Persistent rules stay applied until revoked.
         </div>
       )}
 
@@ -514,6 +581,18 @@ export function LiveFeed() {
                         >
                           <ShieldCheck className="h-3 w-3" /> already blocked
                         </span>
+                      ) : source === "live" && liveCurrent && liveCurrent.source_ip == null ? (
+                        // The engine found no safe device to act on (e.g. the
+                        // traffic came from the gateway or this laptop).
+                        <span
+                          className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.03] px-2.5 py-1 font-mono uppercase text-muted-foreground"
+                          title={
+                            current.execution?.reason ??
+                            "No safe device to target in this window - recommendation only."
+                          }
+                        >
+                          recommended, no target
+                        </span>
                       ) : (
                         <span
                           className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.03] px-2.5 py-1 font-mono uppercase text-muted-foreground"
@@ -533,6 +612,34 @@ export function LiveFeed() {
                     </span>
                   )}
                 </div>
+
+                {/* The 10 flows behind this window, from the engine's
+                    `window_flows` - only live results carry them. */}
+                {source === "live" && liveCurrent?.window_flows?.length ? (
+                  <details className="mt-4 rounded-xl border border-white/10 bg-white/[0.02] px-3 py-2">
+                    <summary className="cursor-pointer text-[11px] font-mono uppercase tracking-widest text-muted-foreground">
+                      Window flows ({liveCurrent.window_flows.length})
+                    </summary>
+                    <div className="mt-2 max-h-40 overflow-y-auto space-y-0.5 pr-1">
+                      {liveCurrent.window_flows.map((flow, i) => (
+                        <div
+                          key={`${flow.src}:${flow.sport}-${flow.dst}:${flow.dport}-${i}`}
+                          className="flex items-center gap-1.5 font-mono text-[11px] text-muted-foreground"
+                        >
+                          <span className="w-4 shrink-0 text-[9px] text-muted-foreground/60">
+                            {i + 1}
+                          </span>
+                          <span className="text-foreground">{flow.src}</span>
+                          <span>:{flow.sport}</span>
+                          <span className="text-muted-foreground/60">-&gt;</span>
+                          <span className="text-foreground">{flow.dst}</span>
+                          <span>:{flow.dport}</span>
+                          <span className="ml-auto uppercase">{flow.proto}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </details>
+                ) : null}
               </>
             )}
           </div>
@@ -634,6 +741,11 @@ export function LiveFeed() {
                         {f.sourceIp}
                       </span>
                     )}
+                    {source === "live" && f.noTarget && (
+                      <span className="text-[10px] font-mono uppercase text-muted-foreground hidden md:inline">
+                        recommended, no target
+                      </span>
+                    )}
                     <span className="ml-auto text-[11px] font-mono text-muted-foreground">
                       {(f.confidence * 100).toFixed(1)}%
                     </span>
@@ -646,6 +758,11 @@ export function LiveFeed() {
                         <ShieldCheck
                           className="h-3.5 w-3.5 text-success shrink-0"
                           aria-label={f.executed ? "executed" : "already blocked"}
+                        />
+                      ) : f.noTarget ? (
+                        <Ban
+                          className="h-3.5 w-3.5 text-muted-foreground shrink-0"
+                          aria-label="recommended, no target"
                         />
                       ) : (
                         <Gavel
@@ -914,6 +1031,18 @@ export function LiveFeed() {
               </div>
             )}
 
+            {/* The capture engine's own error, e.g. Npcap missing or a capture
+                that stopped mid-run. Distinct from a request failure above. */}
+            {pollError && (
+              <div className="relative mt-4 rounded-xl border border-destructive/40 bg-destructive/10 p-4 text-sm text-destructive flex items-start gap-3">
+                <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" />
+                <div>
+                  <strong className="uppercase text-[11px] tracking-widest">Capture error</strong>
+                  <div className="mt-1 font-mono text-xs">{pollError}</div>
+                </div>
+              </div>
+            )}
+
             <div className="relative mt-6 grid grid-cols-3 gap-4">
               <div className="glass rounded-2xl p-4">
                 <div className="flex items-center gap-2 text-[11px] font-mono uppercase tracking-widest text-muted-foreground">
@@ -941,15 +1070,38 @@ export function LiveFeed() {
               </div>
             </div>
 
-            {(counters.skipped > 0 || counters.queue > 0 || counters.dropped > 0) && (
-              <div className="relative mt-3 text-[11px] font-mono text-muted-foreground">
-                {counters.queue > 0 && <span>{counters.queue} window(s) queued · </span>}
-                {counters.skipped > 0 && <span>{counters.skipped} skipped by polling lag · </span>}
-                {counters.dropped > 0 && (
-                  <span className="text-warning">{counters.dropped} dropped</span>
-                )}
+            <div className="relative mt-3 text-[11px] font-mono text-muted-foreground space-y-1">
+              <div>
+                {counters.analysed.toLocaleString()} analysed ·{" "}
+                {counters.inProgress.toLocaleString()} flows in progress ·{" "}
+                {counters.packetQueue.toLocaleString()} queued · IPv6 {counters.ipv6 ? "on" : "off"}
+                {liveMeta.iface ? ` · ${liveMeta.iface}` : ""}
+                {liveMeta.startedAt
+                  ? ` · started ${new Date(liveMeta.startedAt).toLocaleTimeString()}`
+                  : ""}
               </div>
-            )}
+              {(liveMeta.localIps.length > 0 || liveMeta.gatewayIps.length > 0) && (
+                <div className="truncate">
+                  {liveMeta.localIps.length > 0 && (
+                    <span>local {liveMeta.localIps.join(", ")} </span>
+                  )}
+                  {liveMeta.gatewayIps.length > 0 && (
+                    <span>· gateway {liveMeta.gatewayIps.join(", ")}</span>
+                  )}
+                </div>
+              )}
+              {(counters.skipped > 0 || counters.queue > 0 || counters.dropped > 0) && (
+                <div>
+                  {counters.queue > 0 && <span>{counters.queue} window(s) queued · </span>}
+                  {counters.skipped > 0 && (
+                    <span>{counters.skipped} skipped by polling lag · </span>
+                  )}
+                  {counters.dropped > 0 && (
+                    <span className="text-warning">{counters.dropped} packets dropped</span>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
 
           {(livePhase === "running" || feed.length > 0) && resultsPane}

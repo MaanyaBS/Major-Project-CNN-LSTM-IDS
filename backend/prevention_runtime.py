@@ -93,10 +93,19 @@ def is_enabled():
 
 def runtime_info():
     """Describes the current execution posture, for /api/health and the UI."""
+    # A live demo can also act on specific LAN devices listed in the engine's
+    # IDS_PREVENTION_DEMO_TARGETS, so the UI has to name them too - otherwise
+    # its "armed" banner would claim TEST-NET is the only possible target.
+    try:
+        demo_targets = sorted(pe.demo_targets())
+    except Exception:
+        demo_targets = []
     return {
         "execution_enabled": is_enabled(),
         "env_var": ENV_VAR,
         "allowed_demo_ranges": [str(net) for net in pe.ALLOWED_DEMO_RANGES],
+        "demo_targets": demo_targets,
+        "demo_targets_env_var": getattr(pe, "DEMO_TARGETS_ENV", "IDS_PREVENTION_DEMO_TARGETS"),
         "executable_actions": sorted(pe.ACTION_DURATIONS),
         # Documented honestly: rate_limit is a temporary full block, not QoS.
         "simulated_only_actions": ["sanitize_input", "terminate_session", "alert_only", "no_action"],
@@ -189,9 +198,10 @@ def revoke(action, target_ip):
     Lift a persistent (non-expiring) action after human review.
 
     Returns the engine's own verdict as-is: revoke_action() re-checks scope
-    (TEST-NET only) and admin rights itself, works with the kill switch off,
-    and never raises - so callers must surface revoked=False rather than
-    assuming success. action/target_ip are echoed back for display.
+    (the RFC 5737 TEST-NET ranges, or a LAN device listed in
+    IDS_PREVENTION_DEMO_TARGETS) and admin rights itself, works with the kill
+    switch off, and never raises - so callers must surface revoked=False rather
+    than assuming success. action/target_ip are echoed back for display.
     """
     outcome = pe.revoke_action(action=action, target_ip=target_ip)
     return {**outcome, "action": action, "target_ip": target_ip}

@@ -81,26 +81,38 @@ $env:IDS_MAX_PCAP_MB = "500"
 An upload is rejected with HTTP 400 if no IPv4 TCP/UDP flows are found (an
 empty or non-IP capture cannot be analysed).
 
-### Live capture (Person B's `backend/live_capture.py`)
-The UI polls these; until the capture engine lands, a stub in `app.py` answers
-with deterministic demo data and the responses carry `"stub": true`.
+### Live capture (`backend/live_capture.py`)
+Packets off a network interface are reassembled into flows and scored every
+second; the response carries `"stub": false` when the real engine is loaded. If
+`backend/live_capture.py` is missing, a stub in `app.py` answers with
+deterministic demo data and `"stub": true`.
 
 | Endpoint | Body / query | Returns |
 | --- | --- | --- |
-| `GET /api/live/interfaces` | – | `{ interfaces: [{name, description, ip}], stub }` |
-| `POST /api/live/start` | `{ "interface": "Wi-Fi" }` | `{ running: true, interface }` |
-| `GET /api/live/poll` | `?after=<last window>&limit=<≤50>` | `{ running, packets, flows, windows, results, skipped, queue_depth, dropped }` |
+| `GET /api/live/interfaces` | – | `{ interfaces: [{name, description, ip, default}], stub }` |
+| `POST /api/live/start` | `{ "interface": "Wi-Fi" }` | `{ running, interface, local_ips, gateway_ips, ipv6 }` |
+| `GET /api/live/poll` | `?after=<last window>&limit=<≤50>` | counters + `results`, below |
 | `POST /api/live/stop` | – | `{ running: false }` |
 
 `after` is exclusive and defaults to `-1` (nothing seen yet, so window 0 is
 included). A poll returns at most 50 windows so a busy scan cannot freeze the
-page, and `queue_depth` tells the page more are waiting. Each result is one
-`/api/predict_csv` result plus `window`, `source_ip` and `time`; real-engine
-results go through the same execution bookkeeping as a CSV upload. `stop()` is
-also called on server shutdown.
+page; `queue_depth` says more are waiting and `skipped` counts windows that fell
+out of the buffer unpolled. `stop()` is also called on server shutdown.
 
-> Live capture needs **Npcap** (installed with Wireshark) and the backend
-> running **as administrator**.
+Each result is one `/api/predict_csv` result plus `window`, `source_ip` (**null**
+= no safe target), `time` and `window_flows` (the 10 flows). The engine runs
+prevention itself and attaches `execution`, so **`/api/live/poll` never calls the
+firewall** — it only reports.
+
+Poll counters/metadata: `packets`, `flows`, `windows`, `packets_analysed`,
+`flows_in_progress`, `packet_queue`, `dropped`, `ipv6`, `local_ips`,
+`gateway_ips`, `interface`, `started_at`, and `error` (non-null, e.g.
+`"capture stopped: ..."` or an Npcap message, when the capture failed).
+
+> Live capture needs **Npcap** (installed with Wireshark) and, for real
+> blocking, the backend running **as administrator** with
+> `IDS_PREVENTION_EXECUTION_ENABLED=1`. `IDS_LIVE_IPV6=0` analyses IPv4 only;
+> `IDS_PREVENTION_DEMO_TARGETS=<device IP>` allows acting on a LAN device.
 
 ### `GET /api/prevention/active`
 Lists the firewall rules currently in force — the dashboard's "Blocked
@@ -115,7 +127,8 @@ Body: `{ "action": "block_ip", "target_ip": "192.0.2.50" }`.
 Removes a demo firewall rule previously created by the execution engine and
 returns the engine's own verdict. Deliberately **not** gated on the kill
 switch — undoing must stay possible after a restart without the env var — but
-the engine re-checks scope (RFC 5737 TEST-NET only) and admin rights itself.
+the engine re-checks scope (RFC 5737 TEST-NET ranges, or a LAN device listed in
+`IDS_PREVENTION_DEMO_TARGETS`) and admin rights itself.
 A refusal comes back as HTTP 400 with `{"revoked": false, "reason": ...}`.
 
 ## Prevention execution

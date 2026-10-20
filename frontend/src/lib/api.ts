@@ -44,6 +44,9 @@ export interface PreventionRuntime {
   execution_enabled: boolean;
   env_var: string;
   allowed_demo_ranges: string[];
+  /** LAN devices that may be acted on via IDS_PREVENTION_DEMO_TARGETS. */
+  demo_targets?: string[];
+  demo_targets_env_var?: string;
   executable_actions: string[];
   simulated_only_actions: string[];
   source_ip_column?: string | null;
@@ -207,6 +210,8 @@ export interface LiveInterface {
   name: string;
   description: string;
   ip: string | null;
+  /** The machine's main adapter - preselect it in the dropdown. */
+  default?: boolean;
 }
 
 export interface LiveInterfacesResponse {
@@ -222,15 +227,33 @@ export interface LiveStartResponse {
   stub?: boolean;
 }
 
+/** One flow inside a live window (the engine's `window_flows`). */
+export interface LiveWindowFlow {
+  src: string;
+  sport: number;
+  dst: string;
+  dport: number;
+  proto: string;
+}
+
 /** One live window: a normal prediction plus where/when it was captured. */
 export interface LiveResult extends PredictionResult {
   window: number;
+  /**
+   * The device the engine chose to act on, or null when no safe target was
+   * found (e.g. the traffic came from the gateway or this machine).
+   */
   source_ip: string | null;
   time: string;
+  /** The 10 flows behind this window, for the detail pane. */
+  window_flows?: LiveWindowFlow[];
+  /** The interface name, when the engine reports it per result. */
+  interface?: string | null;
 }
 
 export interface LivePollResponse {
   running: boolean;
+  interface?: string | null;
   packets: number;
   flows: number;
   windows: number;
@@ -241,6 +264,19 @@ export interface LivePollResponse {
   queue_depth?: number;
   /** Windows dropped by the engine because its buffer filled. */
   dropped?: number;
+  /** Packets the flow layer actually parsed (IPv4/IPv6 TCP/UDP). */
+  packets_analysed?: number;
+  /** Flows still open in the table. */
+  flows_in_progress?: number;
+  /** Packets waiting for the flow thread. */
+  packet_queue?: number;
+  /** Whether IPv6 traffic is analysed (IDS_LIVE_IPV6). */
+  ipv6?: boolean;
+  local_ips?: string[];
+  gateway_ips?: string[];
+  started_at?: string | null;
+  /** Non-null when the capture failed, e.g. "Npcap not found" or "capture stopped". */
+  error?: string | null;
   stub?: boolean;
 }
 

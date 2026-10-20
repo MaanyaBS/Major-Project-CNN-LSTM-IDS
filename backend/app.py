@@ -691,20 +691,16 @@ def live_poll():
     except Exception as e:
         return jsonify({"error": f"Live poll failed: {e}"}), 500
 
-    results = data.get("results") or []
-    if not _live_is_stub():
-        # Same execution bookkeeping analyze_frame() does, unless the engine
-        # attached it itself. The stub is excluded on purpose: its detections
-        # are fabricated, so they must never reach the firewall.
-        results = [
-            r if isinstance(r, dict) and "execution" in r else _with_execution(r, (r or {}).get("source_ip"))
-            for r in results
-        ]
-    data["results"] = results
+    # The capture engine (backend/live_capture.py) runs prevention itself and
+    # attaches "execution" to each result; the stub does the same for its
+    # fabricated results. Never call the firewall from poll() - that would
+    # execute the same recommendation a second time.
+    data["results"] = data.get("results") or []
     # Defaults keep older/newer engines interchangeable at the client.
     data.setdefault("skipped", 0)
     data.setdefault("queue_depth", 0)
     data.setdefault("dropped", 0)
+    data.setdefault("error", None)
     data["stub"] = _live_is_stub()
     return jsonify(data)
 
