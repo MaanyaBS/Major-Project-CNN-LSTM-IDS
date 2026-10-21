@@ -336,25 +336,15 @@ The dashboard did not process 849 generated windows in this run. A complete eval
 The evaluation confirms that the current feature extraction and dashboard pipeline processed several public or candidate public captures, including PCAP and PCAPNG formats. The runs also produced class predictions, severity levels, prevention recommendations, and inspectable SHAP explanations.
 
 The predicted attack ratios are descriptive dashboard outputs. They must not be compared directly as model accuracy metrics because the captures differ in source, traffic composition, sample size, and processing completeness.
-## 6. Earlier Locally Captured Traffic Tests
-
-In addition to the public and candidate-public captures described above, locally generated traffic was captured with Wireshark and processed using `model/flow_features.py`. These tests were used to check compatibility between the flow extractor, ThreatLens Batch Analysis, and the prediction pipeline.
-
-The historical results below are retained as dashboard observations. Their original flow CSV files were not available during the latest audit, so the recorded row counts and prediction counts could not be independently reproduced.
-
-| Capture CSV | Historical row count | Historical BENIGN predictions | Historical attack predictions | Reported attack ratio |
-|---|---:|---:|---:|---:|
-| `tcp_window_scale.flows.csv` | 59 | 5 | 0 | 0.0% |
-| `dns_fresh.flows.csv` | 59 | 5 | 0 | 0.0% |
-| `normal_download_new.flows.csv` | 9 | 3 | 0 | 0.0% |
-| `normal_web_browsing.flows.csv` | 423 | 362 | 61 | 14.4% |
-| `normal_youtube.flows.csv` | 33 | 30 | 3 | 9.1% |
-
-**Sequence-count clarification:** The current inference implementation uses windows of 10 consecutive flows with a stride of one flow. A capture containing *N* valid flows produces *N − 9* prediction windows when *N* ≥ 10. Thus, 423 flows would produce 414 windows, and 33 flows would produce 24 windows. The historical prediction totals of 423 and 33 do not match those expected window counts if the reported row counts represent flows. Because the original historical flow CSVs are unavailable for independent verification, those historical prediction totals are retained only as unverified dashboard observations and must not be interpreted as validated sequence counts.
+## 6. Live Capture Validation
 
 ### 6.1 Normal Browsing Capture — October 15, 2026
 
 The processed capture `normal_browsing_10min_v2.flows.csv` was generated from the local capture file `captures/normal_browsing_10min_v2.pcapng`.
+
+IPv4 traffic only; IPv6 was not read by the extractor at the time.
+
+The following results were produced using the earlier extractor and the CNN-LSTM inference pipeline.
 
 | Measurement | Observed result |
 |---|---:|
@@ -366,11 +356,12 @@ The processed capture `normal_browsing_10min_v2.flows.csv` was generated from th
 | Observed flow-time span | 617.41 seconds |
 | Mean maximum-class confidence | 0.776876 |
 | Median maximum-class confidence | 0.758773 |
+| Windows predicted BENIGN | 2,431 |
 | Network environment | Mobile hotspot |
 | Capture file size | 69,646,284 bytes |
 | Capture file timestamp interval | 10 minutes 20 seconds (file creation to last modification; not proof of uninterrupted capture) |
 
-Predicted class counts:
+**Predicted class counts:**
 
 | Predicted class | Windows |
 |---|---:|
@@ -380,7 +371,56 @@ Predicted class counts:
 | DoS slowloris | 1 |
 | Web Attack - XSS | 1 |
 
-**Limitations:** this capture has no ground-truth labels. These figures describe model outputs, not accuracy, precision, recall, or a measured false-positive rate. The observed flow-time span does not by itself establish uninterrupted packet capture. The capture's network environment and exact capture start/end times should be recorded only if supported by capture metadata or contemporaneous notes. Local packet captures and derived flow CSVs must be reviewed for sensitive information before sharing or committing them.
+**Limitations:** This capture has no ground-truth labels. These figures describe model predictions, not accuracy, precision, recall, or a measured false-positive rate. The observed flow-time span does not by itself establish uninterrupted packet capture. The capture's network environment and exact capture start/end times should be recorded only if supported by capture metadata or contemporaneous notes. Local packet captures and derived flow CSVs must be reviewed for sensitive information before sharing or committing them.
+
+### 6.2 Normal Browsing Capture — IPv4 + IPv6, Live Settings
+
+The same capture file, `captures/normal_browsing_10min_v2.pcapng`, was reprocessed using the updated extractor with the `--end-on-rst` option. The resulting flow data was saved as `output/live_captures/normal_browsing_10min_v3.flows.csv`, and inference results were saved as `output/live_captures/normal_browsing_10min_v3.predictions.csv`.
+
+The following results are from the v3 flow CSV and its corresponding CNN-LSTM inference run.
+
+| Measurement | Observed result |
+|---|---:|
+| Extraction settings | IPv4 + IPv6, live settings (`--end-on-rst`) |
+| Valid flow records | 4,866 |
+| Rows excluded for invalid feature values | 0 |
+| Window length | 10 flows |
+| Window stride | 1 flow |
+| Prediction windows | 4,857 |
+| Mean maximum-class confidence | 0.911121 |
+| Median maximum-class confidence | 0.989098 |
+| Windows predicted BENIGN | 3,404 |
+
+**Predicted class counts:**
+
+| Predicted class | Windows |
+|---|---:|
+| BENIGN | 3,404 |
+| FTP-Patator | 1,157 |
+| DoS GoldenEye | 125 |
+| DoS Slowhttptest | 63 |
+| DoS Hulk | 45 |
+| Web Attack - Sql Injection | 13 |
+| DoS slowloris | 13 |
+| SSH-Patator | 11 |
+| PortScan | 8 |
+| DDoS | 5 |
+| Web Attack - Brute Force | 5 |
+| Infiltration | 4 |
+| Web Attack - XSS | 3 |
+| Bot | 1 |
+
+**Limitations:** This capture has no ground-truth labels. These figures describe model predictions, not accuracy, precision, recall, or a measured false-positive rate. Model confidence is the maximum softmax probability and is not a guarantee of correctness. The inference run emitted an `InconsistentVersionWarning` because the scaler was saved with scikit-learn 1.6.1 but loaded with scikit-learn 1.9.1. This environment compatibility issue should be resolved and the inference rerun in a compatible environment before treating the results as fully validated. Although the updated extractor was run with the requested settings, the prediction counts alone do not establish detection effectiveness on real-world attacks.
+
+### 6.3 Comparison and Interpretation
+
+The v2 and v3 results come from processing the same source capture with different extraction settings and extractor versions. The v3 run produced more flow records and prediction windows, and a higher proportion of windows predicted as non-BENIGN classes.
+
+These differences demonstrate that feature extraction and flow-handling settings can materially affect the model's outputs. They do not establish that v3 is more accurate or that the predicted attack classes correspond to actual attacks in the capture.
+
+Because the capture has no ground-truth labels, neither run can independently establish accuracy, precision, recall, or false-positive rate. A reliable performance evaluation requires labelled traffic or independent verification of the predicted events. The scikit-learn version mismatch in the v3 inference environment must also be resolved before the results are used as validated evidence.
+
+
 ## 7. SHAP and Prevention Behaviour
 
 SHAP explanations were inspected for selected windows from the five captures. The recorded additivity errors were very small, ranging from approximately 1.8e-10 to 1.9e-9 in the selected checks.
