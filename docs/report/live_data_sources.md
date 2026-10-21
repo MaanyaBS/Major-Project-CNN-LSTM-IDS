@@ -410,7 +410,7 @@ The following results are from the v3 flow CSV and its corresponding CNN-LSTM in
 | Web Attack - XSS | 3 |
 | Bot | 1 |
 
-**Limitations:** This capture has no ground-truth labels. These figures describe model predictions, not accuracy, precision, recall, or a measured false-positive rate. Model confidence is the maximum softmax probability and is not a guarantee of correctness. The warning is harmless here: StandardScaler's transform uses only the stored mean and scale, which do not depend on the scikit-learn version. Although the updated extractor was run with the requested settings, the prediction counts alone do not establish detection effectiveness on real-world attacks.
+**Limitations:** This capture has no ground-truth labels. These figures describe model predictions, not accuracy, precision, recall, or a measured false-positive rate. Model confidence is the maximum softmax probability and is not a guarantee of correctness. The inference run showed a scikit-learn `InconsistentVersionWarning` (scaler saved with 1.6.1, loaded with 1.9.1); the warning is harmless here: StandardScaler's transform uses only the stored mean and scale, which do not depend on the scikit-learn version. Although the updated extractor was run with the requested settings, the prediction counts alone do not establish detection effectiveness on real-world attacks.
 
 ### 6.3 Comparison and Interpretation
 
@@ -418,7 +418,7 @@ The v2 and v3 results come from processing the same source capture with differen
 
 These differences demonstrate that feature extraction and flow-handling settings can materially affect the model's outputs. They do not establish that v3 is more accurate or that the predicted attack classes correspond to actual attacks in the capture.
 
-Because the capture has no ground-truth labels, neither run can independently establish accuracy, precision, recall, or false-positive rate. A reliable performance evaluation requires labelled traffic or independent verification of the predicted events. The scikit-learn version mismatch in the v3 inference environment must also be resolved before the results are used as validated evidence.
+Because the capture has no ground-truth labels, neither run can independently establish accuracy, precision, recall, or false-positive rate. A reliable performance evaluation requires labelled traffic or independent verification of the predicted events.
 
 
 ## 7. SHAP and Prevention Behaviour
