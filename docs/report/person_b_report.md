@@ -407,7 +407,10 @@ Four findings:
 - **IPv6 and QUIC browsing raises recommendation-only false alarms**
   (mostly DoS GoldenEye). Their sources are the laptop and internet servers,
   never a LAN device, so nothing is executed. IPv4-only analysis gives 3.6%
-  and 0%, but ignores 98% of the browsing packets.
+  and 0%, but ignores 98% of the browsing packets. The rate depends heavily
+  on the traffic: on a second, ten-minute browsing capture with the same
+  settings, 29.9% of 4,857 windows were not BENIGN, 23.8% FTP-Patator
+  (`docs/report/live_data_sources.md`, 6.2; its targets were not analysed).
 - **The laptop sees its own traffic plus others' broadcasts.** Only a
   device that talks to the laptop can be a target (see 8.5).
 
