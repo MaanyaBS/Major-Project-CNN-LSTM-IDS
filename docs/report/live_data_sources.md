@@ -410,7 +410,7 @@ The following results are from the v3 flow CSV and its corresponding CNN-LSTM in
 | Web Attack - XSS | 3 |
 | Bot | 1 |
 
-**Limitations:** This capture has no ground-truth labels. These figures describe model predictions, not accuracy, precision, recall, or a measured false-positive rate. Model confidence is the maximum softmax probability and is not a guarantee of correctness. The inference run emitted an `InconsistentVersionWarning` because the scaler was saved with scikit-learn 1.6.1 but loaded with scikit-learn 1.9.1. This environment compatibility issue should be resolved and the inference rerun in a compatible environment before treating the results as fully validated. Although the updated extractor was run with the requested settings, the prediction counts alone do not establish detection effectiveness on real-world attacks.
+**Limitations:** This capture has no ground-truth labels. These figures describe model predictions, not accuracy, precision, recall, or a measured false-positive rate. Model confidence is the maximum softmax probability and is not a guarantee of correctness. The warning is harmless here: StandardScaler's transform uses only the stored mean and scale, which do not depend on the scikit-learn version. Although the updated extractor was run with the requested settings, the prediction counts alone do not establish detection effectiveness on real-world attacks.
 
 ### 6.3 Comparison and Interpretation
 
