@@ -104,6 +104,9 @@ permission; laptop 192.168.29.132, tablet 192.168.29.73, router
    itself and internet servers, so there is no LAN target and nothing is
    executed; the dashboard shows "recommended, no target". IPv4-only analysis
    (`IDS_LIVE_IPV6=0`) gives 3.6% / 0%, but ignores 98% of the browsing packets.
+   The rate varies with the traffic: a second, ten-minute browsing capture
+   with the same settings had 29.9% of 4,857 windows not BENIGN, 23.8%
+   FTP-Patator (`docs/report/live_data_sources.md`, 6.2; targets not analysed).
 4. **The laptop sees its own traffic plus other devices' broadcasts and
    multicasts** (promiscuous mode off; Wi-Fi does not show other devices'
    unicast). Only a device that talks to the laptop can be a target: that is
