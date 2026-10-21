@@ -1,4 +1,4 @@
-# Project Status — Live IDS / IPS-lite, Current State (2026-10-18)
+# Project Status — Live IDS / IPS-lite, Current State (2026-10-21)
 
 Supersedes the 2026-10-02 version. If you are an assistant helping on this
 project with no other context, read this file fully before touching
@@ -39,12 +39,12 @@ live capture; Varshini D N — dashboard and backend.
 | CICIDS2017 / MU-IoT data, models, baselines, SHAP | Done | `main` (tag `v1-demo`) |
 | Prevention policy and engine, wired into the backend | Done | `main` |
 | Dashboard: CSV upload, replay, SHAP, prevention panel | Done | `main` |
-| Packet -> flow extractor (IPv4 + IPv6), validated on the original CICIDS2017 pcap | Done | `person-b-model` |
-| Opt-in LAN demo targets, one rule per device, `active_rules()` | Done | `person-b-model` |
-| Live capture engine `backend/live_capture.py` (detect + block) | Done; live run on a real network passed (2026-10-18) | `person-b-model` |
-| Backend: `/api/predict_pcap`, `/api/live/*`, Live capture UI, Blocked devices panel | Done (against a stub until the merge below) | `varshini-dashboard` |
-| Merge `person-b-model` into `varshini-dashboard` | **Pending** (tested locally: clean) | — |
-| PR to `main` and a new tag | **Pending**, after the live run | — |
+| Packet -> flow extractor (IPv4 + IPv6), validated on the original CICIDS2017 pcap | Done | `main` (tag `v2-live`) |
+| Opt-in LAN demo targets, one rule per device, `active_rules()` | Done | `main` |
+| Live capture engine `backend/live_capture.py` (detect + block) | Done; live run on a real network passed (2026-10-18) | `main` |
+| Backend: `/api/predict_pcap`, `/api/live/*`, Live capture UI, Blocked devices panel | Done | `main` |
+| Rehearsal on the final dashboard code (scan -> block -> revoke, twice) | Done (2026-10-21) | — |
+| PR #3 to `main`, tag `v2-live` (`0ee880d`) | Done (2026-10-21) | — |
 
 ---
 
@@ -105,19 +105,11 @@ microseconds, and V3's rule that a FIN which *starts* a flow does not end it.
 
 ## 5. Open Work (in order)
 
-1. **Dashboard teammate:** merge `origin/person-b-model` into
-   `varshini-dashboard` (brings the live engine; the stub then switches off),
-   show the poll's `error` and "recommended, no target", update the
-   `revoke()` comment (TEST-NET or listed devices).
-2. **Data teammate:** label the 10-minute browsing run as IPv4-only and
-   re-run it with the current extractor (`--end-on-rst`, IPv6 included).
-3. **Dashboard teammate, from the live run:** the Live detection log shows
-   some window numbers more than once (the engine's are unique), and the
-   armed-execution banner names only the TEST-NET ranges (listed LAN devices
-   can be acted on too).
-4. Rehearsal on the merged dashboard branch (`docs/LIVE_DEMO_CHECKLIST.md`),
-   then PR `varshini-dashboard` -> `main` and a new tag.
-5. **After the project:** remove `DisableStealthMode` from the three Windows
+1. **The demo** from `main` / `v2-live` (`docs/LIVE_DEMO_CHECKLIST.md`), on a
+   phone hotspot both devices join (not college Wi-Fi).
+2. **Dashboard teammate:** confirm the pcap-upload equivalence check (a
+   capture and its flow CSV give the same results).
+3. **After the project:** remove `DisableStealthMode` from the three Windows
    Firewall profiles (then reboot) and delete any `IDS_TEST_allow_scanner`
    rule.
 
