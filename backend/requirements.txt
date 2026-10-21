@@ -4,6 +4,9 @@ numpy>=1.26
 pandas>=2.1
 scikit-learn==1.6.*
 tensorflow>=2.16
+# Packet capture reader for /api/predict_pcap (model/flow_features.py uses
+# scapy's RawPcapReader for .pcap/.pcapng).
+scapy>=2.6
 # Pinned exactly: the explainer uses shap.utils._legacy.DenseData, an internal
 # class whose signature is not covered by shap's compatibility guarantees.
 shap==0.52.0

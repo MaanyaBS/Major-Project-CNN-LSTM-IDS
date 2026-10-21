@@ -279,7 +279,7 @@ The model, its evaluation, the prevention layer and all model-side results are u
 | Random forest, same test examples | accuracy 0.991, macro F1 0.780 | unseen recordings: macro F1 0.404 |
 
 * On CICIDS2017 a single-flow random forest does better than the CNN-LSTM. On MU-IoT, where single flow records are often ambiguous, the CNN-LSTM is clearly better.
-* Accuracy is dominated by benign traffic; macro F1 is the honest summary. Weak and rare classes, and other limitations, are listed in `model/MODEL_INTERFACE.md` (Section 6) and `docs/report/person_b_report.md` (Section 9).
+* Accuracy is dominated by benign traffic; macro F1 is the honest summary. Weak and rare classes, and other limitations, are listed in `model/MODEL_INTERFACE.md` (Section 6) and `docs/report/person_b_report.md` (Section 10).
 
 Checks that run on a normal laptop:
 
@@ -290,7 +290,7 @@ python model/benchmark_inference.py    # CPU speed of both models
 python model/evaluate_model.py         # CICIDS2017 evaluation (needs datasets/verify_run_ruthwik/)
 ```
 
-Training, the MU-IoT evaluation, the baselines and the SHAP error analysis run in Google Colab; the commands are in `docs/report/person_b_report.md`, Section 10.
+Training, the MU-IoT evaluation, the baselines and the SHAP error analysis run in Google Colab; the commands are in `docs/report/person_b_report.md`, Section 11.
 
 ---
 

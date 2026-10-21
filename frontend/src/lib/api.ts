@@ -44,6 +44,9 @@ export interface PreventionRuntime {
   execution_enabled: boolean;
   env_var: string;
   allowed_demo_ranges: string[];
+  /** LAN devices that may be acted on via IDS_PREVENTION_DEMO_TARGETS. */
+  demo_targets?: string[];
+  demo_targets_env_var?: string;
   executable_actions: string[];
   simulated_only_actions: string[];
   source_ip_column?: string | null;
@@ -75,6 +78,8 @@ export interface CsvAnalysisResponse {
   timeline: TimelinePoint[];
   results: PredictionResult[];
   prevention?: PreventionRuntime;
+  /** Present only for /api/predict_pcap: how many flows the capture became. */
+  flows?: number;
 }
 
 export interface ShapAttribution {
@@ -130,7 +135,10 @@ async function handle<T>(res: Response): Promise<T> {
     let msg = `Request failed (${res.status})`;
     try {
       const body = await res.json();
+      // The prevention endpoints report refusals as `reason`, everything else
+      // as `error` - surface either instead of the generic message.
       if (body?.error) msg = body.error;
+      else if (body?.reason) msg = body.reason;
     } catch {
       /* ignore */
     }
@@ -147,6 +155,18 @@ export async function analyzeCsv(file: File): Promise<CsvAnalysisResponse> {
   const form = new FormData();
   form.append("file", file);
   return handle(await fetch(`${API_BASE}/api/predict_csv`, { method: "POST", body: form }));
+}
+
+/** A Wireshark capture: the backend converts it to flows, then analyses them. */
+export function isPcapFile(file: File): boolean {
+  const name = file.name.toLowerCase();
+  return name.endsWith(".pcap") || name.endsWith(".pcapng");
+}
+
+export async function analyzePcap(file: File): Promise<CsvAnalysisResponse> {
+  const form = new FormData();
+  form.append("file", file);
+  return handle(await fetch(`${API_BASE}/api/predict_pcap`, { method: "POST", body: form }));
 }
 
 export async function explainWindow(window: number): Promise<ExplainResponse> {
@@ -180,4 +200,157 @@ export async function streamLoad(file: File): Promise<StreamLoadResponse> {
 
 export async function streamNext(): Promise<StreamNextResponse> {
   return handle(await fetch(`${API_BASE}/api/stream/next`, { method: "GET" }));
+}
+
+/* ------------------------------------------------------------------ *
+ * Live capture (backend/live_capture.py contract)
+ * ------------------------------------------------------------------ */
+
+export interface LiveInterface {
+  name: string;
+  description: string;
+  ip: string | null;
+  /** The machine's main adapter - preselect it in the dropdown. */
+  default?: boolean;
+}
+
+export interface LiveInterfacesResponse {
+  interfaces: LiveInterface[];
+  /** True while the capture engine is Person B's stub: the feed is demo data. */
+  stub?: boolean;
+  note?: string;
+}
+
+export interface LiveStartResponse {
+  running: boolean;
+  interface: string;
+  stub?: boolean;
+}
+
+/** One flow inside a live window (the engine's `window_flows`). */
+export interface LiveWindowFlow {
+  src: string;
+  sport: number;
+  dst: string;
+  dport: number;
+  proto: string;
+}
+
+/** One live window: a normal prediction plus where/when it was captured. */
+export interface LiveResult extends PredictionResult {
+  window: number;
+  /**
+   * The device the engine chose to act on, or null when no safe target was
+   * found (e.g. the traffic came from the gateway or this machine).
+   */
+  source_ip: string | null;
+  time: string;
+  /** The 10 flows behind this window, for the detail pane. */
+  window_flows?: LiveWindowFlow[];
+  /** The interface name, when the engine reports it per result. */
+  interface?: string | null;
+}
+
+export interface LivePollResponse {
+  running: boolean;
+  interface?: string | null;
+  packets: number;
+  flows: number;
+  windows: number;
+  results: LiveResult[];
+  /** Windows the page never asked for (poll lagged behind the capture). */
+  skipped?: number;
+  /** Results produced but not handed out yet - > 0 means the next poll has more. */
+  queue_depth?: number;
+  /** Windows dropped by the engine because its buffer filled. */
+  dropped?: number;
+  /** Packets the flow layer actually parsed (IPv4/IPv6 TCP/UDP). */
+  packets_analysed?: number;
+  /** Flows still open in the table. */
+  flows_in_progress?: number;
+  /** Packets waiting for the flow thread. */
+  packet_queue?: number;
+  /** Whether IPv6 traffic is analysed (IDS_LIVE_IPV6). */
+  ipv6?: boolean;
+  local_ips?: string[];
+  gateway_ips?: string[];
+  started_at?: string | null;
+  /** Non-null when the capture failed, e.g. "Npcap not found" or "capture stopped". */
+  error?: string | null;
+  stub?: boolean;
+}
+
+export async function getLiveInterfaces(): Promise<LiveInterfacesResponse> {
+  return handle(await fetch(`${API_BASE}/api/live/interfaces`, { method: "GET" }));
+}
+
+export async function startLive(interfaceName: string): Promise<LiveStartResponse> {
+  return handle(
+    await fetch(`${API_BASE}/api/live/start`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ interface: interfaceName }),
+    }),
+  );
+}
+
+/**
+ * Windows after `after` (exclusive), at most `limit` per call. Pass after=-1
+ * before the first window has arrived; the server caps limit at 50.
+ */
+export async function pollLive(after: number, limit = 50): Promise<LivePollResponse> {
+  return handle(
+    await fetch(`${API_BASE}/api/live/poll?after=${after}&limit=${limit}`, { method: "GET" }),
+  );
+}
+
+export async function stopLive(): Promise<LiveStartResponse> {
+  return handle(await fetch(`${API_BASE}/api/live/stop`, { method: "POST" }));
+}
+
+/* ------------------------------------------------------------------ *
+ * Prevention - what is actually in force on this machine
+ * ------------------------------------------------------------------ */
+
+export interface ActiveRule {
+  rule_name?: string | null;
+  action: string | null;
+  target_ip: string | null;
+  /** true = stays until revoked; false = the engine removes it on a timer. */
+  persistent?: boolean | null;
+  expires_in_seconds?: number | null;
+  ttl_seconds?: number | null;
+}
+
+export interface ActiveRulesResponse {
+  rules: ActiveRule[];
+  /**
+   * True once the engine exposes active_rules() itself. Until then the list
+   * comes from the engine's in-process registry, so a rule created moments ago
+   * still shows, but the source is not the engine's own reporting API.
+   */
+  engine_ready?: boolean;
+}
+
+export async function getActiveRules(): Promise<ActiveRulesResponse> {
+  return handle(await fetch(`${API_BASE}/api/prevention/active`, { method: "GET" }));
+}
+
+export interface RevokeResponse {
+  revoked: boolean;
+  reason?: string;
+  rule_name?: string;
+  action?: string;
+  target_ip?: string;
+}
+
+/** Lift a persistent block created by the execution engine. */
+export async function revokePrevention(action: string, targetIp: string): Promise<RevokeResponse> {
+  return handle(
+    await fetch(`${API_BASE}/api/prevention/revoke`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action, target_ip: targetIp }),
+    }),
+  );
 }

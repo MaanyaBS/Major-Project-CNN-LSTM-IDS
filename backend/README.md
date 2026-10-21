@@ -55,12 +55,80 @@ etc. also accepted) is used as the target for any prevention action. The value
 is taken from the **first flow row of each window**. Blank / `null` / `n/a` /
 non-IP values become `None`, and `None` targets are never executed.
 
+### `POST /api/predict_pcap`
+Multipart form with a `file` field containing a Wireshark **`.pcap` or
+`.pcapng`** capture. The capture is converted to bidirectional flows and the
+20 CICIDS2017 feature columns with `model/flow_features.py` (needs
+`scapy>=2.6`), then analysed by the *same* code path as `/api/predict_csv`
+(`analyze_frame()`), so the response is identical plus `"flows"`: how many
+flows the capture became.
+
+Equivalence check:
+
+```bash
+python model/flow_features.py capture.pcap -o x.csv
+# uploading x.csv and uploading capture.pcap give identical results
+```
+
+The body is streamed to a temp file in chunks and the temp file is always
+deleted. A capture over the size limit is refused with HTTP 413 while it is
+being read. The limit defaults to **200 MB** and is configurable:
+
+```powershell
+$env:IDS_MAX_PCAP_MB = "500"
+```
+
+An upload is rejected with HTTP 400 if no IPv4 TCP/UDP flows are found (an
+empty or non-IP capture cannot be analysed).
+
+### Live capture (`backend/live_capture.py`)
+Packets off a network interface are reassembled into flows and scored every
+second; the response carries `"stub": false` when the real engine is loaded. If
+`backend/live_capture.py` is missing, a stub in `app.py` answers with
+deterministic demo data and `"stub": true`.
+
+| Endpoint | Body / query | Returns |
+| --- | --- | --- |
+| `GET /api/live/interfaces` | – | `{ interfaces: [{name, description, ip, default}], stub }` |
+| `POST /api/live/start` | `{ "interface": "Wi-Fi" }` | `{ running, interface, local_ips, gateway_ips, ipv6 }` |
+| `GET /api/live/poll` | `?after=<last window>&limit=<≤50>` | counters + `results`, below |
+| `POST /api/live/stop` | – | `{ running: false }` |
+
+`after` is exclusive and defaults to `-1` (nothing seen yet, so window 0 is
+included). A poll returns at most 50 windows so a busy scan cannot freeze the
+page; `queue_depth` says more are waiting and `skipped` counts windows that fell
+out of the buffer unpolled. `stop()` is also called on server shutdown.
+
+Each result is one `/api/predict_csv` result plus `window`, `source_ip` (**null**
+= no safe target), `time` and `window_flows` (the 10 flows). The engine runs
+prevention itself and attaches `execution`, so **`/api/live/poll` never calls the
+firewall** — it only reports.
+
+Poll counters/metadata: `packets`, `flows`, `windows`, `packets_analysed`,
+`flows_in_progress`, `packet_queue`, `dropped`, `ipv6`, `local_ips`,
+`gateway_ips`, `interface`, `started_at`, and `error` (non-null, e.g.
+`"capture stopped: ..."` or an Npcap message, when the capture failed).
+
+> Live capture needs **Npcap** (installed with Wireshark) and, for real
+> blocking, the backend running **as administrator** with
+> `IDS_PREVENTION_EXECUTION_ENABLED=1`. `IDS_LIVE_IPV6=0` analyses IPv4 only;
+> `IDS_PREVENTION_DEMO_TARGETS=<device IP>` allows acting on a LAN device.
+
+### `GET /api/prevention/active`
+Lists the firewall rules currently in force — the dashboard's "Blocked
+devices" panel, refreshed on every live poll. Read-only, so it needs no kill
+switch. Uses Person B's `pe.active_rules()` once it exists (`engine_ready:
+true`); until then it reads the engine's own in-process registry so a rule
+created by a real execution is still listed and revocable (`engine_ready:
+false`).
+
 ### `POST /api/prevention/revoke`
 Body: `{ "action": "block_ip", "target_ip": "192.0.2.50" }`.
 Removes a demo firewall rule previously created by the execution engine and
 returns the engine's own verdict. Deliberately **not** gated on the kill
 switch — undoing must stay possible after a restart without the env var — but
-the engine re-checks scope (RFC 5737 TEST-NET only) and admin rights itself.
+the engine re-checks scope (RFC 5737 TEST-NET ranges, or a LAN device listed in
+`IDS_PREVENTION_DEMO_TARGETS`) and admin rights itself.
 A refusal comes back as HTTP 400 with `{"revoked": false, "reason": ...}`.
 
 ## Prevention execution
