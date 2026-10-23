@@ -1,0 +1,526 @@
+%% =====================================================================
+%%  IEEE conference paper — Real-Time Explainable Hybrid CNN-LSTM IDS
+%%
+%%  Content source : docs/report/ieee_paper_content.md  (person-b-model)
+%%  Every number below is taken from that file, which in turn cites
+%%  committed results under model/results/.
+%%
+%%  Compile with pdfLaTeX (Overleaf default). No external files needed.
+%%  Figures are deliberately excluded from this version.
+%%
+%%  WHAT YOU MUST FILL IN MANUALLY  (search for  %% TODO )
+%%    1. Author e-mail addresses
+%%    2. MU-IoT reference [8]
+%%    3. Acknowledgment: add the MU-IoT credit
+%% =====================================================================
+
+\documentclass[conference]{IEEEtran}
+\IEEEoverridecommandlockouts
+
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{url}
+\usepackage{balance}
+\usepackage{stfloats}
+
+% nicer cell padding, no overfull boxes in narrow tables
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.08}
+
+\begin{document}
+
+\title{Real-Time Explainable Hybrid CNN-LSTM Intrusion Detection System with IoT-Based Data Collection and Cloud Deployment}
+
+\author{%
+\IEEEauthorblockN{Maanya B S, Ruthwik Sai Ganesh, Varshini D N, and Dr.~Madhu B R}
+\IEEEauthorblockA{\textit{Department of Artificial Intelligence and Machine Learning}\\
+\textit{Jyothy Institute of Technology}\\
+Bengaluru, India\\
+%% TODO: insert the four institutional e-mail addresses
+[author e-mail addresses]}
+}
+
+\maketitle
+
+%% ---------------------------------------------------------------------
+\begin{abstract}
+Deep-learning intrusion detection systems are usually reported as accuracy
+figures on benchmark datasets, rarely as systems that act on live traffic.
+This paper presents a hybrid CNN-LSTM intrusion detection and prevention
+system that classifies sequences of network flows, explains its errors with
+SHAP, and blocks attackers through the host firewall in real time. The model
+is evaluated on CICIDS2017 with a chronological, leakage-controlled split and
+on MU-IoT, real IoT traffic with four whole recordings held out. A random
+forest trained on identical examples serves as a fair baseline: it is better
+on CICIDS2017 (macro F1 0.780 vs.\ 0.586), whereas the CNN-LSTM is clearly
+better on MU-IoT (held-out macro F1 0.676 vs.\ 0.404), where single flow
+records are ambiguous and sequences resolve them. A per-class prevention
+policy derives confidence thresholds from measured F1 and locks unreliable
+classes to human review; on the CICIDS2017 test set it acts automatically on
+96.6\% of attack windows and on 0.33\% of benign windows. A packet-to-flow
+extractor reproduces CICFlowMeter-V3 features on 99.8\% of flows from the
+original CICIDS2017 capture. In a live run on a shared Wi-Fi network, a real
+port scan was detected about two seconds after its first probes and the
+scanning device was blocked automatically, while another user's falsely
+flagged device was refused. The limitations of a 2017-trained model on
+present-day traffic are measured and reported.
+\end{abstract}
+
+\begin{IEEEkeywords}
+Intrusion detection, intrusion prevention, CNN-LSTM, deep learning,
+CICIDS2017, Internet of Things, explainable AI, SHAP, live packet capture.
+\end{IEEEkeywords}
+
+%% ---------------------------------------------------------------------
+\section{Introduction}
+
+Network intrusion detection systems (NIDS) based on machine learning are
+commonly evaluated by accuracy on public datasets. Such figures can be
+misleading: neighbouring flows in a capture are often near-identical, so
+random train/test splits reward memorisation \cite{ref6}, \cite{ref7}, and
+benign traffic dominates the data, so accuracy hides failures on rare
+attacks. A detector that is to protect a network must also run on live
+traffic and act on its decisions, which raises a question benchmark scores do
+not answer: when may a model's prediction be trusted to block a device
+automatically?
+
+This work builds and evaluates a complete system around a hybrid CNN-LSTM
+model that reads windows of consecutive flows. The contributions are:
+
+\begin{enumerate}
+\item \textbf{A leakage-controlled evaluation} of the CNN-LSTM on two
+datasets, CICIDS2017 and MU-IoT, against a random-forest baseline trained and
+tested on identical examples, showing where sequence modelling helps and
+where it does not.
+\item \textbf{An explainability analysis} that uses SHAP to separate three
+causes of the model's errors on unseen IoT recordings.
+\item \textbf{A prevention layer} in which each class's automatic-action
+threshold follows its measured F1, unreliable classes are locked to human
+review, and execution is bounded by a kill switch, an address allow-list and
+one-rule-per-device bookkeeping.
+\item \textbf{A live capture pipeline} whose packet-to-flow extractor is
+validated against the original CICIDS2017 capture (99.8\% agreement), with a
+live engine that detects and blocks in real time.
+\item \textbf{A real-network demonstration} with its failure modes reported:
+a port scan detected and blocked in about two seconds, and the false alarms a
+2017-trained model raises on present-day IPv6 and QUIC traffic.
+\end{enumerate}
+
+\subsection*{Scope of the Built System}
+The registered project title refers to IoT-based data collection and cloud
+deployment. The scope of the present work is stated here explicitly to avoid
+over-claiming. The IoT traffic used in this study is the external MU-IoT
+dataset; no IoT sensor network was deployed or instrumented by the authors.
+The system runs on the protected host itself, as a local backend and web
+dashboard, and is not hosted in the cloud. All results reported in
+Section~\ref{sec:results} were produced by that host-local deployment.
+
+%% ---------------------------------------------------------------------
+\section{Related Work}
+
+\subsection{Deep Learning for Intrusion Detection}
+Vinayakumar et al.~\cite{ref3} compared deep neural networks with classical
+classifiers across several intrusion datasets and found deep models
+competitive. Hybrid convolutional--recurrent models are a common choice for
+flow sequences, convolution capturing local patterns between neighbouring
+flows and recurrence capturing their development. This work uses such a
+hybrid but measures it against a strong classical baseline on identical
+examples.
+
+\subsection{Datasets and Their Pitfalls}
+CICIDS2017~\cite{ref1} provides labelled flows generated by
+CICFlowMeter~\cite{ref2} from a testbed with benign users and fourteen attack
+types. Engelen et al.~\cite{ref4} documented artefacts in CICFlowMeter's flow
+construction, such as ``TCP appendix'' flows created after a connection's
+FIN, and labelling errors. Sommer and Paxson~\cite{ref6} argued that network
+intrusion detection differs from other machine-learning tasks in the cost of
+errors and in the gap between training and deployment traffic; Arp et
+al.~\cite{ref7} catalogued pitfalls such as data snooping and inappropriate
+baselines. The evaluation design here follows these lessons: a chronological
+split, a baseline on identical examples, and measurement on real traffic.
+
+\subsection{Explainability}
+SHAP~\cite{ref5} attributes a prediction to its input features with additive,
+game-theoretic contributions. It is used here not to justify correct
+predictions but to diagnose wrong ones.
+
+%% ---------------------------------------------------------------------
+\section{Datasets and Evaluation Design}
+
+\subsection{CICIDS2017}
+Fifteen classes (benign plus fourteen attacks) over five capture days.
+Twenty features were selected by random-forest importance. Because
+neighbouring flows are often near-identical, the data were split
+chronologically within each (capture day, class) group: the first 80\% of
+rows train, the remainder test. A pure day-level split was rejected because
+it removed eight of fifteen classes from the test set. Windows of ten
+consecutive flows never span two days, and the scaler is fitted on training
+rows only. The test set holds 530{,}951 windows, 83\% benign.
+
+\subsection{MU-IoT}
+Real IoT traffic in seven classes (normal, DDoS, Injection, MiTM,
+Password\_Hacking, Scan, Spyware), 3.94 million rows and 38
+features~\cite{ref8}. Flow timestamps were removed because each recording
+holds one class and its own time range, so timestamps would reveal the label.
+Twenty-row windows never cross a recording block, a split or a gap in row
+identifiers. Two test tracks are used: \emph{within} (later traffic of
+recordings seen in training) and \emph{held-out} (four whole recordings never
+seen: an hping3 UDP flood, a vulnerability scan, an MQTT dictionary attack
+and an XSS attack). Headline scores count only test windows whose exact
+sequence never appears in training.
+
+\subsection{Baseline}
+A random forest~\cite{ref10} (100 trees) is trained on single flows with the
+same features and split, and scored on the last flow of each CNN-LSTM test
+window, so both models are judged on identical examples and labels.
+
+%% ---------------------------------------------------------------------
+\section{Model}
+
+The same architecture serves both datasets (Table~\ref{tab:arch}). Two
+one-dimensional convolution blocks learn local patterns across neighbouring
+flows; an LSTM~\cite{ref9} summarises their development across the window.
+
+\begin{table*}[t]
+\caption{CNN-LSTM Architecture}
+\label{tab:arch}
+\centering
+\footnotesize
+\begin{tabularx}{\textwidth}{@{}Ycc@{}}
+\toprule
+\textbf{Layer} & \textbf{CICIDS2017} & \textbf{MU-IoT}\\
+\midrule
+Input                               & 10 flows $\times$ 20 features & 20 flows $\times$ 38 features\\
+Conv1D 64, kernel 3, ReLU; BatchNorm; MaxPool 2  & \checkmark & \checkmark\\
+Conv1D 128, kernel 3, ReLU; BatchNorm; MaxPool 2 & \checkmark & \checkmark\\
+LSTM, 64 units                      & \checkmark & \checkmark\\
+Dense 64, ReLU                      & \checkmark & \checkmark\\
+Dense, softmax                      & 15 classes & 7 classes\\
+Parameters                          & 83{,}919   & 86{,}855\\
+\bottomrule
+\end{tabularx}
+\end{table*}
+
+Both models use Adam, sparse categorical cross-entropy, batch size 512 and
+early stopping on validation loss (patience 5). For CICIDS2017, three
+class-weighting schemes were compared on the same test set; square-root
+balanced weights gave the best result (accuracy 0.984, macro F1 0.586,
+against 0.883\,/\,0.428 for capped balanced weights). MU-IoT training draws a
+fresh sample of up to 300{,}000 windows per class each epoch with
+square-root-balanced weights capped at 10, in mixed precision.
+
+%% ---------------------------------------------------------------------
+\section{Prevention Layer}
+
+\subsection{Policy}
+Each class maps to an action, a severity and a confidence threshold.
+Thresholds rise as a class's test F1 falls, from 0.55 (DDoS, DoS Hulk) to
+0.78 (SSH-Patator). Below its threshold a prediction is held for human
+review. Classes whose evidence is too weak never act automatically: on
+CICIDS2017, Bot, Web Attack--Brute Force and XSS (F1 below 0.15) and SQL
+Injection, Heartbleed and Infiltration (too few test examples); on MU-IoT,
+MiTM and Spyware (no held-out recording). Measuring the policy changed it:
+before the lock, all 17 automatic Bot actions on the CICIDS2017 test set hit
+benign traffic.
+
+\subsection{Execution}
+An approved action becomes inbound and outbound Windows Firewall rules for
+the attacker's address, added through \texttt{netsh advfirewall}. Execution
+is bounded by independent checks: a global kill switch (off by default); an
+allow-list of RFC~5737 documentation ranges plus single LAN devices listed
+explicitly for a demonstration; a deny-list (loopback, broadcast,
+unspecified); and an administrator check. One rule is kept per device
+whatever class flags it, temporary actions expire on a timer, a startup sweep
+recovers state after a crash, and a revoke operation lifts any block even
+with the kill switch off. Rate limiting is approximated by a temporary
+block, and input sanitisation for XSS stays a recommendation, since a network
+firewall cannot perform it.
+
+\subsection{Verification}
+35 automated tests cover both policies and every refusal path; deliberately
+breaking the engine in 26 ways made a test fail every time; an end-to-end
+check on the real firewall passed 22 of 22 checks.
+
+%% ---------------------------------------------------------------------
+\section{Live Capture and Validation}
+
+\subsection{Packet-to-Flow Extraction}
+A new extractor groups packets from a live interface or a Wireshark capture
+into bidirectional flows and computes the twenty features with
+CICFlowMeter-V3's definitions, including the quirks the model learned: the
+first packet counted twice in the packet-length statistics, sample standard
+deviations, Ethernet padding counted as payload, whole-microsecond times, and
+V3's flow termination rules. It reads IPv4 and IPv6 from raw bytes at about
+68{,}000 packets per second.
+
+\subsection{Validation Against the Original Data}
+UNB's original Friday capture was passed through the extractor and every flow
+compared with CICFlowMeter-V3's official row for it
+(Table~\ref{tab:extractor}). The comparison found two differences, both
+corrected: times must be whole microseconds, and a FIN that \emph{starts} a
+flow (a TCP appendix~\cite{ref4}) does not end it.
+
+\begin{table}[t]
+\caption{Extractor Against CICFlowMeter-V3 (Original CICIDS2017 PCAP, 10 min)}
+\label{tab:extractor}
+\centering
+\footnotesize
+\begin{tabularx}{\columnwidth}{@{}Yr@{}}
+\toprule
+\textbf{Measure} & \textbf{Value}\\
+\midrule
+Flows matched one-to-one with official rows        & 5{,}957 of 7{,}332 (81\%)\\
+All 20 features agree (at the CSV's printed precision) & 99.8\%\\
+All 20 features agree (strictly, within $10^{-4}$) & 86.3\%\\
+PortScan flows agreeing on all 20 features         & 49 of 49\\
+Agreement if flows also end on RST                 & 98.9\%\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Live Engine}
+Three threads separate capture, flow tracking and inference, so bursts of
+packets never wait for the model. Once per second, if a flow has ended, the
+engine classifies the ten most recently ended flows, selects the target (the
+most frequent private IPv4 source that sent traffic to the host, never the
+host itself or the gateway), and invokes the firewall engine itself, so
+blocking does not depend on the dashboard. Live mode also ends flows on RST:
+a scan flow (SYN followed by RST) has the same features either way, and a
+scan is reported within seconds instead of after the 120\,s flow timeout. A
+web dashboard shows predictions, executions and blocked devices with a revoke
+control.
+
+%% ---------------------------------------------------------------------
+\section{Results}
+\label{sec:results}
+
+\subsection{Detection on CICIDS2017}
+
+\begin{table}[t]
+\caption{CICIDS2017, 530{,}951 Identical Test Examples}
+\label{tab:cicids}
+\centering
+\footnotesize
+\begin{tabularx}{\columnwidth}{@{}Yccc@{}}
+\toprule
+\textbf{Model} & \textbf{Accuracy} & \textbf{Weighted F1} & \textbf{Macro F1}\\
+\midrule
+CNN-LSTM (10-flow windows)   & 0.984 & 0.986 & 0.586\\
+Random forest (single flows) & 0.991 & 0.991 & 0.780\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Per class, the CNN-LSTM leads clearly only on DoS Hulk (F1 0.990 vs.\ 0.953).
+Both models fail on Bot (0.056 and 0.031), which points to a feature or data
+limit. The web attacks fail only for the CNN-LSTM (brute force 0.125 vs.\
+0.688), so the signal exists in single flows and the windowed model loses it.
+Large classes are detected well by both (DDoS 0.990, PortScan 0.971 for the
+CNN-LSTM).
+
+\subsection{Detection on MU-IoT}
+
+\begin{table}[t]
+\caption{MU-IoT, Unseen Windows Only}
+\label{tab:muiot}
+\centering
+\footnotesize
+\begin{tabularx}{\columnwidth}{@{}Ycc@{}}
+\toprule
+\textbf{Measure} & \textbf{CNN-LSTM} & \textbf{Random forest}\\
+\midrule
+Within: accuracy / macro F1             & 0.964 / 0.936 & 0.904 / 0.816\\
+Held-out: accuracy / macro F1           & 0.680 / 0.676 & 0.407 / 0.404\\
+Normal traffic flagged as attack (within) & 9.3\% & 17.2\%\\
+Held-out attacks called normal          & 0.09\% & 2.5\%\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The CNN-LSTM is clearly better, most of all on recordings never seen. It
+almost never misses an attack; its held-out errors concern the attack's name,
+as unfamiliar tools are mapped to the nearest familiar class. The reason
+sequences help here is measurable: with timestamps removed, 71.8\% of single
+Scan test records also appear in training under another label, against 0.0\%
+of twenty-row Scan windows.
+
+\subsection{Error Analysis with SHAP}
+Expected-gradient SHAP values (validated against
+\texttt{shap.GradientExplainer}, $r = 0.990$) were averaged per error group
+and compared, by cosine similarity, with correctly classified groups
+(Table~\ref{tab:shap}).
+
+\begin{table*}[t]
+\caption{Causes of the Main MU-IoT Errors}
+\label{tab:shap}
+\centering
+\footnotesize
+\begin{tabularx}{\textwidth}{@{}YccY@{}}
+\toprule
+\textbf{Error} & \textbf{Similarity to predicted class} &
+\textbf{Similarity to true class} & \textbf{Cause}\\
+\midrule
+normal $\rightarrow$ Spyware & 0.87 & 0.29 & Systematic resemblance\\
+hping3 flood $\rightarrow$ Scan & 0.59 & $-0.64$ & Real resemblance to scans\\
+vulnerability scan $\rightarrow$ Password\_Hacking & 0.20 & $-0.05$ &
+Extrapolation beyond training range\\
+\bottomrule
+\end{tabularx}
+\end{table*}
+
+The first error cannot be fixed by a threshold, which is why Spyware is locked
+to human review; the second reflects a gap in training coverage; the third is
+driven by one feature whose values lie far outside the training range.
+
+\subsection{Prevention Policy}
+
+\begin{table*}[t]
+\caption{Policy Outcomes on All Test Windows}
+\label{tab:policy}
+\centering
+\footnotesize
+\begin{tabularx}{\textwidth}{@{}Yccc@{}}
+\toprule
+\textbf{Dataset} & \textbf{Benign windows auto-actioned} &
+\textbf{Attacks handled automatically} & \textbf{Attacks missed}\\
+\midrule
+CICIDS2017                    & 0.33\% & 96.6\% & 2.4\%\\
+MU-IoT, within recordings     & 1.6\%  & 94.1\% & 1.5\%\\
+MU-IoT, held-out recordings   & ---    & 94.4\% & 0.08\%\\
+\bottomrule
+\end{tabularx}
+\end{table*}
+
+\subsection{Real Traffic and the Live Run}
+Three captures were recorded on a phone hotspot with a laptop as the protected
+host and a tablet as the second device. In a port scan (\texttt{nmap -sT},
+1{,}051 probes in 7\,s), 98\% of the windows pointing at the tablet were
+classified PortScan. In laptop browsing, 11.1\% of windows were not benign and
+7.6\% recommended an automatic action, none of them with a target that could
+be blocked; a second, ten-minute browsing capture reached 29.9\% non-benign
+windows. While the tablet repeatedly loaded a page on the laptop, its windows
+were read as Bot and held for review, never executed.
+
+The live run took place on a home Wi-Fi network used daily by 20--30 people,
+with the owner's permission and the tablet as the only listed device:
+
+\begin{itemize}
+\item A real port scan was classified PortScan (confidence 0.99) about two
+seconds after its first probes; the tablet was blocked with one rule, and
+twelve further detections were answered ``already blocked''.
+\item The laptop's services became unreachable from the tablet; revoking the
+rule restored access. Three full scan, block and revoke cycles were run.
+\item Another user's device was classified as a slow-HTTP DoS (confidence
+0.996) from its SSDP discovery broadcasts; the engine refused all ten attempts
+because the device was not listed. Since a broadcasting device never addresses
+the host, targets are now required to have sent traffic to it.
+\end{itemize}
+
+Single-window inference takes 1.48\,ms on a Ryzen~3 laptop CPU, and batched
+inference about 70{,}700 windows per second.
+
+%% ---------------------------------------------------------------------
+\section{Discussion and Limitations}
+
+\begin{itemize}
+\item \textbf{Sequences are not a universal improvement.} They help where
+single flows are ambiguous (MU-IoT) and lose to a single-flow forest where
+flows are distinctive (CICIDS2017).
+\item \textbf{Dataset shift.} The 2017-trained model raises
+recommendation-only false alarms on present-day IPv6 and QUIC traffic
+(11--30\% of browsing windows), reads repeated polling as Bot, and recognises
+a scan only when the victim answers it (Windows' stealth mode had to be
+disabled for the demonstration). The safety layers kept all of these from
+being executed.
+\item \textbf{Scope of the live validation.} One live attack type (a TCP
+connect scan) was run, on one network, from one device. Floods, brute-force
+and web attacks require a victim, vulnerable services or several attacking
+machines on an isolated laboratory network, which were not available; these
+classes were evaluated on recorded data only. Blocking follows detection by
+about two seconds, so a fast scan has already probed most ports by then.
+\item \textbf{Evaluation caveats.} Feature selection used a sample that
+includes some later test rows; thresholds come from test-set F1 without a
+separate calibration set; each model was trained once, so scores carry no
+error margin; the extractor was validated on one ten-minute slice of one day.
+\item \textbf{Prevention is deliberately limited} (IPS-lite): it blocks only
+listed devices or documentation addresses, behind a kill switch.
+\end{itemize}
+
+%% ---------------------------------------------------------------------
+\section{Conclusion and Future Work}
+
+A hybrid CNN-LSTM intrusion detection and prevention system was evaluated
+with leakage-controlled splits and a baseline on identical examples, and
+taken from benchmark data to live traffic. Its strengths are specific: it is
+clearly better than a random forest on ambiguous IoT traffic and on unseen
+attack recordings, but not on CICIDS2017. Deriving each class's
+automatic-action threshold from its measured F1, and locking unreliable
+classes to review, kept automatic action on benign traffic at 0.33\% on the
+CICIDS2017 test set, and the live run showed real attacks blocked within
+seconds while false alarms on other devices were refused. Future work
+includes fine-tuning on present-day benign traffic (IPv6, QUIC), evaluating
+further attack types live on an isolated laboratory network, a separate
+calibration set for the thresholds, and repeated training runs to report
+score variance.
+
+%% ---------------------------------------------------------------------
+\section*{Acknowledgment}
+
+The authors thank Dr.~Madhu B R for guidance and the Canadian Institute for
+Cybersecurity (University of New Brunswick) for the CICIDS2017 dataset.
+%% TODO: add the MU-IoT dataset acknowledgment here.
+
+%% ---------------------------------------------------------------------
+\balance
+\begin{thebibliography}{10}
+
+\bibitem{ref1} I.~Sharafaldin, A.~H.~Lashkari, and A.~A.~Ghorbani, ``Toward
+generating a new intrusion detection dataset and intrusion traffic
+characterization,'' in \emph{Proc. 4th Int. Conf. Information Systems Security
+and Privacy (ICISSP)}, 2018, pp. 108--116.
+
+\bibitem{ref2} A.~H.~Lashkari, G.~Draper-Gil, M.~S.~I.~Mamun, and
+A.~A.~Ghorbani, ``Characterization of Tor traffic using time based
+features,'' in \emph{Proc. 3rd Int. Conf. Information Systems Security and
+Privacy (ICISSP)}, 2017, pp. 253--262.
+
+\bibitem{ref3} R.~Vinayakumar, M.~Alazab, K.~P.~Soman, P.~Poornachandran,
+A.~Al-Nemrat, and S.~Venkatraman, ``Deep learning approach for intelligent
+intrusion detection system,'' \emph{IEEE Access}, vol.~7, pp. 41525--41550,
+2019.
+
+\bibitem{ref4} G.~Engelen, V.~Rimmer, and W.~Joosen, ``Troubleshooting an
+intrusion detection dataset: The CICIDS2017 case study,'' in \emph{Proc. IEEE
+Security and Privacy Workshops (SPW)}, 2021, pp. 7--12.
+
+\bibitem{ref5} S.~M.~Lundberg and S.-I.~Lee, ``A unified approach to
+interpreting model predictions,'' in \emph{Advances in Neural Information
+Processing Systems 30 (NeurIPS)}, 2017.
+
+\bibitem{ref6} R.~Sommer and V.~Paxson, ``Outside the closed world: On using
+machine learning for network intrusion detection,'' in \emph{Proc. IEEE
+Symposium on Security and Privacy}, 2010, pp. 305--316.
+
+\bibitem{ref7} D.~Arp \emph{et al.}, ``Dos and don'ts of machine learning in
+computer security,'' in \emph{Proc. 31st USENIX Security Symposium}, 2022.
+
+%% TODO: replace the entry below with the real MU-IoT dataset reference.
+\bibitem{ref8} MU-IoT dataset, Manipur University, IoT intrusion traffic
+recordings. [Reference to be completed by the data team.]
+
+\bibitem{ref9} S.~Hochreiter and J.~Schmidhuber, ``Long short-term memory,''
+\emph{Neural Computation}, vol.~9, no.~8, pp. 1735--1780, 1997.
+
+\bibitem{ref10} L.~Breiman, ``Random forests,'' \emph{Machine Learning},
+vol.~45, no.~1, pp. 5--32, 2001.
+
+\end{thebibliography}
+
+\end{document}
