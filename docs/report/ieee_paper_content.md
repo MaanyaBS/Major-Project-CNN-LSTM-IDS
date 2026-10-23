@@ -10,11 +10,10 @@ must be filled in by the team.
 
 ## Title
 
-**Real-Time Explainable Hybrid CNN-LSTM Intrusion Detection System with IoT-Based Data Collection and Cloud Deployment**
+**Intrusion Detection System using Hybrid CNN-LSTM with Explainable AI (SHAP) for Indian Network Databases**
 
-(The registered title cannot change (confirmed 2026-10-23). Section I must
-state the built scope: IoT traffic from the external MU-IoT dataset; the
-system runs on the protected host, not in the cloud.)
+(The team's Review 2 title, confirmed 2026-10-23. "Indian network databases":
+MU-IoT, recorded at Manipur University, India.)
 
 ## Authors
 

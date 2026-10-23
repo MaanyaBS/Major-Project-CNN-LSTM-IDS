@@ -1,5 +1,5 @@
 task_id,description,report_section,evidence,status,dependencies,priority,notes
-A01,Confirm final project title,Title sheet; Certificate; Declaration; Abstract; Ch 1; slide 1,README.md; Review 2 and Review 4 decks; ieee_paper_content.md,Done,Q1,P1,Registered title kept: Real-Time Explainable Hybrid CNN-LSTM Intrusion Detection System with IoT-Based Data Collection and Cloud Deployment
+A01,Confirm final project title,Title sheet; Certificate; Declaration; Abstract; Ch 1; slide 1,README.md; Review 2 and Review 4 decks; ieee_paper_content.md,Done,Q1,P1,Registered title kept: Intrusion Detection System using Hybrid CNN-LSTM with Explainable AI (SHAP) for Indian Network Databases
 A02,Confirm student names and USNs,Title sheet; Certificate; Declaration; Acknowledgement; slide 1,Review 2 deck (outside repo),Verify,Q2,P1,Three students; template allows four
 A03,Confirm guide name and designation,Title sheet; Certificate; Acknowledgement; slide 1,Review 2 deck,Done,Q3,P1,"Guide = HOD: Dr. Madhu B R, Professor & Head"
 A04,Confirm HOD details,Certificate; Acknowledgement,Certificate template,Done,Q3,P1,"Dr. Madhu B R, Professor & Head (also guide)"
