@@ -1,0 +1,45 @@
+task_id,description,report_section,evidence,status,dependencies,priority,notes
+A01,Confirm final project title,"Title sheet; Certificate; Declaration; Abstract; Ch 1; slide 1","README.md; Review 2 and Review 4 decks; ieee_paper_content.md",Verify,Q1,P1,"Four variants exist; two claim unbuilt features"
+A02,Confirm student names and USNs,"Title sheet; Certificate; Declaration; Acknowledgement; slide 1",Review 2 deck (outside repo),Verify,Q2,P1,"Three students; template allows four"
+A03,Confirm guide name and designation,"Title sheet; Certificate; Acknowledgement; slide 1",Review 2 deck,Verify,Q3,P1,"Dr. Madhu B R listed as guide and as HOD in template"
+A04,Confirm HOD details,"Certificate; Acknowledgement",Certificate template,Verify,Q3,P1,
+A05,Confirm Principal name,Acknowledgement,Acknowledgement template,Verify,Q4,P2,"Template: Dr. Gopalkrishnan"
+A06,Confirm Project Coordinator,Acknowledgement,Acknowledgement template,Verify,Q4,P2,"Template: Dr. Soumya K N"
+A07,"Academic year, batch and batch number","Certificate; Declaration; Title sheet; slides",Templates and decks conflict,Missing,Q5,P1,"2020-24 / 2024-26 / 2026-2027 / 2023-27 seen"
+A08,Degree name (B.E. or B.Tech),"Title sheet; Certificate; Declaration",Templates conflict,Verify,Q6,P1,
+A09,Other genuine acknowledgements,Acknowledgement,none,Missing,Q7,P3,
+A10,"Signatures, dates, examiner details","Certificate; Declaration; Acknowledgement",none,Missing,"A01-A08",P1,Placeholders until submission
+C01,Abstract (one page; TNR 12; justified; 1.5),Abstract,docs/report/ieee_paper_content.md (person-b-model),Ready,A01,P1,
+C02,"Background, problem statement, motivation, scope",Ch 1,"ieee_paper_content.md; docs/PROJECT_STATUS_CURRENT.md; README.md",Ready,"A01; Q8",P1,State IPS-lite scope honestly
+C03,Objectives,Ch 3.1,Review 4 deck slide 3,Ready,,P1,
+C04,Literature survey and summary table,Ch 2,ieee_paper_content.md section II,Partial,"Q10; Q11",P1,Nine works cited; Phase-1 list not in repo
+C05,"Methodology (data, evaluation, model, SHAP, prevention, live capture, dashboard)",Ch 3.2,"docs/report/person_a_report.md; person_b_report.md; person_c_report.md; model/*_INTERFACE.md",Ready,,P1,
+C06,System architecture diagram,Ch 4.1,"backend/; model/; frontend/",Missing,,P1,Create Fig. 4.1
+C07,Use case diagram,Ch 4.2,"frontend/src/routes/dashboard.tsx; frontend/src/components/LiveFeed.tsx; backend/app.py",Missing,,P1,Create Fig. 4.2
+C08,Data flow diagrams level 0 and 1,Ch 4.3,"model/flow_features.py; backend/live_capture.py; backend/app.py",Missing,,P1,Create Fig. 4.3(a)(b)
+C09,"Sequence diagrams (live block, upload, explain, revoke)",Ch 4.4,"backend/live_capture.py; backend/app.py; backend/prevention_runtime.py",Missing,,P1,Create Fig. 4.4(a)-(d)
+C10,Algorithms used (pseudo-code),Ch 4.5,"model/flow_features.py; model/class_action_mapping.py; model/target_selection.py; model/prevention_executor.py; backend/shap_service.py; model/cnn_lstm_architecture.py",Ready,,P1,
+C11,Hardware requirement table,Ch 5.1,"model/results/inference_benchmark.txt; model/results/hotspot_live_results.md",Partial,"Q13; Q14",P1,Laptop Ryzen 3 5300U 7.3 GB measured; Colab T4 for MU-IoT
+C12,Software requirement table with versions,Ch 5.2,"backend/requirements.txt; frontend/package.json",Ready,,P1,
+C13,Results tables (CICIDS2017; MU-IoT; SHAP; policy; extractor; live run; speed),Ch 6 [verify],model/results/*,Ready,Q9,P1,Chapter placement depends on Q9
+C14,Testing and validation summary,Ch 6 [verify],"model/test_*.py; backend/test_live_capture.py; model/results/prevention_live_check.txt; model/results/extractor_validation.md",Partial,Q16,P2,Backend API/stream/smoke logs not committed
+C15,Screenshots and demo stills,"Ch 6 [verify]; Ch 4 support; slides 8 and 11",Outside repo,Missing,Q15,P1,Store under docs/report_assets/; no personal data
+C16,Conclusion and future enhancements,Conclusion,"ieee_paper_content.md section IX; person_b_report.md section 10",Ready,,P2,
+C17,Nomenclature table,Preliminary,REPORT_MASTER_CHECKLIST.md nomenclature list,Ready,,P2,Include only terms used in the final text
+C18,Limitations statement,"Ch 1; Ch 6; Conclusion","person_b_report.md section 10; hotspot_live_results.md",Ready,,P2,
+C19,Verify all references,"References; Ch 2",ieee_paper_content.md references,Partial,Q17,P1,Check each against the source
+C20,MU-IoT dataset citation,"References; Ch 3",none,Missing,Q12,P1,
+C21,Equations,Ch 4.5,"person_b_report.md; person_c_report.md",Ready,,P3,Only equations used in the text
+C22,README prevention wording outdated,Writers' reference,README.md,Verify,,P3,Doc-only fix after drafting
+F01,Table of Contents,Preliminary,final document,Missing,All chapters,P1,Generate from headings
+F02,List of Figures,Preliminary,REPORT_ARTEFACT_INVENTORY.md,Missing,"C06-C09; C15",P1,
+F03,List of Tables,Preliminary,REPORT_ARTEFACT_INVENTORY.md,Missing,C13,P1,
+F04,Apply template styles,Whole report,REPORT_TEMPLATE_SPECIFICATION.md section 4,Ready,,P1,TNR 18/16/14/12 B; body TNR 12 1.5 justified
+F05,"Page settings (paper, margins, binding, headers, numbering)",Whole report,none,Missing,Q18,P1,
+F06,Extra submission items,Submission,none,Missing,Q19,P2,
+F07,Length target,Whole report,none,Missing,Q20,P3,
+P01,Review 4 deck (12 slides),Presentation,PROJECTS/Report format AIML 8th sem/.../Phase 2 Review 4 - CNN-LSTM IDS Presentation.pptx,Done,,P1,
+P02,Batch number on slide 1,Presentation,none,Missing,Q5,P1,
+P03,Slide 1 title matches final title,Presentation,deck slide 1,Verify,Q1,P1,
+P04,Each presenter reviews own methodology slide,Presentation,deck slides 6-8,Missing,,P2,
+P05,Demo still or recording for slide 11,Presentation,team recording,Partial,Q15,P2,
