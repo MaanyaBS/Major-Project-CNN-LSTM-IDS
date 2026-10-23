@@ -8,10 +8,8 @@
 %%  Compile with pdfLaTeX (Overleaf default). No external files needed.
 %%  Figures are deliberately excluded from this version.
 %%
-%%  WHAT YOU MUST FILL IN MANUALLY  (search for  %% TODO )
-%%    1. Author e-mail addresses
-%%    2. MU-IoT reference [8]
-%%    3. Acknowledgment: add the MU-IoT credit
+%%  WHAT YOU MUST FILL IN MANUALLY
+%%    1. Author e-mail addresses  (search for "author e-mail addresses")
 %% =====================================================================
 
 \documentclass[conference]{IEEEtran}
@@ -497,13 +495,28 @@ score variance.
 %% ---------------------------------------------------------------------
 \section*{Acknowledgment}
 
-The authors thank Dr.~Madhu B R for guidance and the Canadian Institute for
-Cybersecurity (University of New Brunswick) for the CICIDS2017 dataset.
-%% TODO: add the MU-IoT dataset acknowledgment here.
+The authors thank Dr.~Madhu B R for guidance, the Canadian Institute for
+Cybersecurity (University of New Brunswick) for the CICIDS2017 dataset, and
+the IoT Smart Lab, Department of Computer Science, Manipur University, for
+the MU-IoT dataset.
 
 %% ---------------------------------------------------------------------
+%% References are ordered by first citation, as required by IEEE style.
 \balance
 \begin{thebibliography}{10}
+
+\bibitem{ref6} R.~Sommer and V.~Paxson, ``Outside the closed world: On using
+machine learning for network intrusion detection,'' in \emph{Proc. IEEE
+Symposium on Security and Privacy}, 2010, pp. 305--316.
+
+\bibitem{ref7} D.~Arp \emph{et al.}, ``Dos and don'ts of machine learning in
+computer security,'' in \emph{Proc. 31st USENIX Security Symposium}, 2022,
+pp. 2287--2304.
+
+\bibitem{ref3} R.~Vinayakumar, M.~Alazab, K.~P.~Soman, P.~Poornachandran,
+A.~Al-Nemrat, and S.~Venkatraman, ``Deep learning approach for intelligent
+intrusion detection system,'' \emph{IEEE Access}, vol.~7, pp. 41525--41550,
+2019, doi:~10.1109/ACCESS.2019.2895334.
 
 \bibitem{ref1} I.~Sharafaldin, A.~H.~Lashkari, and A.~A.~Ghorbani, ``Toward
 generating a new intrusion detection dataset and intrusion traffic
@@ -515,35 +528,24 @@ A.~A.~Ghorbani, ``Characterization of Tor traffic using time based
 features,'' in \emph{Proc. 3rd Int. Conf. Information Systems Security and
 Privacy (ICISSP)}, 2017, pp. 253--262.
 
-\bibitem{ref3} R.~Vinayakumar, M.~Alazab, K.~P.~Soman, P.~Poornachandran,
-A.~Al-Nemrat, and S.~Venkatraman, ``Deep learning approach for intelligent
-intrusion detection system,'' \emph{IEEE Access}, vol.~7, pp. 41525--41550,
-2019.
-
 \bibitem{ref4} G.~Engelen, V.~Rimmer, and W.~Joosen, ``Troubleshooting an
 intrusion detection dataset: The CICIDS2017 case study,'' in \emph{Proc. IEEE
 Security and Privacy Workshops (SPW)}, 2021, pp. 7--12.
 
 \bibitem{ref5} S.~M.~Lundberg and S.-I.~Lee, ``A unified approach to
 interpreting model predictions,'' in \emph{Advances in Neural Information
-Processing Systems 30 (NeurIPS)}, 2017.
+Processing Systems 30 (NeurIPS)}, 2017, pp. 4765--4774.
 
-\bibitem{ref6} R.~Sommer and V.~Paxson, ``Outside the closed world: On using
-machine learning for network intrusion detection,'' in \emph{Proc. IEEE
-Symposium on Security and Privacy}, 2010, pp. 305--316.
-
-\bibitem{ref7} D.~Arp \emph{et al.}, ``Dos and don'ts of machine learning in
-computer security,'' in \emph{Proc. 31st USENIX Security Symposium}, 2022.
-
-%% TODO: replace the entry below with the real MU-IoT dataset reference.
-\bibitem{ref8} MU-IoT dataset, Manipur University, IoT intrusion traffic
-recordings. [Reference to be completed by the data team.]
-
-\bibitem{ref9} S.~Hochreiter and J.~Schmidhuber, ``Long short-term memory,''
-\emph{Neural Computation}, vol.~9, no.~8, pp. 1735--1780, 1997.
+\bibitem{ref8} U.~B.~Clinton and N.~Hoque, ``MU-IoT: A new IoT intrusion
+dataset for network and application layer attacks analysis,'' \emph{IEEE
+Access}, vol.~12, pp. 166068--166092, 2024,
+doi:~10.1109/ACCESS.2024.3494052.
 
 \bibitem{ref10} L.~Breiman, ``Random forests,'' \emph{Machine Learning},
 vol.~45, no.~1, pp. 5--32, 2001.
+
+\bibitem{ref9} S.~Hochreiter and J.~Schmidhuber, ``Long short-term memory,''
+\emph{Neural Computation}, vol.~9, no.~8, pp. 1735--1780, 1997.
 
 \end{thebibliography}
 
