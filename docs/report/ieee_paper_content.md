@@ -10,11 +10,11 @@ must be filled in by the team.
 
 ## Title
 
-**A Hybrid CNN-LSTM Intrusion Detection and Prevention System with Live
-Packet Capture, Explainable Error Analysis and Safety-Bounded Blocking**
+**Real-Time Explainable Hybrid CNN-LSTM Intrusion Detection System with IoT-Based Data Collection and Cloud Deployment**
 
-(Shorter alternative: *Live Hybrid CNN-LSTM Intrusion Detection and
-Prevention: From Benchmark Evaluation to Real-Network Blocking*)
+(The registered title cannot change (confirmed 2026-10-23). Section I must
+state the built scope: IoT traffic from the external MU-IoT dataset; the
+system runs on the protected host, not in the cloud.)
 
 ## Authors
 

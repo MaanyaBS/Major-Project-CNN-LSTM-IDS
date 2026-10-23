@@ -117,8 +117,9 @@ microseconds, and V3's rule that a FIN which *starts* a flow does not end it.
 
 ## 6. Open Team Decisions
 
-1. **Project title**: it promises "IoT-based Data Collection and Cloud
-   Deployment"; neither is built. Change the title or explain the scope.
+1. **Project title** (decided 2026-10-23): the registered title stays; the
+   report and slides state the built scope (IoT traffic from the MU-IoT
+   dataset; host-based, not cloud-hosted).
 2. **Whether the dashboard shows the MU-IoT model** or only CICIDS2017.
 3. **IPv6 in the live demo**: on (default; honest coverage, 7.6% of browsing
    windows recommend actions that have no target) or off

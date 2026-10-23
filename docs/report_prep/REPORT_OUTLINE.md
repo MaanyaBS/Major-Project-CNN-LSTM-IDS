@@ -39,9 +39,12 @@ the lists. [VERIFY] final numbering after layout.)
   failures; models are rarely run on live traffic.
 - *[REC] 1.1.3 Motivation* — the guide's review: input must be live and from
   real (Wireshark) captures; detection must lead to prevention.
-- *[REC] 1.1.4 Scope and limitations of the project* — IPS-lite (listed
-  devices / TEST-NET only, kill switch); one live attack type demonstrated;
-  no cloud deployment; MU-IoT model not in the dashboard. [VERIFY title scope, Q1]
+- *[REC] 1.1.4 Scope and limitations of the project* — the registered title
+  is kept (Q1); state what was built: IoT traffic comes from the external
+  MU-IoT dataset (no sensor collection hardware); the system runs on the
+  protected host (no cloud hosting); IPS-lite (listed devices / TEST-NET
+  only, kill switch); one live attack type demonstrated; MU-IoT model not in
+  the dashboard.
 - *[REC] 1.1.5 Organisation of the report*
 
 ## Chapter 2 — Literature Survey [OFFICIAL]
@@ -99,12 +102,10 @@ the lists. [VERIFY] final numbering after layout.)
 - **5.1 Hardware Requirement [OFFICIAL]** (C11)
 - **5.2 Software Requirement [OFFICIAL]** (C12)
 
-## [VERIFY] Chapter 6 — Implementation, Testing and Results
+## Chapter 6 — Implementation, Testing and Results (approved, Q9)
 
-Not named in the supplied content structure, but the template's sample List
-of Figures references Chapter 6, and the project's main evidence (results,
-tests, live run) needs a home. **Ask the guide (Q9)** whether to add this
-chapter or place the material elsewhere. If approved:
+Not named in the supplied content structure; the guide confirmed on
+2026-10-23 that it is allowed.
 - *6.1 Implementation details and screenshots* (C15)
 - *6.2 Testing and validation* (C14)
 - *6.3 Results: CICIDS2017, MU-IoT, SHAP error analysis, prevention policy*

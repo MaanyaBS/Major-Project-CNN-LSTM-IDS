@@ -8,6 +8,11 @@ inconsistency or an unstated parameter that must be confirmed with the guide
 or department before the final report is produced. Nothing here is the
 project's technical content.
 
+> **Answers received 2026-10-23:** title unchanged (registered title); guide
+> = HOD (Dr. Madhu B R); B.E.; academic year/batch 2023-27; Principal Dr. K.
+> Gopalakrishna; Chapter 6 allowed. Assumed defaults for citation style and
+> page settings are listed in `MISSING_INFORMATION_QUESTIONNAIRE.md`.
+
 ## 1. Institutional context [OFFICIAL]
 
 | Item | Value in the specification |

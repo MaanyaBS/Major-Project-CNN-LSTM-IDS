@@ -1,5 +1,27 @@
 # Missing Information Questionnaire
 
+## Answers received (2026-10-23, before the final review)
+
+| Q | Answer | Source |
+|---|---|---|
+| Q1 | **Title cannot change:** "Real-Time Explainable Hybrid CNN-LSTM Intrusion Detection System with IoT-Based Data Collection and Cloud Deployment" | Team (guide) |
+| Q3 | **The guide is the HOD:** Dr. Madhu B R, Professor & Head, Department of AIML | Team |
+| Q4 | Principal: **Dr. K. Gopalakrishna** (template said "Dr. Gopalkrishnan"). Project Coordinator: **not answered** — keep the template's "Dr. Soumya K N" only after confirmation | Team (partial) |
+| Q5 | Academic year / batch: **2023-27**. Batch number: **still missing** | Team (partial) |
+| Q6 | Degree: **Bachelor of Engineering (B.E.)** in Artificial Intelligence and Machine Learning | Team |
+| Q9 | **Chapter 6 (implementation, testing and results) is allowed** | Team |
+| Q8 | Follows from Q1: keep the title and state the built scope explicitly in Chapter 1 (no IoT sensor collection or cloud hosting was built; MU-IoT is an external IoT dataset; the system runs on the protected host) | Decision |
+| Q10 | **Assumed:** 10-15 surveyed papers with a summary table (Table 2.1) | Default, not confirmed |
+| Q17 | **Assumed:** IEEE numbered style (matches the template's examples) | Default, not confirmed |
+| Q18 | **Assumed:** A4; margins left 1.5 in (binding), right/top/bottom 1 in; Roman numbers for preliminary pages, Arabic for chapters, bottom centre | Default, not confirmed |
+| Q19 | **Assumed:** no extra items; ask at the final review | Default, not confirmed |
+
+Still open: Q2 (spelling confirmation), Q4 coordinator, Q5 batch number, Q7,
+Q11, Q12, Q13, Q14, Q15, Q16, Q20. Defaults above must be replaced if the
+review states otherwise.
+
+---
+
 Only questions the repository and the template specification cannot answer.
 "Found" notes what the repository or the team's decks already say, so the
 answer can be a quick confirmation. Section names refer to `REPORT_OUTLINE.md`.
