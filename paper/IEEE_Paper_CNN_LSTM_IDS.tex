@@ -31,8 +31,8 @@
 
 % nicer cell padding, no overfull boxes in narrow tables
 \newcolumntype{Y}{>{\raggedright\arraybackslash}X}
-\setlength{\tabcolsep}{4pt}
-\renewcommand{\arraystretch}{1.08}
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
 
 \begin{document}
 
@@ -188,24 +188,31 @@ The same architecture serves both datasets (Table~\ref{tab:arch}). Two
 one-dimensional convolution blocks learn local patterns across neighbouring
 flows; an LSTM~\cite{ref9} summarises their development across the window.
 
-\begin{table*}[t]
-\caption{CNN-LSTM Architecture}
-\label{tab:arch}
-\centering
+\begin{table*}[htbp]
+\caption{Hybrid CNN-LSTM Architecture}
+\begin{center}
 \footnotesize
-\begin{tabularx}{\textwidth}{@{}Ycc@{}}
-\toprule
+\begin{tabularx}{\textwidth}{|Y|c|c|}
+\hline
 \textbf{Layer} & \textbf{CICIDS2017} & \textbf{MU-IoT}\\
-\midrule
+\hline
 Input                               & 10 flows $\times$ 20 features & 20 flows $\times$ 38 features\\
+\hline
 Conv1D 64, kernel 3, ReLU; BatchNorm; MaxPool 2  & \checkmark & \checkmark\\
+\hline
 Conv1D 128, kernel 3, ReLU; BatchNorm; MaxPool 2 & \checkmark & \checkmark\\
+\hline
 LSTM, 64 units                      & \checkmark & \checkmark\\
+\hline
 Dense 64, ReLU                      & \checkmark & \checkmark\\
+\hline
 Dense, softmax                      & 15 classes & 7 classes\\
+\hline
 Parameters                          & 83{,}919   & 86{,}855\\
-\bottomrule
+\hline
 \end{tabularx}
+\label{tab:arch}
+\end{center}
 \end{table*}
 
 Both models use Adam, sparse categorical cross-entropy, batch size 512 and
@@ -267,22 +274,27 @@ compared with CICFlowMeter-V3's official row for it
 corrected: times must be whole microseconds, and a FIN that \emph{starts} a
 flow (a TCP appendix~\cite{ref4}) does not end it.
 
-\begin{table}[t]
+\begin{table}[htbp]
 \caption{Extractor Against CICFlowMeter-V3 (Original CICIDS2017 PCAP, 10 min)}
-\label{tab:extractor}
-\centering
+\begin{center}
 \footnotesize
-\begin{tabularx}{\columnwidth}{@{}Yr@{}}
-\toprule
+\begin{tabularx}{\columnwidth}{|Y|r|}
+\hline
 \textbf{Measure} & \textbf{Value}\\
-\midrule
+\hline
 Flows matched one-to-one with official rows        & 5{,}957 of 7{,}332 (81\%)\\
+\hline
 All 20 features agree (at the CSV's printed precision) & 99.8\%\\
+\hline
 All 20 features agree (strictly, within $10^{-4}$) & 86.3\%\\
+\hline
 PortScan flows agreeing on all 20 features         & 49 of 49\\
+\hline
 Agreement if flows also end on RST                 & 98.9\%\\
-\bottomrule
+\hline
 \end{tabularx}
+\label{tab:extractor}
+\end{center}
 \end{table}
 
 \subsection{Live Engine}
@@ -303,19 +315,21 @@ control.
 
 \subsection{Detection on CICIDS2017}
 
-\begin{table}[t]
+\begin{table}[htbp]
 \caption{CICIDS2017, 530{,}951 Identical Test Examples}
-\label{tab:cicids}
-\centering
+\begin{center}
 \footnotesize
-\begin{tabularx}{\columnwidth}{@{}Yccc@{}}
-\toprule
+\begin{tabularx}{\columnwidth}{|Y|c|c|c|}
+\hline
 \textbf{Model} & \textbf{Accuracy} & \textbf{Weighted F1} & \textbf{Macro F1}\\
-\midrule
+\hline
 CNN-LSTM (10-flow windows)   & 0.984 & 0.986 & 0.586\\
+\hline
 Random forest (single flows) & 0.991 & 0.991 & 0.780\\
-\bottomrule
+\hline
 \end{tabularx}
+\label{tab:cicids}
+\end{center}
 \end{table}
 
 Per class, the CNN-LSTM leads clearly only on DoS Hulk (F1 0.990 vs.\ 0.953).
@@ -327,21 +341,25 @@ CNN-LSTM).
 
 \subsection{Detection on MU-IoT}
 
-\begin{table}[t]
+\begin{table}[htbp]
 \caption{MU-IoT, Unseen Windows Only}
-\label{tab:muiot}
-\centering
+\begin{center}
 \footnotesize
-\begin{tabularx}{\columnwidth}{@{}Ycc@{}}
-\toprule
+\begin{tabularx}{\columnwidth}{|Y|c|c|}
+\hline
 \textbf{Measure} & \textbf{CNN-LSTM} & \textbf{Random forest}\\
-\midrule
+\hline
 Within: accuracy / macro F1             & 0.964 / 0.936 & 0.904 / 0.816\\
+\hline
 Held-out: accuracy / macro F1           & 0.680 / 0.676 & 0.407 / 0.404\\
+\hline
 Normal traffic flagged as attack (within) & 9.3\% & 17.2\%\\
+\hline
 Held-out attacks called normal          & 0.09\% & 2.5\%\\
-\bottomrule
+\hline
 \end{tabularx}
+\label{tab:muiot}
+\end{center}
 \end{table}
 
 The CNN-LSTM is clearly better, most of all on recordings never seen. It
@@ -357,22 +375,25 @@ Expected-gradient SHAP values (validated against
 and compared, by cosine similarity, with correctly classified groups
 (Table~\ref{tab:shap}).
 
-\begin{table*}[t]
+\begin{table*}[htbp]
 \caption{Causes of the Main MU-IoT Errors}
-\label{tab:shap}
-\centering
+\begin{center}
 \footnotesize
-\begin{tabularx}{\textwidth}{@{}YccY@{}}
-\toprule
+\begin{tabularx}{\textwidth}{|Y|c|c|Y|}
+\hline
 \textbf{Error} & \textbf{Similarity to predicted class} &
 \textbf{Similarity to true class} & \textbf{Cause}\\
-\midrule
+\hline
 normal $\rightarrow$ Spyware & 0.87 & 0.29 & Systematic resemblance\\
+\hline
 hping3 flood $\rightarrow$ Scan & 0.59 & $-0.64$ & Real resemblance to scans\\
+\hline
 vulnerability scan $\rightarrow$ Password\_Hacking & 0.20 & $-0.05$ &
 Extrapolation beyond training range\\
-\bottomrule
+\hline
 \end{tabularx}
+\label{tab:shap}
+\end{center}
 \end{table*}
 
 The first error cannot be fixed by a threshold, which is why Spyware is locked
@@ -381,21 +402,24 @@ driven by one feature whose values lie far outside the training range.
 
 \subsection{Prevention Policy}
 
-\begin{table*}[t]
+\begin{table*}[htbp]
 \caption{Policy Outcomes on All Test Windows}
-\label{tab:policy}
-\centering
+\begin{center}
 \footnotesize
-\begin{tabularx}{\textwidth}{@{}Yccc@{}}
-\toprule
+\begin{tabularx}{\textwidth}{|Y|c|c|c|}
+\hline
 \textbf{Dataset} & \textbf{Benign windows auto-actioned} &
 \textbf{Attacks handled automatically} & \textbf{Attacks missed}\\
-\midrule
+\hline
 CICIDS2017                    & 0.33\% & 96.6\% & 2.4\%\\
+\hline
 MU-IoT, within recordings     & 1.6\%  & 94.1\% & 1.5\%\\
+\hline
 MU-IoT, held-out recordings   & ---    & 94.4\% & 0.08\%\\
-\bottomrule
+\hline
 \end{tabularx}
+\label{tab:policy}
+\end{center}
 \end{table*}
 
 \subsection{Real Traffic and the Live Run}
