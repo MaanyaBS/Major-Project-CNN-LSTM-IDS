@@ -40,6 +40,26 @@ Fig. 4.2 shows the use cases of the system. The primary actor is the security an
 
 The analyst's ten use cases (UC1 to UC10) cover controlling the input, viewing results and managing blocks. Four system use cases (UC11 to UC14) are included by them: starting a capture or uploading a Wireshark file includes extracting flows from packets; extracting flows, or uploading a flow CSV, includes classifying windows; classification includes applying the prevention policy; and the policy includes adding a firewall rule when an automatic action is approved. Revoking a block (UC9) removes a rule.
 
+Table 4.2 describes each use case.
+
+::table 4.2 | Description of the use cases
+| Use case | Actor | Description |
+|:---|:---|:---|
+| UC1 Start or stop live capture | Analyst | Selects a network interface and starts or stops live analysis |
+| UC2 Upload a Wireshark capture | Analyst | Uploads a .pcap or .pcapng file (up to 200 MB) for batch analysis |
+| UC3 Upload a flow CSV | Analyst | Uploads flow records with the 20 model features |
+| UC4 View detection log and confidence stream | Analyst | Follows predictions window by window, newest first |
+| UC5 View batch verdict and statistics | Analyst | Sees attack rate, top threat, class distribution, actions recommended and executed |
+| UC6 Request SHAP explanation | Analyst | Asks why a window received its prediction |
+| UC7 Review alerts held for human review | Analyst | Decides on predictions the policy would not act on automatically |
+| UC8 View blocked devices | Analyst | Lists firewall rules in force with their action and expiry |
+| UC9 Revoke a firewall block | Analyst, Firewall | Removes a rule; works even with the kill switch off |
+| UC10 Export report | Analyst | Downloads the batch results |
+| UC11 Extract flows from packets | Traffic source | Groups packets into flows and computes the 20 features |
+| UC12 Classify windows | System | Runs the CNN-LSTM on windows of ten flows |
+| UC13 Apply prevention policy | System | Decides between no action, review, recommendation and automatic action |
+| UC14 Add or remove firewall rule | Firewall | Enforces or lifts a block for one device |
+
 ## 4.3 Data Flow Diagram
 
 The data flow diagrams show what data the system consumes and produces, without the timing of the interactions. At level 0 (Fig. 4.3(a)) the whole system is a single process. It receives live packets from the network interface and capture files or flow CSV files from the analyst, receives the analyst's requests (start or stop capture, upload, explain, revoke), returns verdicts, SHAP values and the list of blocked devices, and exchanges block and unblock rules and their status with the Windows Firewall.
@@ -49,6 +69,21 @@ The data flow diagrams show what data the system consumes and produces, without 
 Level 1 (Fig. 4.3(b)) decomposes the system into seven processes and four data stores.
 
 ::figure docs/report_assets/figures/fig_4_3b_dfd_level1.png | 4.3(b) | Data flow diagram, level 1 | 4.8
+
+::table 4.3 | Processes and data stores of the level-1 data flow diagram
+| Element | Input | Output |
+|:---|:---|:---|
+| 1.0 Extract flows | Packets from the interface or a capture file | Flow records with 20 features |
+| 2.0 Build and scale windows | Flow records; scaler from D1 | Windows of 10 x 20 standardised values |
+| 3.0 Classify | Windows; model from D1 | Class and confidence per window |
+| 4.0 Decide action and target | Class, confidence; thresholds from D2; window source addresses | Action and target address, or review or recommendation |
+| 5.0 Execute prevention | Action, target | Firewall rule; log entry in D4 |
+| 6.0 Explain | Window; model; background from D3 | SHAP values per feature |
+| 7.0 Present results | Results, explanations, active rules from D4 | Dashboard views; requests to 1.0, 5.0 and 6.0 |
+| D1 Model artifacts | | Keras model, scaler, label mapping |
+| D2 Policy table | | Action, severity, threshold and review lock per class |
+| D3 SHAP background | | 100 real training windows |
+| D4 Prevention log and registry | Every attempt, success, refusal, expiry and revoke | Rules in force |
 
 The analyst never writes to the policy table or the engine's settings; requests reach process 5.0 only as revocations, and every attempt to act, including refusals, is written to the prevention log (D4).
 
@@ -112,11 +147,11 @@ Each flow's 20 features are standardised with Equation (3.1), using the mean and
 
 ### 4.5.3 Hybrid CNN-LSTM Classifier
 
-The classifier (Fig. 4.5, Table 4.2) maps a window of 10 x 20 values to a probability for each of the 15 classes.
+The classifier (Fig. 4.5, Table 4.4) maps a window of 10 x 20 values to a probability for each of the 15 classes.
 
 ::figure docs/report_assets/figures/fig_4_5_cnn_lstm_architecture.png | 4.5 | Architecture of the hybrid CNN-LSTM model with the output shape of each layer | 5.6
 
-::table 4.2 | Layers of the CNN-LSTM models
+::table 4.4 | Layers of the CNN-LSTM models
 | Layer | CICIDS2017 model | MU-IoT model |
 |:---|:---|:---|
 | Input | 10 flows x 20 features | 20 flows x 38 features |
@@ -192,11 +227,11 @@ and compares the mean SHAP profiles a and b of two groups of windows with the co
 
 ### 4.5.6 Prevention Policy
 
-The policy table (Table 4.3) assigns every class an action, a severity and a confidence threshold. Thresholds were calibrated inversely to each class's F1 score on the test set, through a decreasing piecewise-linear curve: the CICIDS2017 classes define the calibration points (F1ⱼ, θⱼ), and the threshold of any other F1 value, such as those of the MU-IoT classes, is interpolated between the two nearest points:
+The policy table (Table 4.5) assigns every class an action, a severity and a confidence threshold. Thresholds were calibrated inversely to each class's F1 score on the test set, through a decreasing piecewise-linear curve: the CICIDS2017 classes define the calibration points (F1ⱼ, θⱼ), and the threshold of any other F1 value, such as those of the MU-IoT classes, is interpolated between the two nearest points:
 
 ::equation threshold | 4.19
 
-::table 4.3 | Prevention policy for the CICIDS2017 classes
+::table 4.5 | Prevention policy for the CICIDS2017 classes
 | Class | Action | Severity | F1 | Threshold | Automatic |
 |:---|:---|:---|---:|---:|:---|
 | BENIGN | No action | Low | 0.991 | 0.50 | - |
@@ -253,3 +288,62 @@ revoke(action, target):                          # kill switch not required
 ```
 
 Only one rule is kept per device, whatever class flags it and however many windows do, and a startup sweep restores the engine's view of the firewall after a crash. Rate limiting is implemented as a temporary full block, because Windows offers no simple per-address bandwidth limit, and input sanitisation against XSS remains a recommendation, because a network firewall cannot perform it.
+
+## 4.6 Detailed Design
+
+The diagrams of Sections 4.1 to 4.4 show what the system does; this section shows how the live path is built inside: the threads of the live engine, the main classes, where each part runs, and what the prevention engine records.
+
+### 4.6.1 Live Engine Design
+
+The live engine (Fig. 4.7) separates capture, flow tracking and prediction into three threads, joined by a bounded packet queue and the list of ended flows. The capture thread only reads frames and parses them into packets, so a burst of traffic is absorbed by the queue instead of being lost while the model is busy; if the queue is full (100,000 packets), new packets are dropped and counted, so that an overload is visible rather than silent. The flow thread adds packets to the flow table and, once a second, ends flows that have reached their timeout. The worker thread runs once a second: if at least one flow has ended since its last run, it classifies the window of the ten most recently ended flows, applies the policy, selects the target and calls the prevention engine. Results go to a bounded buffer from which the dashboard collects them through the poll endpoint.
+
+::figure docs/report_assets/figures/fig_4_7_live_engine_threads.png | 4.7 | Threads of the live engine | 5.8
+
+Two properties follow from this design. First, the time from an attack to a block is set by the flow-ending rules and the one-second prediction interval, not by the speed of the model, which needs only 1.48 ms per window. Second, the same engine runs on a recorded capture through a replay source, which delivers the file's packets at their original timing; this is how the engine was tested without a network, and how a live run can be repeated exactly.
+
+### 4.6.2 Class Design
+
+Fig. 4.8 shows the main classes and modules of the live path. A `Packet` holds only the fields that flow features need. A `Flow` collects the packet lengths and timestamps of both directions and computes the 20 features when it ends; a `FlowTable` maps each five-tuple to its open flow and applies the CICFlowMeter-V3 rules for ending flows. `NpcapSource` and `PcapReplaySource` offer the same three methods (read, clock and close), so the `LiveEngine` works with either. The model is wrapped by `ModelService`, which loads the Keras model, the scaler and the label mapping once and offers single and batch prediction; `ShapService` holds the explainer and its background. The policy, target selection and prevention engine are plain modules of functions, because they keep no state of their own apart from the engine's rule registry.
+
+::figure docs/report_assets/figures/fig_4_8_class_diagram.png | 4.8 | Class diagram of the live path | 6.0
+
+### 4.6.3 Deployment View
+
+All run-time components are deployed on the protected laptop (Fig. 4.9): the dashboard served by Vite on port 8080, the Flask backend and live engine on port 5000, the trained artifacts, the Npcap driver and the Windows Firewall. The backend must run as administrator, both to capture packets and to change firewall rules. The laptop shares a Wi-Fi network with the second device used to attack it and with other devices that are never acted on; the router or hotspot is the gateway and can never be a target. Training and evaluation ran separately on Google Colab, whose only output used at run time is the set of trained artifacts.
+
+::figure docs/report_assets/figures/fig_4_9_deployment.png | 4.9 | Deployment of the system | 5.8
+
+### 4.6.4 Logs and Data Stores
+
+The prevention engine appends one JSON record per line to its execution log for every attempt, whatever its outcome (Table 4.6). The log serves three purposes: it is the audit trail of everything the system did and refused to do, it lets the engine rebuild its registry of rules in force after a restart, and it supplies the dashboard's list of blocked devices. Because the log, not the firewall, is the engine's record, rules must be removed through the revoke function rather than by hand, or the two would disagree.
+
+::table 4.6 | Fields of a prevention log record
+| Field | Meaning |
+|:---|:---|
+| timestamp | Time of the event, UTC, ISO 8601 |
+| action, target_ip | Requested action (block_ip, drop_connection, rate_limit, isolate_host) and target address |
+| predicted_class, confidence | Prediction that triggered the attempt |
+| executed | True only if firewall rules were actually added |
+| rule_name | Name of the rule pair added, revoked or expired |
+| auto_expires_in_seconds | 60 or 120 for temporary actions; empty for persistent blocks |
+| already_active, active_rule | The device was already blocked by the named rule; nothing was added |
+| reason | Why an attempt was refused (kill switch off, out of scope, deny-list, not administrator) |
+| revoked, expired | The rule was lifted by an analyst or by its timer |
+
+### 4.6.5 Design Decisions
+
+Table 4.7 summarises the main design decisions, the alternatives that were considered, and the reason for each choice. Several of them were decided by measurement rather than by preference.
+
+::table 4.7 | Main design decisions and the alternatives considered
+| Decision | Alternative considered | Reason for the choice |
+|:---|:---|:---|
+| Chronological split within each day and class | Random split; whole days held out | A random split leaks near-identical flows into the test set; holding out whole days removed 8 of 15 classes from the test set |
+| Windows of 10 flows (20 for MU-IoT) | Single flows | Sequences resolve MU-IoT records that are identical across classes (71.8% of single Scan records against 0.0% of windows) |
+| Square-root class weights | Balanced weights capped at 50; boosting the weakest classes | Measured on the same test set: macro F1 0.586 against 0.428 and 0.481 |
+| Kernel SHAP with grouped features | Gradient explainer | Gradient attributions did not add up to the output (error about 0.13) and changed between runs |
+| Thresholds from measured F1, review locks | One threshold for all classes | All 17 automatic Bot actions on the test set hit benign traffic at confidences of 0.94 and above |
+| Own packet-to-flow extractor in Python | Running a separate flow-meter tool | The model needs CICFlowMeter-V3's exact behaviour, artefacts included, inside the live engine |
+| Ending live flows on RST | CICFlowMeter-V3 behaviour (FIN or 120 s only) | A scan is reported within seconds instead of after 120 s, with identical features for scan flows |
+| Host firewall through netsh, IPS-lite scope | Blocking at the router | No dedicated router hardware; blocking on the host protects it without touching other users' traffic |
+| One rule per device | One rule per action and window | A device flagged in 500 windows, or under several classes, gets one rule, not hundreds |
+| Target must have sent traffic to this host | Most frequent source in the window | A neighbour's discovery broadcasts were flagged during the live run; broadcasting devices never address the host |

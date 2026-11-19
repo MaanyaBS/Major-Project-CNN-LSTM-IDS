@@ -105,3 +105,32 @@ K30. U. B. Clinton and N. Hoque, "MU-IoT: A new IoT intrusion dataset for networ
 - **Per-paper findings.** Person A recorded relevance only. Chapter 2 will
   describe each paper's method and limitation as stated in its abstract, and
   will not quote numeric results that were not checked in the original paper.
+
+
+## 4. Added for the full report (checked against Crossref on 2026-11-19)
+
+K31. Y. Mirsky, T. Doitshman, Y. Elovici, and A. Shabtai, "Kitsune: An ensemble of autoencoders for online network intrusion detection," in *Proc. Netw. Distrib. Syst. Security Symp. (NDSS)*, 2018, doi: 10.14722/ndss.2018.23204.
+
+K32. J. Kim, J. Kim, H. L. T. Thu, and H. Kim, "Long short term memory recurrent neural network classifier for intrusion detection," in *Proc. Int. Conf. Platform Technol. Service (PlatCon)*, 2016, pp. 1-5, doi: 10.1109/PlatCon.2016.7456805.
+
+K33. W. Wang *et al.*, "HAST-IDS: Learning hierarchical spatial-temporal features using deep neural networks to improve intrusion detection," *IEEE Access*, vol. 6, pp. 1792-1806, 2018, doi: 10.1109/ACCESS.2017.2780250.
+
+K34. H. Liu and B. Lang, "Machine learning and deep learning methods for intrusion detection systems: A survey," *Appl. Sci.*, vol. 9, no. 20, Art. no. 4396, 2019, doi: 10.3390/app9204396.
+
+K35. S. M. Lundberg *et al.*, "From local explanations to global understanding with explainable AI for trees," *Nature Mach. Intell.*, vol. 2, no. 1, pp. 56-67, 2020, doi: 10.1038/s42256-019-0138-9.
+
+K36. G. Erion, J. D. Janizek, P. Sturmfels, S. M. Lundberg, and S.-I. Lee, "Improving performance of deep learning models with axiomatic attribution priors and expected gradients," *Nature Mach. Intell.*, vol. 3, no. 7, pp. 620-631, 2021, doi: 10.1038/s42256-021-00343-w.
+
+K37. Z. Ahmad, A. S. Khan, C. W. Shiang, J. Abdullah, and F. Ahmad, "Network intrusion detection system: A systematic study of machine learning and deep learning approaches," *Trans. Emerg. Telecommun. Technol.*, vol. 32, no. 1, Art. no. e4150, 2021, doi: 10.1002/ett.4150.
+
+K38. M. Sarhan, S. Layeghy, and M. Portmann, "Towards a standard feature set for network intrusion detection system datasets," *Mobile Netw. Appl.*, vol. 27, no. 1, pp. 357-370, 2022, doi: 10.1007/s11036-021-01843-0.
+
+K39. A. Javaid, Q. Niyaz, W. Sun, and M. Alam, "A deep learning approach for network intrusion detection system," in *Proc. 9th EAI Int. Conf. Bio-inspired Inf. Commun. Technol. (BICT)*, 2016, doi: 10.4108/eai.3-12-2015.2262516.
+
+K40. A. Rosay, E. Cheval, F. Carlier, and P. Leroux, "Network intrusion detection: A comprehensive analysis of CIC-IDS2017," in *Proc. 8th Int. Conf. Inf. Syst. Security Privacy (ICISSP)*, 2022, pp. 25-36, doi: 10.5220/0010774000003120.
+
+K41. M. Lanvin, P.-F. Gimenez, Y. Han, F. Majorczyk, L. Mé, and É. Totel, "Errors in the CICIDS2017 dataset and the significant differences in detection performances it makes," in *Risks and Security of Internet and Systems (CRiSIS 2022)*, Lecture Notes in Computer Science. Cham, Switzerland: Springer, 2023, pp. 18-33, doi: 10.1007/978-3-031-31108-6_2.
+
+K42. A. S. Jacobs, R. Beltiukov, W. Willinger, R. A. Ferreira, A. Gupta, and L. Z. Granville, "AI/ML for network security: The emperor has no clothes," in *Proc. ACM SIGSAC Conf. Comput. Commun. Security (CCS)*, 2022, pp. 1537-1551, doi: 10.1145/3548606.3560609.
+
+K43. G. Apruzzese, P. Laskov, and J. Schneider, "SoK: Pragmatic assessment of machine learning for network intrusion detection," in *Proc. IEEE 8th Eur. Symp. Security Privacy (EuroS&P)*, 2023, pp. 592-614, doi: 10.1109/EuroSP57164.2023.00042.

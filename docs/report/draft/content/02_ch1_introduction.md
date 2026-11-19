@@ -10,6 +10,15 @@ This report describes the design, implementation and evaluation of an intrusion 
 
 A network intrusion is any unauthorised activity on a network: an attempt to discover, access, disrupt or misuse systems that the attacker has no right to use. The attacks studied in this project fall into a few families, each with its own traffic pattern: reconnaissance (a port scan produces many short flows from one source, most answered by a reset), denial of service (floods of requests, or many connections held open with very slow requests), brute force (automated password guessing against FTP, SSH or a web login), web application attacks (cross-site scripting and SQL injection), exploits, botnets and infiltration. The CICIDS2017 dataset [@K9], the main benchmark used in this project, contains fourteen attack classes from these families (Table 1.1). The MU-IoT dataset [@K30], recorded on an IoT testbed at Manipur University, India, contains six attack classes against IoT devices and services (Table 1.2).
 
+Each family leaves its own trace in the flow statistics that a flow-based detector observes:
+
+- **Reconnaissance.** A port scan opens many short connections from one source to many ports of one destination. Each flow has one or two packets and almost no payload, and closed ports answer it with a reset.
+- **Volumetric denial of service.** A flood such as DoS Hulk or DDoS produces a very large number of similar flows to one service in a short time, with near-identical packet sizes and very short gaps between packets.
+- **Slow denial of service.** Slowloris and Slowhttptest keep many connections open for a long time while sending very little, which shows as long flows, long gaps between packets and small payloads.
+- **Brute force.** Password-guessing tools repeat the same login exchange, so the flows to the login port repeat one size pattern hundreds of times.
+- **Web application attacks.** Cross-site scripting and SQL injection travel inside normal-looking web requests. Their flows differ only slightly from benign web traffic, which makes them among the hardest classes for flow features.
+- **Botnets and infiltration.** An infected host contacts its command server at regular intervals with small requests, and an attacker inside the network scans and moves between hosts. Each single flow resembles ordinary traffic; the attack becomes visible mainly as a pattern over time.
+
 ::table 1.1 | Traffic classes of the CICIDS2017 dataset
 | Class | Family | Description |
 |:---|:---|:---|
@@ -92,6 +101,39 @@ The project covers the full path from data to action. Within that path its scope
 - **Live attacks.** One attack type, a TCP port scan, was run live against the system, on one network, from one device. The other attack classes need victim servers, vulnerable services or several attacking machines on an isolated laboratory network, and were evaluated on the recorded datasets only.
 - **Dashboard.** The dashboard serves the CICIDS2017 model, because live traffic is converted into CICIDS2017 features. The MU-IoT model is evaluated offline.
 
-## 1.6 Organisation of the Report
+## 1.6 Contributions
 
-Chapter 2 surveys the literature on intrusion detection datasets, deep-learning detectors, hybrid CNN-LSTM models and explainable AI, and identifies the gap this project addresses. Chapter 3 states the objectives and describes the methodology: the datasets, preprocessing, evaluation design, model, explainability, prevention policy, live capture and dashboard. Chapter 4 presents the system design: the architecture, use case, data flow and sequence diagrams, and the algorithms with their equations. Chapter 5 lists the hardware and software requirements. Chapter 6 describes the implementation and testing and reports all results, including the live run. The report closes with conclusions and future enhancements, the references and appendices.
+The main contributions of the project are:
+
+1. A leakage-controlled evaluation of a hybrid CNN-LSTM on two datasets against a random-forest baseline trained and scored on identical examples, which shows where sequence modelling helps (ambiguous IoT flows and unseen recordings) and where it does not (CICIDS2017).
+2. An explainability analysis that uses SHAP to separate three different causes of the model's errors on unseen IoT recordings, and a measured choice of explainer for the dashboard.
+3. A prevention policy in which every class's automatic-action threshold follows its measured F1 score and unreliable classes are locked to human review, with an execution engine bounded by a kill switch, an address allow-list and one rule per device, verified by automated tests, a mutation check and an end-to-end check on the real firewall.
+4. A packet-to-flow extractor that reproduces CICFlowMeter-V3 on 99.8% of flows of the original CICIDS2017 capture, and a live engine that detects and blocks in real time.
+5. A demonstration on a real shared network, with its failure modes measured and reported.
+
+## 1.7 Applications
+
+The system is designed for settings in which one computer must protect itself, and the network segment it shares, without dedicated security hardware:
+
+- **Small offices and homes,** where a laptop or desktop on a shared Wi-Fi network is exposed to scans and password guessing from other devices on the same network.
+- **College laboratories and IoT testbeds,** where many devices share one network, attacks are run on purpose for teaching and research, and an analyst wants to see why each alert was raised.
+- **Teaching intrusion detection,** where the dashboard shows the whole path from packets to flows, predictions, explanations and firewall rules, and every step can be inspected.
+- **Evaluating detection models,** where the evaluation pipeline (chronological split, baseline on identical examples, held-out recordings) can be reused for other models and datasets.
+
+The system does not replace a network firewall or an enterprise intrusion prevention appliance, and it cannot stop large floods, which fill the network link before their packets reach the host and must be stopped earlier in the path.
+
+## 1.8 Challenges
+
+Building an intrusion detection and prevention system that can be trusted on a real network raises challenges that shaped every part of this project:
+
+1. **Class imbalance.** Benign traffic forms 83% of the CICIDS2017 test windows, and some attacks have only a handful of examples. A model can reach high accuracy while missing rare attacks entirely, so the evaluation must look at each class.
+2. **Leakage between training and test data.** Neighbouring flows are often near-identical, and in MU-IoT whole records repeat under different labels. Random splits and timestamps let a model memorise rather than detect.
+3. **Dataset shift.** Benchmark traffic was recorded years ago in a laboratory. Present-day traffic uses protocols such as QUIC and IPv6 in ways the model never saw, and real networks contain devices and behaviours the benchmark does not.
+4. **Exact feature reproduction.** A model trained on the features of one tool can only be applied to new traffic if the features are computed identically, including that tool's quirks.
+5. **The cost of acting.** A wrong block cuts a legitimate user off the network. Automatic prevention must be limited to predictions whose reliability has been measured, and every action must be reversible.
+6. **Real-time operation.** Packets arrive in bursts and must never wait for the model, and detection must finish within seconds to be useful against a scan.
+7. **Explaining decisions.** An analyst who must approve or revoke a block needs to know why the model decided as it did, and the explanation itself must be correct.
+
+## 1.9 Organisation of the Report
+
+Chapter 2 surveys the literature on intrusion detection datasets, deep-learning detectors, hybrid CNN-LSTM models, explainable AI and practical evaluation, and identifies the gap this project addresses. Chapter 3 states the objectives and describes the methodology: the datasets, preprocessing, evaluation design, model, explainability, prevention policy, live capture, dashboard and development process. Chapter 4 presents the system design: the architecture, use case, data flow and sequence diagrams, the algorithms with their equations, and the detailed design of the live engine, the classes, the deployment and the logs. Chapter 5 lists the hardware and software requirements and the development environment. Chapter 6 describes the implementation and testing and reports all results, including the live run. The report closes with conclusions and future enhancements, the references and five appendices: the backend API, the MU-IoT features and dashboard categories, definitions of the 20 flow features, the live demonstration procedure and selected source code.

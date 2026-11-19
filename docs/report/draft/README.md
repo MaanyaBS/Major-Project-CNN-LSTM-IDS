@@ -6,7 +6,7 @@ The project report, built as a Word document on the college templates.
 |---|---|
 | `output/Project_Report_Draft.docx`, `.pdf` | The built report (open the .docx in Word and accept "update fields") |
 | `content/*.md` | The text, one file per chapter; edit these, not the .docx |
-| `template/` | The college templates: front pages (1-5) and report styles (7, converted from `7.REPORT.doc`) |
+| `template/` | The department's front sheets (0: title page, certificate, declaration, acknowledgement), the abstract page (5) and the report styles (7, converted from `7.REPORT.doc`) |
 | `build_report.py` | Builds the .docx from `content/`, the templates and `docs/report_prep/VERIFIED_REFERENCES.md` |
 | `../../report_assets/` | Figures, equations, screenshots, and the scripts that draw them |
 

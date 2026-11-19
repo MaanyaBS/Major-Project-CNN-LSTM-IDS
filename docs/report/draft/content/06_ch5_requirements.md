@@ -55,3 +55,39 @@ Table 5.3 lists the software and libraries with the versions used. The backend's
 | Git and GitHub | - | Version control and collaboration between the three members |
 
 The backend must run with administrator rights, to capture packets and to change firewall rules, and no VPN may be active during live capture.
+
+## 5.3 Development and Deployment Environment
+
+**Repository.** The project is kept in one Git repository (Table 5.4).
+
+::table 5.4 | Organisation of the project repository
+| Folder | Contents |
+|:---|:---|
+| src/, output/ | Data cleaning, feature selection and MU-IoT handoff scripts and their metadata |
+| model/ | Model definition and training, evaluation, baselines, SHAP analysis, prevention policy and engine, flow extractor, target selection, tests |
+| model/artifacts/ | Trained models, scalers and label mappings for both datasets |
+| model/results/ | Every reported result as a text or Markdown file, with the command that produced it |
+| backend/ | Flask API, SHAP service, prevention runtime, live capture engine and their tests |
+| frontend/ | React and TypeScript dashboard |
+| docs/ | Interface documents, team reports, live demonstration checklist, this report |
+
+**Configuration.** The behaviour of the running system is controlled by environment variables that are set when the backend is started (Table 5.5). No request to the API can change them; in particular, firewall execution can only be switched on by the person who starts the backend.
+
+::table 5.5 | Environment variables of the backend
+| Variable | Effect | Default |
+|:---|:---|:---|
+| IDS_PREVENTION_EXECUTION_ENABLED | Kill switch: "1" allows real firewall rules | Off |
+| IDS_PREVENTION_DEMO_TARGETS | Single private LAN addresses that may be blocked, besides the RFC 5737 ranges | None |
+| IDS_LIVE_IPV6 | "0" analyses IPv4 only in live capture | IPv4 and IPv6 |
+| IDS_MAX_PCAP_MB | Largest capture file accepted for upload, in MB | 200 |
+| OPENBLAS_NUM_THREADS | Set to "1" on a laptop with little free memory | Library default |
+
+**Network ports.** The dashboard is served on port 8080, the backend API on port 5000, and the test page used in the live demonstration on port 8000.
+
+**Setting up a machine.** A new machine is prepared in five steps:
+
+1. Install Python 3.13 and the backend's dependencies (`pip install -r backend/requirements.txt`).
+2. Install Wireshark together with the Npcap driver it offers.
+3. Install Node.js and the dashboard's dependencies (`npm install` in `frontend/`).
+4. Start the backend from an administrator PowerShell window, with the environment variables of Table 5.5.
+5. Start the dashboard (`npm run dev` in `frontend/`) and open it in a browser.

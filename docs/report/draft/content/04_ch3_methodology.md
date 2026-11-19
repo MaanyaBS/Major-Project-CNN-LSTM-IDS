@@ -21,11 +21,20 @@ The work was divided among the three team members by area: data preparation and 
 
 The remainder of this section follows the order of Fig. 3.1: datasets and preprocessing (Sections 3.2.2 and 3.2.3), the evaluation design (Section 3.2.4), the model and its training (Section 3.2.5), explainability (Section 3.2.6), the prevention policy (Section 3.2.7), live capture and flow extraction (Section 3.2.8), the dashboard (Section 3.2.9) and the evaluation metrics (Section 3.2.10).
 
+Table 3.1 lists the division of work. Each member owned one part of the system end to end and documented its interface, so that the parts could be developed in parallel and joined through written contracts (Section 3.2.11).
+
+::table 3.1 | Division of work among the team members
+| Member | Area | Main work |
+|:---|:---|:---|
+| Maanya B S (1JT23AI030) | Data | Cleaning of CICIDS2017 and MU-IoT, feature selection, session mapping and splits of MU-IoT, literature survey, public and own packet captures |
+| Ruthwik Sai Ganesh (1JT23AI042) | Model and prevention | CNN-LSTM training and evaluation, baselines, SHAP error analysis, prevention policy and engine, packet-to-flow extractor and its validation, live capture engine |
+| Varshini D N (1JT23AI060) | Explainability and dashboard | SHAP service, Flask backend and API, React dashboard (batch analysis, live feed, blocked devices), CERT-In category mapping |
+
 ### 3.2.2 Datasets
 
-**CICIDS2017.** The dataset [@K9] is published as eight CSV files, one or two per capture day, with about 79 columns per flow. Each file was loaded, column names were standardised, rows with missing or infinite values and exact duplicate rows were removed, ten columns that were constant across the data were dropped, the label was encoded as an integer, and the files were combined with a `source_day` column that records which capture file each row came from. Table 3.1 lists the effect of cleaning on each file. The cleaned dataset has 2,655,060 rows and 70 columns.
+**CICIDS2017.** The dataset [@K9] is published as eight CSV files, one or two per capture day, with about 79 columns per flow. Each file was loaded, column names were standardised, rows with missing or infinite values and exact duplicate rows were removed, ten columns that were constant across the data were dropped, the label was encoded as an integer, and the files were combined with a `source_day` column that records which capture file each row came from. Table 3.2 lists the effect of cleaning on each file. The cleaned dataset has 2,655,060 rows and 70 columns.
 
-::table 3.1 | Cleaning of the CICIDS2017 capture files
+::table 3.2 | Cleaning of the CICIDS2017 capture files
 | Capture file | Original rows | Missing values | Duplicates removed | Cleaned rows |
 |:---|---:|---:|---:|---:|
 | Monday-WorkingHours | 529,918 | 874 | 14,278 | 515,203 |
@@ -48,9 +57,9 @@ Data preparation also found that two of the raw files (`Botnet_Slowloris.csv` an
 
 ### 3.2.3 Preprocessing and Feature Selection
 
-**CICIDS2017 features.** Twenty features were selected by random-forest importance. A random forest with 100 trees was trained on a random sample of 100,000 rows of the encoded dataset, the features were ranked by their importance, and the top 20 were kept (Table 3.2). All twenty are statistics of packet lengths, inter-arrival times and the destination port; none of them identifies a particular host.
+**CICIDS2017 features.** Twenty features were selected by random-forest importance. A random forest with 100 trees was trained on a random sample of 100,000 rows of the encoded dataset, the features were ranked by their importance, and the top 20 were kept (Table 3.3). All twenty are statistics of packet lengths, inter-arrival times and the destination port; none of them identifies a particular host.
 
-::table 3.2 | The 20 CICIDS2017 features selected by random-forest importance
+::table 3.3 | The 20 CICIDS2017 features selected by random-forest importance
 | Rank | Feature | Importance | Rank | Feature | Importance |
 |---:|:---|---:|---:|:---|---:|
 | 1 | Bwd Packet Length Mean | 0.0568 | 11 | Subflow Fwd Bytes | 0.0366 |
@@ -86,9 +95,9 @@ The evaluation design matters more than the architecture: a careless split measu
 
 **Chronological split for CICIDS2017.** CICIDS2017 rows have no reliable timestamp in the cleaned data, but the row order within each capture file preserves the order of capture. The data were therefore split chronologically within each group of (capture day, class): the first 80% of the rows of each group train the model, and the remaining 20% test it. A pure day-level split, holding out whole capture days, was considered and rejected, because each attack appears on only one day and such a split removed eight of the fifteen classes from the test set. The resulting test set has 530,951 windows, 83% of them benign.
 
-**Tracks for MU-IoT.** Four complete capture sessions were held out from training and validation: an hping3 UDP flood (DDoS), a vulnerability scan (Scan), an MQTT dictionary attack (Password_Hacking) and an XSS attack (Injection). The remaining sessions were split chronologically within each session into about 70% training, 15% validation and 15% testing. This gives two test tracks (Table 3.3): *within*, later traffic of recordings seen in training, and *held-out*, recordings never seen, which measures generalisation to new attack tools.
+**Tracks for MU-IoT.** Four complete capture sessions were held out from training and validation: an hping3 UDP flood (DDoS), a vulnerability scan (Scan), an MQTT dictionary attack (Password_Hacking) and an XSS attack (Injection). The remaining sessions were split chronologically within each session into about 70% training, 15% validation and 15% testing. This gives two test tracks (Table 3.4): *within*, later traffic of recordings seen in training, and *held-out*, recordings never seen, which measures generalisation to new attack tools.
 
-::table 3.3 | MU-IoT rows per class and split
+::table 3.4 | MU-IoT rows per class and split
 | Class | Train | Validation | Test (within) | Test (held-out) |
 |:---|---:|---:|---:|---:|
 | DDoS | 496,750 | 99,261 | 149,984 | 200,000 |
@@ -106,13 +115,24 @@ MiTM, Spyware and normal traffic have no held-out recording, so their scores com
 
 **Baseline on identical examples.** A random forest [@K29] with 100 trees is trained on single flows with the same features and the same split, built by the same code, and scored on the last flow of each CNN-LSTM test window. Both models are thus judged on identical examples with identical labels, and any difference between them is due to the model, not the data.
 
+**Why the split matters.** Before the chronological split was adopted, baselines were trained on random splits. Table 3.5 shows how much a random split flatters a model: on a random 80/20 split of the whole dataset the random forest reaches a macro F1 of 0.834, against 0.786 on the chronological split, because near-identical neighbouring flows fall on both sides of a random split. A logistic regression on the same random split reaches only 0.137, which shows that the attack classes are not linearly separable in the 20 features. A random sample of 100,000 rows is even more flattering, because it leaves out most rare-class rows. Every result in Chapter 6 uses the chronological split.
+
+::table 3.5 | Early baselines on random splits and on the chronological split (CICIDS2017)
+| Model and split | Test rows | Accuracy | Weighted F1 | Macro F1 |
+|:---|---:|---:|---:|---:|
+| Logistic regression, random sample of 100,000 rows (80/20) | 20,000 | 0.9886 | 0.9875 | 0.70 |
+| Random forest, random sample of 100,000 rows (80/20) | 20,000 | 0.9980 | 0.9977 | 0.85 |
+| Logistic regression, whole dataset, random 80/20 split | 531,012 | 0.8651 | 0.8432 | 0.137 |
+| Random forest, whole dataset, random 80/20 split | 531,012 | 0.9970 | 0.9970 | 0.834 |
+| Random forest, chronological split, all test rows | all | 0.9911 | 0.9908 | 0.786 |
+
 ### 3.2.5 Model Development
 
 **Architecture.** The model, described in detail in Section 4.5.3, consists of two one-dimensional convolution blocks that learn local patterns across neighbouring flows, an LSTM layer that summarises how these patterns develop across the window, a dense layer and a softmax output. The same architecture is used for both datasets; only the input shape and the number of output classes differ.
 
-**Class imbalance.** Benign traffic is 83% of the CICIDS2017 test set and some attack classes have only a few hundred examples, so the training loss weights each class (Section 4.5.3). Three weighting schemes were trained with the same architecture and scored on the same test set (Table 3.4). Capped balanced weights pushed benign traffic into rare classes, and a targeted boost of the three weakest classes made the overall result worse; the square root of the balanced weights gave the best result and is the deployed model (v2).
+**Class imbalance.** Benign traffic is 83% of the CICIDS2017 test set and some attack classes have only a few hundred examples, so the training loss weights each class (Section 4.5.3). Three weighting schemes were trained with the same architecture and scored on the same test set (Table 3.6). Capped balanced weights pushed benign traffic into rare classes, and a targeted boost of the three weakest classes made the overall result worse; the square root of the balanced weights gave the best result and is the deployed model (v2).
 
-::table 3.4 | Class-weighting schemes compared on the CICIDS2017 test set
+::table 3.6 | Class-weighting schemes compared on the CICIDS2017 test set
 | Version | Class weights | Test accuracy | Macro F1 |
 |:---|:---|---:|---:|
 | v1 | Balanced, capped at 50 | 0.8831 | 0.4276 |
@@ -135,9 +155,9 @@ Each class is mapped to a countermeasure (block the source address, drop its con
 
 ### 3.2.8 Live Capture and Packet-to-Flow Extraction
 
-The model was trained on flows produced by CICFlowMeter version 3. To apply it to live traffic or to Wireshark captures, packets must be turned into flows with exactly the same definitions, including the tool's quirks, because the model learned the features as the tool computed them. A new extractor was written for this purpose and validated against the original CICIDS2017 capture (Section 6.3.5). Table 3.5 lists the definitions it reproduces.
+The model was trained on flows produced by CICFlowMeter version 3. To apply it to live traffic or to Wireshark captures, packets must be turned into flows with exactly the same definitions, including the tool's quirks, because the model learned the features as the tool computed them. A new extractor was written for this purpose and validated against the original CICIDS2017 capture (Section 6.3.5). Table 3.7 lists the definitions it reproduces.
 
-::table 3.5 | CICFlowMeter-V3 behaviour reproduced by the extractor
+::table 3.7 | CICFlowMeter-V3 behaviour reproduced by the extractor
 | Behaviour | Effect on the features |
 |:---|:---|
 | First packet counted twice | Packet Length Mean, Std and Variance and Average Packet Size include the flow's first packet twice |
@@ -173,3 +193,14 @@ Accuracy is the fraction of correctly classified examples:
 ::equation accuracy | 3.6
 
 Because benign traffic dominates both datasets, accuracy and weighted F1 stay high however the rare attacks fare, so macro F1 and the per-class F1 scores are the main measures of detection quality in this report.
+
+### 3.2.11 Development Process
+
+The project was developed in weekly iterations, each ending with a measurable result written to the repository. Four practices kept the work of three people consistent:
+
+- **One repository, one branch per member.** The data, model and dashboard work lived on separate branches of one Git repository and were merged into the main branch through pull requests after the other members had run them. Versions that were demonstrated were tagged: v1-demo for the first review and v2-live for the live system.
+- **Written interface contracts.** The model interface fixes the order of the 20 features, the scaling, the window length and the label mapping; the prevention interface fixes the actions, their parameters and the checks the engine applies. The dashboard was built against these documents, so the model and the engine could change internally without breaking it.
+- **Results as files.** Every number reported in this document was written by a script to a file in `model/results/`, together with the command that produced it, so that every result can be traced and reproduced.
+- **Cloud training, local operation.** Training and the large evaluations ran on Google Colab GPUs; the trained model, scaler and label mapping were then committed and loaded on the laptop, where inference, the dashboard and live capture run without a GPU.
+
+Validation also happened in stages: the model was checked on the whole test set and on the rare classes separately, the prevention engine was tested with simulated firewall calls before it touched the real firewall, and the extractor was compared with the original dataset before it was used on live traffic.

@@ -311,9 +311,133 @@ def fig_4_6_policy():
     c.save(os.path.join(OUT, "fig_4_6_prevention_flowchart.png"))
 
 
+def fig_4_7_threads():
+    """backend/live_capture.py: three threads joined by a bounded packet queue and the ended-flow list."""
+    c = Canvas(4.3)
+    t = c.top
+    c.text(50, t - 3, "Live engine (backend/live_capture.py): three threads, so packets never wait for the model",
+           fs=7, bold=True, color=NAVY)
+    y1 = t - 25
+    c.box(2, y1, 20, 17, "Npcap interface\nor capture file\n\nNpcapSource,\nPcapReplaySource", fc=WHITE, fs=6.3)
+    c.box(26, y1, 22, 17, "Thread 1: capture\n\nread raw frame,\nparse IPv4 / IPv6\nTCP and UDP", fc=TEAL, fs=6.3)
+    c.store(52, y1 + 4, 20, 9, "packet queue\nmax 100,000; when full,\npackets dropped, counted", fs=6)
+    c.box(76, y1, 22, 17, "Thread 2: flows\n\nFlowTable.add; every 1 s\nends flows at FIN, RST\nor 120 s after start",
+          fc=TEAL, fs=6.3)
+    for a, b in ((22, 26), (48, 52), (72, 76)):
+        c.arrow((a, y1 + 8.5), (b, y1 + 8.5))
+    y2 = 14
+    c.store(78, y2 + 6, 20, 8, "ended flows\n(in end order)", fs=6)
+    c.arrow((87, y1), (87, y2 + 14))
+    c.box(48, y2, 25, 22, "Thread 3: worker, once a second\n\nlast 10 ended flows\n-> scale -> CNN-LSTM\n"
+          "-> get_action\n-> select_target\n-> execute_for_result", fc=AMBER, fs=6.3)
+    c.arrow((78, y2 + 10), (73, y2 + 10))
+    c.store(26, y2 + 6, 18, 8, "results buffer\n(window results)", fs=6)
+    c.arrow((48, y2 + 10), (44, y2 + 10))
+    c.box(2, y2 + 2, 20, 16, "poll(after)\nFlask /api/live/poll\n\ndashboard asks\nonce a second", fc=WHITE, fs=6.3)
+    c.arrow((26, y2 + 10), (22, y2 + 10))
+    c.box(48, 2, 25, 7, "Windows Firewall (netsh)", fc=PALE, fs=6.4)
+    c.arrow((60.5, y2), (60.5, 9))
+    c.text(2, 5.5, "Blocking is done by the worker itself:\nit does not wait for the dashboard.", fs=6.2, ha="left",
+           italic=True, color=GREY)
+    c.save(os.path.join(OUT, "fig_4_7_live_engine_threads.png"))
+
+
+def _uml(c, x, y_top, w, name, attrs, methods, fc=BLUE, stereotype=None):
+    """UML class box with name, attribute and method compartments; returns its bottom y."""
+    line = 2.55
+    head = 4.2 + (2.4 if stereotype else 0)
+    h_attr = max(1, len(attrs)) * line + 1.2 if attrs else 0
+    h_meth = max(1, len(methods)) * line + 1.2
+    h = head + h_attr + h_meth
+    c.box(x, y_top - h, w, h, fc=WHITE, rounding=0.3)
+    c.box(x, y_top - head, w, head, fc=fc, rounding=0.3)
+    if stereotype:
+        c.text(x + w / 2, y_top - 1.8, stereotype, fs=5.6, italic=True, color=GREY)
+    c.text(x + w / 2, y_top - head + 2.0, name, fs=6.6, bold=True)
+    y = y_top - head
+    for block in ([attrs] if attrs else []) + [methods]:
+        c.ax.plot([x, x + w], [y, y], color=NAVY, lw=0.7, zorder=3)
+        for k, s in enumerate(block):
+            c.text(x + 1.2, y - 1.6 - k * line, s, fs=5.7, ha="left")
+        y -= len(block) * line + 1.2
+    return y_top - h
+
+
+def fig_4_8_classes():
+    c = Canvas(6.4)
+    t = c.top
+    c.text(50, t - 2.5, "Main classes and modules of the live path (model/flow_features.py, backend/, model/)", fs=7,
+           bold=True, color=NAVY)
+    b_packet = _uml(c, 2, t - 6, 22, "Packet", ["ts, src, dst", "sport, dport, proto", "payload, flags"],
+                    ["(frozen dataclass)"])
+    b_flow = _uml(c, 27, t - 6, 23, "Flow", ["src, dst, sport, dport", "proto, start, last", "fwd, bwd (lengths)",
+                                             "fwd_us, all_us (times)", "first_len"],
+                  ["add(p)", "duration_us()", "features()", "info()"])
+    _uml(c, 53, t - 6, 21, "FlowTable", ["active_timeout_s", "end_on_rst", "flows"],
+         ["add(p)", "tick(now)", "flush()"])
+    _uml(c, 77, t - 6, 21, "ModelService", ["model, scaler", "int_to_label, loaded"],
+         ["load()", "predict_matrix(X)", "predict_one(rows)", "predict_batch(seqs)"])
+    y2 = t - 44
+    _uml(c, 2, y2, 22, "NpcapSource", None, ["read()", "clock()", "close()"])
+    _uml(c, 2, y2 - 15, 22, "PcapReplaySource", ["speed"], ["read()", "clock()", "close()"])
+    _uml(c, 30, y2 + 4, 38, "LiveEngine", ["tick_s, flow_timeout_s, ipv6", "queue_max, results_max",
+                                             "_lock, _threads, _source"],
+         ["start(source, interface, local_ips, gateway_ips)", "poll(after, limit)", "stop()",
+          "_capture_loop(), _flow_loop()", "_worker_loop(), _predict_step(now)"], fc=AMBER)
+    _uml(c, 77, y2 + 4, 21, "ShapService", ["explainer, background", "background_source, ready"],
+         ["init()", "explain(rows)", "explain_matrix(X)", "background_info()"])
+    y3 = 17
+    _uml(c, 2, y3, 30, "class_action_mapping", None, ["get_action(class, confidence,", "    dataset)"], fc=TEAL,
+         stereotype="«module»")
+    _uml(c, 35, y3, 30, "target_selection", None, ["select_target(source_ips, local_ips,", "    gateway_ips, dest_ips)"],
+         fc=TEAL, stereotype="«module»")
+    _uml(c, 68, y3, 30, "prevention_executor", None, ["execute_action(action, target, ...)",
+                                                      "revoke_action(action, target)", "active_rules()"],
+         fc=TEAL, stereotype="«module»")
+    c.arrow((50, t - 14), (53, t - 14), "1 .. *", lab=(51.5, t - 11.5), fs=5.6)
+    c.arrow((27, t - 12), (24, t - 12), "uses", lab=(25.5, t - 9.5), fs=5.6)
+    c.arrow((30, y2 - 4), (24, y2 - 4), "source", lab=(27, y2 - 1.6), fs=5.6)
+    c.arrow((30, y2 - 12), (24, y2 - 19), ls="--")
+    c.arrow((55, y2 + 4), (62, t - 27.9), "flow table", lab=(61, y2 + 8), fs=5.6)
+    c.arrow((68, y2 + 1), (80, t - 27.9), "predicts with", lab=(76, y2 + 5.5), fs=5.6)
+    c.arrow((40, y2 - 23.5), (17, y3), ls="-")
+    c.arrow((49, y2 - 23.5), (50, y3), ls="-")
+    c.arrow((58, y2 - 23.5), (83, y3), ls="-")
+    c.arrow((92, y2 + 4), (92, t - 27.9), "uses model", lab=(92, y2 + 8), fs=5.6, ls="--")
+    c.save(os.path.join(OUT, "fig_4_8_class_diagram.png"))
+
+
+def fig_4_9_deployment():
+    c = Canvas(4.7)
+    t = c.top
+    c.box(2, 15, 60, t - 17, fc=PALE, rounding=1.2)
+    c.text(4, t - 4.5, "Protected host: Windows 11 laptop (administrator)", fs=7, ha="left", bold=True, color=NAVY)
+    c.box(5, t - 20, 25, 11, "Dashboard\nReact, Vite (port 8080)", fc=BLUE, fs=6.4)
+    c.box(34, t - 20, 25, 11, "Flask backend and\nlive engine (port 5000)\nPython 3.13", fc=AMBER, fs=6.4)
+    c.box(5, t - 36, 25, 11, "Npcap driver\n(packet capture)", fc=WHITE, fs=6.4)
+    c.box(34, t - 36, 25, 11, "CNN-LSTM, scaler,\nSHAP explainer\n(model/artifacts)", fc=TEAL, fs=6.4)
+    c.box(5, 18, 25, 10, "Test page\n(port 8000)", fc=WHITE, fs=6.4)
+    c.box(34, 18, 25, 10, "Windows Firewall\n(netsh advfirewall)", fc=AMBER, fs=6.4)
+    c.arrow((30, t - 14.5), (34, t - 14.5), both=True, label="REST", lab=(32, t - 11.5), fs=5.6)
+    c.arrow((30, t - 30.5), (34, t - 20), label="packets", lab=(26, t - 23.5), fs=5.6)
+    c.arrow((46.5, t - 20), (46.5, t - 25), both=True)
+    c.poly([(58.5, t - 20), (60.5, t - 22), (60.5, 26), (59, 26)], "rules", lab=(58, t - 44), fs=5.6)
+    c.box(70, t - 18, 28, 12, "Wi-Fi router or phone hotspot\n(gateway: never a target)", fc=WHITE, fs=6.4)
+    c.box(70, t - 38, 28, 13, "Second device\nAndroid tablet: Termux + nmap,\nbrowser (the only listed target)",
+          fc=ROSE, fs=6.2)
+    c.box(70, t - 55, 28, 11, "Other devices on the network\n(never acted on)", fc=WHITE, fs=6.4)
+    c.arrow((62, t - 12), (70, t - 12), both=True, label="Wi-Fi", lab=(66, t - 9.5), fs=5.6)
+    c.arrow((84, t - 18), (84, t - 25), both=True)
+    c.poly([(98, t - 12), (99.3, t - 12), (99.3, t - 49.5), (98, t - 49.5)], both=False)
+    c.box(2, 2, 60, 9, "Google Colab (GPU), offline: training and evaluation; produces model/artifacts",
+          fc=WHITE, fs=6.4, ls="--", ec=GREY)
+    c.save(os.path.join(OUT, "fig_4_9_deployment.png"))
+
+
 FIGURES = {f.__name__[4:]: f for f in (fig_3_1_block, fig_4_1_architecture, fig_4_2_use_case, fig_4_3a_dfd0,
                                       fig_4_3b_dfd1, fig_4_4a_live, fig_4_4b_upload, fig_4_4c_shap, fig_4_4d_revoke,
-                                      fig_4_5_model, fig_4_6_policy)}
+                                      fig_4_5_model, fig_4_6_policy, fig_4_7_threads, fig_4_8_classes,
+                                      fig_4_9_deployment)}
 
 if __name__ == "__main__":
     os.makedirs(OUT, exist_ok=True)

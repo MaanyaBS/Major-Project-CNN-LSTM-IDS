@@ -21,3 +21,8 @@ The project's conclusion is therefore not that a deep model is always better, bu
 5. **Recovering the web-attack signal.** The random forest detects web brute force from single flows (F1 0.69) where the CNN-LSTM does not; a model that combines the current flow's features with the window's sequence could keep both strengths.
 6. **The MU-IoT model in the dashboard,** with its own extractor for the MU-IoT features, so that IoT traffic can be analysed live as well.
 7. **True rate limiting** through Windows quality-of-service policies instead of a temporary full block.
+8. **Blocking many attackers at once.** The live engine selects one target per window; distributed attacks and botnets come from many devices. Blocking the most active sources together, with a cap so that a mistake cannot cut off a whole network, would extend prevention to these attacks.
+9. **Escalating responses.** Repeat offenders could move from a short drop to a temporary block and then to a persistent block, so that a single false alarm costs little while a persistent attacker is stopped for good.
+10. **Narrower blocks.** Blocking only the attacked service, for example the SSH port for an SSH brute-force attack, instead of the whole device, would reduce the damage of a wrong decision.
+11. **Enforcement at the gateway.** Moving the blocking from the protected host to a gateway (a small Linux computer or a router running OpenWrt) would protect every device on the network and stop traffic before it reaches the host, which is the only effective place to stop large floods.
+12. **Closing connections opened before a block,** already implemented and tested with simulated system calls, to be verified on a real network.

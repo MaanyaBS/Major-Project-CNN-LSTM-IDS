@@ -2,9 +2,10 @@
 
     python -I docs/report/draft/build_report.py
 
-Needs python-docx and docxcompose. The front pages are the college's own
-templates (template/1_ to 5_), filled in from the constants below; everything
-after them uses the styles of the college report template
+Needs python-docx and docxcompose. The front sheets are the department's own
+template (template/0_front_sheets.docx: title page, certificate, declaration,
+acknowledgement) and the abstract template (5_abstract.docx), filled in from
+the constants below; everything after them uses the styles of the college report template
 (template/7_report_styles.docx: CHNO, CHTITLE, HEAD1-3, MAINPARA, FIGLEGEND,
 TABLE*). Writes output/Project_Report_Draft.docx. Word fills the contents and
 the figure and table lists when the fields are updated (it asks on opening).
@@ -17,7 +18,7 @@ Chapter-file syntax, one block per blank-line-separated paragraph:
     ::table 6.1 | Caption         followed by a pipe table
     ::figure path | 4.1 | Caption | width-in-inches
     ::equation name | 4.1         docs/report_assets/equations/<name>.png
-    ::algorithm 4.1 | Caption     followed by a ``` fenced block
+    ::algorithm 4.1 | Caption     followed by a ``` fenced block (::listing E.1 | ... likewise)
     ::toc, ::lof, ::lot, ::references, ::pagebreak, ::frontend
 Inline: **bold**, *italic*, `code`, [@K8] or [@K8, K26] (numbered in order of
 first citation, IEEE style, from docs/report_prep/VERIFIED_REFERENCES.md).
@@ -48,8 +49,7 @@ TITLE = ("Intrusion Detection System using Hybrid CNN-LSTM with Explainable AI (
          "for Indian Network Databases")
 STUDENTS = [("Maanya B S", "1JT23AI030"), ("Ruthwik Sai Ganesh", "1JT23AI042"), ("Varshini D N", "1JT23AI060")]
 GUIDE = "Dr. Madhu B R"
-PRINCIPAL = "Dr. K. Gopalakrishna"
-ACADEMIC_YEAR = "2023-27"
+GUIDE_DESIGNATION = "Professor and Head"
 RUNNING_TITLE = "Intrusion Detection System using Hybrid CNN-LSTM with Explainable AI"
 KEYWORDS = ("intrusion detection, intrusion prevention, CNN-LSTM, deep learning, explainable AI, SHAP, "
             "CICIDS2017, MU-IoT, live packet capture.")
@@ -173,87 +173,68 @@ def add_inline(p, text, cites, size=None, bold=False, italic=False):
 
 # ---------------------------------------------------------------- front pages
 
-def fill_title_sheet(d):
+def _runs(p, changes):
+    """Sets the text of runs by index ({index: text}); other runs keep their text and formatting."""
+    runs = p.runs
+    for i, text in changes.items():
+        runs[i].text = text
+
+
+def fill_front_sheets(d):
+    """The department's front sheets (template/0_front_sheets.docx): title page, certificate,
+    declaration and acknowledgement. Placeholders are replaced run by run, so the template's
+    fonts, colours, page borders and logos stay as they are. Department wording is kept."""
     ps = d.paragraphs
-    set_text(ps[6], f"“{TITLE}”")
-    for p, (name, usn) in zip((ps[14], ps[15], ps[16]), STUDENTS):
-        set_text(p, f"{usn}\t{name}")
-        p.alignment = WD_ALIGN_PARAGRAPH.LEFT
-        pf = p.paragraph_format
-        pf.left_indent, pf.first_line_indent = Inches(1.35), Inches(0)
-        pf.tab_stops.add_tab_stop(Inches(3.0))
-    set_text(ps[20], GUIDE)
-    set_text(ps[21], "Professor and Head")
+    (n1, u1), (n2, u2), (n3, u3) = STUDENTS
 
+    # title page
+    _runs(ps[4], {0: TITLE})
+    for p, (name, usn) in zip((ps[10], ps[11], ps[12]), STUDENTS):
+        _runs(p, {0: usn, 2: name})
+        for r in p.runs[3:]:
+            r._r.getparent().remove(r._r)
+    _runs(ps[14], {7: "\n" + GUIDE, 8: "", 9: "", 10: "", 11: "", 12: ""})
+    _runs(ps[15], {0: GUIDE_DESIGNATION, 1: "", 2: "", 3: "\nDept of "})
 
-def fill_certificate(d):
-    names = ", ".join(f"{n} ({u})" for n, u in STUDENTS)
-    set_text(d.paragraphs[3],
-             f"This is to certify that the project work titled “{TITLE}” is carried out by {names}, "
-             "bonafide students of Bachelor of Engineering at the Jyothy Institute of Technology, Bangalore, in "
-             "partial fulfillment for the award of the degree of Bachelor of Engineering in Artificial "
-             f"Intelligence and Machine Learning of Visvesvaraya Technological University, Belagavi, during the "
-             f"academic year {ACADEMIC_YEAR}.")
-    for row in d.tables[0].rows:
-        for cell in row.cells:
-            for p in cell.paragraphs:
-                if "Dr./Prof." in p.text:
-                    set_text(p, GUIDE)
-                elif "Assistant/Associate Professor" in p.text:
-                    set_text(p, p.text.replace("Assistant/Associate Professor", "Professor and Head (Guide)"))
-    examiner = next(p for p in d.paragraphs if p.text.startswith("Name of the Examiner"))
-    set_text(examiner, "Name of the Examiner\tSignature of the Examiner")
-    examiner.paragraph_format.tab_stops.add_tab_stop(Inches(6.1), WD_TAB_ALIGNMENT.RIGHT)
+    # certificate
+    _runs(ps[26], {1: TITLE, 3: n1, 4: f" [{u1}], ", 5: n2, 6: " ", 7: f"[{u2}", 8: "] and ", 9: n3, 10: " ",
+                   11: f"[{u3}], ", 12: "", 13: "", 14: "", 15: ""})
+    _runs(ps[34], {0: GUIDE, 1: "", 12: GUIDE_DESIGNATION})
 
+    # declaration
+    _runs(ps[47], {22: TITLE, 25: GUIDE, 26: "", 27: "", 28: ", ", 29: GUIDE_DESIGNATION, 30: "", 31: "",
+                   32: ", Department of "})
 
-def fill_declaration(d):
-    set_text(d.paragraphs[0], "")
-    names = ", ".join(f"{n} ({u})" for n, u in STUDENTS)
-    set_text(d.paragraphs[2],
-             f"We, {names}, are students of the eighth semester B.E. in Artificial Intelligence and Machine "
-             "Learning at Jyothy Institute of Technology, VTU, and hereby declare that the project titled "
-             f"“{TITLE}” has been carried out by us and submitted in partial fulfillment for the award "
-             "of the degree of Bachelor of Engineering in Artificial Intelligence and Machine Learning during the "
-             f"academic year {ACADEMIC_YEAR}. Further, the matter presented in the project has not been submitted "
-             "previously by anybody for the award of any degree or any diploma to any other University, to the "
-             "best of our knowledge and faith.")
-    people = iter(STUDENTS)
-    current = None
-    for row in d.tables[0].rows:
-        for cell in row.cells:
-            for p in list(cell.paragraphs):
-                t = p.text.strip()
-                if t.startswith("Name"):
-                    current = next(people, None)
-                    set_text(p, f"Name: {current[0]}") if current else delete(p)
-                elif t.startswith("USN"):
-                    set_text(p, f"USN: {current[1]}") if current else delete(p)
+    # acknowledgement (no pronouns for the people named)
+    _runs(ps[56], {5: "for providing us an opportunity and for the valuable support."})
+    _runs(ps[58], {1: GUIDE, 2: "", 3: "", 4: "", 5: "", 6: "", 8: GUIDE_DESIGNATION,
+                   9: ", Department of ", 12: "for the keen interest and boundless encouragement in completing this work."})
+    insert_after(ps[59], "We thank the University of New Brunswick and Manipur University for the CICIDS2017 and "
+                         "MU-IoT datasets, and the owner of the network used for the live test for permission to "
+                         "use it.")
 
+    # name tables of the declaration and the acknowledgement: three students, so the fourth row goes
+    for table in d.tables:
+        name_col = 1 if len(table.columns) == 3 else 0
+        for row, (name, usn) in zip(table.rows, STUDENTS):
+            set_text(row.cells[name_col].paragraphs[0], name)
+            set_text(row.cells[name_col + 1].paragraphs[0], f"[{usn}]")
+            row.cells[name_col].paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.LEFT
+        last = table.rows[3]
+        if name_col == 1 and last.cells[0].text.strip():
+            continue
+        last._tr.getparent().remove(last._tr)
 
-def fill_acknowledgement(d):
-    ps = d.paragraphs
-    set_text(ps[4], f"In particular we would like to thank {PRINCIPAL}, Principal, Jyothy Institute of "
-                    "Technology, VTU, for the constant encouragement and expert advice.")
-    set_text(ps[7], f"We would like to thank our guide and Project Coordinator {GUIDE}, Professor and Head, "
-                    "Department of Artificial Intelligence and Machine Learning, for sparing valuable time to extend "
-                    "help in every step of our project work, and all the staff members of the Department of AIML "
-                    "for their support.")
-    set_text(ps[9], "We thank the University of New Brunswick and Manipur University for the CICIDS2017 and "
-                    "MU-IoT datasets, and the owner of the network used for the live test for permission to use it.")
-    # the template separates some paragraphs with empty ones; without them the page fits
-    signature = next(p for p in d.paragraphs if "Signature of Students" in p.text)
-    text_seen = False
-    for p in list(d.paragraphs):
-        if p is signature:
-            break
-        if p.text.strip():
-            text_seen = True
-        elif text_seen and not p._p.xpath(".//w:drawing|.//w:pict"):
-            delete(p)
-    for p in d.paragraphs:
-        if p.text.strip() and p is not signature and p.text != "ACKNOWLEDGEMENT":
-            p.paragraph_format.space_after = Pt(6)
-    signature.paragraph_format.space_before = Pt(24)
+    # the template ends with an empty page in its own section: drop everything after the
+    # acknowledgement's section break (the body's final properties are not merged anyway)
+    body = d.element.body
+    ack_end = ps[63]._p
+    remove = False
+    for el in list(body):
+        if remove and el.tag != qn("w:sectPr"):
+            body.remove(el)
+        if el is ack_end:
+            remove = True
 
 
 def fill_abstract(d, paragraphs):
@@ -327,6 +308,35 @@ def freeze_formatting(d):
                 b = _style_value(style, lambda s: s.font.bold)
                 if b:
                     r.font.bold = True
+            rpr = r._r.get_or_add_rPr()          # the report's Normal style widens letter spacing
+            if rpr.find(qn("w:spacing")) is None:
+                sp = OxmlElement("w:spacing")
+                sp.set(qn("w:val"), "0")
+                rpr.append(sp)
+        # the report's Heading styles are numbered; the front pages' headings must not be
+        p._p.get_or_add_pPr()
+        if p.style.name.startswith("Heading") and p._p.pPr.find(qn("w:numPr")) is None:
+            num = OxmlElement("w:numPr")
+            for tag in ("w:ilvl", "w:numId"):
+                el = OxmlElement(tag)
+                el.set(qn("w:val"), "0")
+                num.append(el)
+            p._p.pPr.insert(0, num) if p._p.pPr.find(qn("w:pStyle")) is None else \
+                p._p.pPr.find(qn("w:pStyle")).addnext(num)
+
+
+def unlink_header_footer(sections):
+    """Gives each front-sheet section its own new, empty header and footer: no running title or page
+    number. Their old references are dropped, not cleared: the parts may be shared with the report."""
+    for section in sections:
+        sectPr = section._sectPr
+        for tag in ("w:headerReference", "w:footerReference"):
+            for ref in sectPr.findall(qn(tag)):
+                sectPr.remove(ref)
+        for part in (section.header, section.footer):
+            part.is_linked_to_previous = False           # creates a fresh, empty part
+            for p in part.paragraphs:
+                p.style = "Normal"                       # the Header style draws a rule line
 
 
 def format_abstract(d):
@@ -345,6 +355,28 @@ def format_abstract(d):
             p.add_run(KEYWORDS)
             for r in p.runs:
                 r.font.name, r.font.size = "Times New Roman", Pt(12)
+
+
+def column_widths(rows, size_pt):
+    """Column widths in inches: each column at least as wide as its longest word at this font
+    size, the rest of the text width shared in proportion to the columns' text length."""
+    shown = lambda c: re.sub(r"[*`]", "", re.sub(r"\[@[^\]]+\]", lambda m: "[00], " * m.group(0).count("K"), c))
+    n = len(rows[0])
+    char_in = size_pt * 0.62 / 72                       # width of a bold Times character, with margin
+    floor = [max(len(w) for r in rows for w in (shown(r[j]).split() or [""])) * char_in + 0.3 for j in range(n)]
+    weight = [min(38, max(len(shown(r[j])) for r in rows)) + 3 for j in range(n)]
+    widths, fixed = list(floor), set()
+    for _ in range(n):                                  # columns held at their floor leave the rest to share
+        free = [j for j in range(n) if j not in fixed]
+        room = TEXT_WIDTH_IN - sum(floor[j] for j in fixed)
+        share = {j: room * weight[j] / sum(weight[k] for k in free) for j in free}
+        below = [j for j in free if share[j] < floor[j]]
+        if not below:
+            for j in free:
+                widths[j] = share[j]
+            break
+        fixed.update(below)
+    return widths
 
 
 def add_toc_styles(styles):
@@ -377,12 +409,6 @@ def strip_trailing_empty(d):
             continue
         else:
             break
-
-
-def end_with_page_break(d):
-    """Page break inside the last paragraph: a full page does not spill an empty one."""
-    strip_trailing_empty(d)
-    d.paragraphs[-1].add_run().add_break(WD_BREAK.PAGE)
 
 
 # ---------------------------------------------------------------- report body
@@ -463,8 +489,9 @@ class Builder:
         t.alignment = WD_TABLE_ALIGNMENT.CENTER
         t.autofit = False
         size = 10 if number == "-" else 11 if n <= 4 else 10 if n <= 6 else 9
-        weights = [max(4, min(38, max(len(re.sub(r"[*`]", "", r[j])) for r in rows))) for j in range(n)]
-        widths = [TEXT_WIDTH_IN * w / sum(weights) for w in weights]
+        widths = column_widths(rows, size)
+        for j, col in enumerate(t.columns):                # Word lays the table out from its grid
+            col.width = Inches(widths[j])
         for i, row in enumerate(rows):
             for j in range(n):
                 cell = t.cell(i, j)
@@ -479,6 +506,8 @@ class Builder:
                 add_inline(p, row[j] if j < len(row) else "", self.cites, size=size, bold=(i == 0))
                 if i == 0:
                     shade(cell, "D9E2F3")
+        for row in t.rows:                               # a row never breaks across pages
+            row._tr.get_or_add_trPr().append(OxmlElement("w:cantSplit"))
         trPr = t.rows[0]._tr.get_or_add_trPr()
         hdr = OxmlElement("w:tblHeader")
         hdr.set(qn("w:val"), "true")
@@ -521,12 +550,12 @@ class Builder:
         num._r.get_or_add_rPr().append(pos)
         self.counts["equations"] += 1
 
-    def code(self, caption, lines):
+    def code(self, caption, lines, label="Algorithm"):
         if caption:
             num, text = [s.strip() for s in caption.split("|", 1)]
             p = self.doc.add_paragraph(style="MAINPARA")
             p.paragraph_format.keep_with_next = True
-            r = p.add_run(f"Algorithm {num}. ")
+            r = p.add_run(f"{label} {num}. ")
             r.bold = True
             p.add_run(text).bold = True
         t = self.doc.add_table(rows=1, cols=1)
@@ -596,13 +625,13 @@ class Builder:
                 elif cmd == "equation":
                     name, num = [x.strip() for x in arg.split("|")]
                     self.equation(name, num)
-                elif cmd == "algorithm":
+                elif cmd in ("algorithm", "listing"):
                     j = i + 2                          # next line must open a ``` fence
                     block = []
                     while not lines[j].strip().startswith("```"):
                         block.append(lines[j])
                         j += 1
-                    self.code(arg, block)
+                    self.code(arg, block, label=cmd.capitalize())
                     i = j + 1
                     continue
                 elif cmd == "toc":             # TOC \t takes style names (HEAD_1), not ids (HEAD1)
@@ -675,13 +704,13 @@ def _page_numbers(sectPr, fmt, start=None):
 
 
 def end_front_section(doc):
-    """Ends the front-matter section: Roman numbers, none on the title sheet."""
+    """Ends the preliminary section (abstract to nomenclature): Roman page numbers from i.
+    The front sheets before it are their own, unnumbered sections."""
     final = doc.element.body.find(qn("w:sectPr"))
     sect = copy.deepcopy(final)
     _page_numbers(sect, "lowerRoman", 1)
-    if sect.find(qn("w:titlePg")) is None:
-        tp = OxmlElement("w:titlePg")
-        sect.find(qn("w:pgNumType")).addnext(tp)
+    for tp in sect.findall(qn("w:titlePg")):
+        sect.remove(tp)
     p = doc.add_paragraph()
     p._p.get_or_add_pPr().append(sect)
 
@@ -713,14 +742,10 @@ def main():
         abstract = [p.strip().replace("\n", " ") for p in f.read().split("\n\n") if p.strip()
                     and not p.strip().startswith("<!--")]
 
-    front = []
-    for name, fill in (("1_title_sheet.docx", fill_title_sheet), ("2_certificate.docx", fill_certificate),
-                       ("3_declaration.docx", fill_declaration), ("4_acknowledgement.docx", fill_acknowledgement)):
-        d = Document(os.path.join(TEMPLATE, name))
-        fill(d)
-        freeze_formatting(d)
-        end_with_page_break(d)
-        front.append(d)
+    sheets = Document(os.path.join(TEMPLATE, "0_front_sheets.docx"))   # ends with its own section break
+    fill_front_sheets(sheets)
+    freeze_formatting(sheets)
+    front = [sheets]
     d = Document(os.path.join(TEMPLATE, "5_abstract.docx"))
     fill_abstract(d, abstract)
     freeze_formatting(d)
@@ -733,10 +758,12 @@ def main():
     for el in list(body):
         if el.tag != qn("w:sectPr"):
             body.remove(el)
+    front_sections = sum(1 for p in sheets.paragraphs if p._p.find(".//" + qn("w:sectPr")) is not None)
     composer = Composer(master)
     for d in front:
         composer.append(d)
     doc = composer.doc
+    unlink_header_footer(doc.sections[:front_sections])
 
     b = Builder(doc, cites, refs)
     for path in body_files:
