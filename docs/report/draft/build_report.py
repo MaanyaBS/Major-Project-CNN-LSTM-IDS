@@ -180,6 +180,52 @@ def _runs(p, changes):
         runs[i].text = text
 
 
+def tidy_signatures(d):
+    """The certificate's signature block, laid out in the template with tab stops and a
+    three-column section that drift apart once filled, as a borderless four-column table:
+    name, designation, department and role, each column centred."""
+    ps = d.paragraphs
+    k = next(i for i, p in enumerate(ps) if "Soumya K N" in p.text and "Gopalakrishna" in p.text)
+    block, end = ps[k], ps[k + 6]               # names line ... the three-column section's break
+    sect = end._p.find(".//" + qn("w:sectPr"))
+    assert ps[k + 1]._p.find(".//" + qn("w:sectPr")) is not None and sect is not None, "template layout changed"
+    rows = [(GUIDE, "Dr. Soumya K N", GUIDE, "Dr. K. Gopalakrishna"),
+            (GUIDE_DESIGNATION, "Associate Professor", GUIDE_DESIGNATION, "Principal"),
+            ("Dept of AIML, JIT", "Dept of AIML, JIT", "Dept of AIML, JIT", "JIT"),
+            ("(Project Guide)", "(Project Coordinator)", "", "")]
+    table = d.add_table(rows=4, cols=4)
+    block._p.addprevious(table._tbl)
+    table.alignment = WD_TABLE_ALIGNMENT.CENTER
+    borders = OxmlElement("w:tblBorders")
+    for edge in ("top", "left", "bottom", "right", "insideH", "insideV"):
+        b = OxmlElement(f"w:{edge}")
+        b.set(qn("w:val"), "nil")
+        borders.append(b)
+    table._tbl.tblPr.append(borders)
+    for j, col in enumerate(table.columns):
+        col.width = Inches(1.7)
+    for i, values in enumerate(rows):
+        for j, text in enumerate(values):
+            cell = table.cell(i, j)
+            cell.width = Inches(1.7)
+            p = cell.paragraphs[0]
+            p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            pf = p.paragraph_format
+            pf.line_spacing, pf.space_before, pf.space_after = 1.0, Pt(0), Pt(4)
+            r = p.add_run(text)
+            r.font.name, r.font.size = "Times New Roman", Pt(11 if i == 3 else 12)
+            sp = OxmlElement("w:spacing")
+            sp.set(qn("w:val"), "0")
+            r._r.get_or_add_rPr().append(sp)
+    for p in (block, ps[k + 2], ps[k + 3], ps[k + 4], ps[k + 5]):
+        delete(p)
+    cols = sect.find(qn("w:cols"))                 # the now-empty section needs no columns
+    for child in list(cols):
+        cols.remove(child)
+    for attr in ("w:num", "w:equalWidth"):
+        cols.attrib.pop(qn(attr), None)
+
+
 def fill_front_sheets(d):
     """The department's front sheets (template/0_front_sheets.docx): title page, certificate,
     declaration and acknowledgement. Placeholders are replaced run by run, so the template's
@@ -224,6 +270,8 @@ def fill_front_sheets(d):
         if name_col == 1 and last.cells[0].text.strip():
             continue
         last._tr.getparent().remove(last._tr)
+
+    tidy_signatures(d)
 
     # the template ends with an empty page in its own section: drop everything after the
     # acknowledgement's section break (the body's final properties are not merged anyway)
