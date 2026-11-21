@@ -28,7 +28,7 @@ Table 3.1 lists the division of work. Each member owned one part of the system e
 |:---|:---|:---|
 | Maanya B S (1JT23AI030) | Data | Cleaning of CICIDS2017 and MU-IoT, feature selection, session mapping and splits of MU-IoT, literature survey, public and own packet captures |
 | Ruthwik Sai Ganesh (1JT23AI042) | Model and prevention | CNN-LSTM training and evaluation, baselines, SHAP error analysis, prevention policy and engine, packet-to-flow extractor and its validation, live capture engine |
-| Varshini D N (1JT23AI060) | Explainability and dashboard | SHAP service, Flask backend and API, React dashboard (batch analysis, live feed, blocked devices), CERT-In category mapping |
+| Varshini D N (1JT23AI059) | Explainability and dashboard | SHAP service, Flask backend and API, React dashboard (batch analysis, live feed, blocked devices), CERT-In category mapping |
 
 ### 3.2.2 Datasets
 
@@ -51,7 +51,7 @@ The missing-value column counts values, not rows: every row removed for missing 
 
 **MU-IoT.** The MU-IoT dataset [@K30] was recorded on an IoT testbed at Manipur University. The copy used in this project consists of 40 raw CSV files, about 12.4 GB, with 124 columns. A session-mapping step grouped the 40 files into 32 capture sessions (one recording of one activity), and the session identifier was kept with every row. Cleaning processed the files in chunks and produced 24,171,263 rows with 118 columns: eight completely empty columns and seven constant columns were removed, and the `label` and `type` columns were removed from the features because they encode the target. HTTP and RTSP request methods were encoded as small integers (for example GET as 0 and POST as 1, with -1 for missing), and the source and destination IP addresses were replaced by six numeric indicators each (private, loopback, multicast and link-local flags, and the first and last octets), so that the model cannot learn the testbed's specific addresses.
 
-The published description of the dataset [@K30] reports a larger record count and 121 flow features; the files used here are the copy available to the team, reduced as described above and in Section 3.2.3. *[To confirm with the data team: how the 40-file copy relates to the full published dataset.]*
+The published description of the dataset [@K30] reports a larger record count and 121 flow features; the files used here are the copy available to the team, reduced as described above and in Section 3.2.3.
 
 Data preparation also found that two of the raw files (`Botnet_Slowloris.csv` and `Slowloris.csv`) are identical, so they cannot be treated as independent recordings.
 

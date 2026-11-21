@@ -30,4 +30,5 @@ contents, the figure and table lists, and their page numbers.
   (`::figure ... | 4.1 | ...`); keep the numbers in order when adding one.
 - Every number in the report comes from a file in `model/results/` or a team
   report; do not add figures that are not in the repository.
-- Marked *[To confirm ...]* in the text: open questions for the team.
+- Open questions for the team are marked *[To confirm ...]* in the text; none
+  are left in the current version.

@@ -47,7 +47,7 @@ EQUATIONS = os.path.join(ROOT, "docs", "report_assets", "equations")
 
 TITLE = ("Intrusion Detection System using Hybrid CNN-LSTM with Explainable AI (SHAP) "
          "for Indian Network Databases")
-STUDENTS = [("Maanya B S", "1JT23AI030"), ("Ruthwik Sai Ganesh", "1JT23AI042"), ("Varshini D N", "1JT23AI060")]
+STUDENTS = [("Maanya B S", "1JT23AI030"), ("Ruthwik Sai Ganesh", "1JT23AI042"), ("Varshini D N", "1JT23AI059")]
 GUIDE = "Dr. Madhu B R"
 GUIDE_DESIGNATION = "Professor and Head"
 RUNNING_TITLE = "Intrusion Detection System using Hybrid CNN-LSTM with Explainable AI"
@@ -229,7 +229,8 @@ def tidy_signatures(d):
 def fill_front_sheets(d):
     """The department's front sheets (template/0_front_sheets.docx): title page, certificate,
     declaration and acknowledgement. Placeholders are replaced run by run, so the template's
-    fonts, colours, page borders and logos stay as they are. Department wording is kept."""
+    fonts, colours, page borders and logos stay as they are. The template's department
+    (Computer Science and Engineering) becomes ours, and its spacing slips are corrected."""
     ps = d.paragraphs
     (n1, u1), (n2, u2), (n3, u3) = STUDENTS
 
@@ -241,23 +242,36 @@ def fill_front_sheets(d):
             r._r.getparent().remove(r._r)
     _runs(ps[14], {7: "\n" + GUIDE, 8: "", 9: "", 10: "", 11: "", 12: ""})
     _runs(ps[15], {0: GUIDE_DESIGNATION, 1: "", 2: "", 3: "\nDept of "})
+    _runs(ps[17], {4: "ARTIFICIAL", 6: "INTELLIGENCE\n", 7: "", 8: "&",
+                   10: "MACHINE LEARNING\nJYOTHY INSTITUTE OF TECHNOLOGY"})
 
     # certificate
+    _runs(ps[24], {4: "ARTIFICIAL", 6: "INTELLIGENCE", 8: "& ", 9: "MACHINE LEARNING"})
     _runs(ps[26], {1: TITLE, 3: n1, 4: f" [{u1}], ", 5: n2, 6: " ", 7: f"[{u2}", 8: "] and ", 9: n3, 10: " ",
-                   11: f"[{u3}], ", 12: "", 13: "", 14: "", 15: ""})
+                   11: f"[{u3}], ", 12: "", 13: "", 14: "", 15: "", 20: "Bachelor of Engineering in ", 22: "Learning"})
     _runs(ps[34], {0: GUIDE, 1: "", 12: GUIDE_DESIGNATION})
 
     # declaration
-    _runs(ps[47], {22: TITLE, 25: GUIDE, 26: "", 27: "", 28: ", ", 29: GUIDE_DESIGNATION, 30: "", 31: "",
-                   32: ", Department of "})
+    _runs(ps[47], {0: "We, the students of the 7th semester of Artificial Intelligence & Machine Learning, Jyothy "
+                      "Institute", 22: TITLE, 25: GUIDE, 26: "", 27: "", 28: ", ", 29: GUIDE_DESIGNATION, 30: "",
+                   31: "", 32: ", Department of ", 34: "Learning", 35: ","})
 
-    # acknowledgement (no pronouns for the people named)
-    _runs(ps[56], {5: "for providing us an opportunity and for the valuable support."})
-    _runs(ps[58], {1: GUIDE, 2: "", 3: "", 4: "", 5: "", 6: "", 8: GUIDE_DESIGNATION,
-                   9: ", Department of ", 12: "for the keen interest and boundless encouragement in completing this work."})
+    # acknowledgement: Dr. Madhu B R is both HOD and guide, so one sentence thanks both roles;
+    # no pronouns for the people named
+    _runs(ps[56], {3: ", Professor and Head, Department of ", 4: "Artificial Intelligence and Machine Learning, ",
+                   5: "and our project guide, for providing us this opportunity and for the keen interest and "
+                      "boundless encouragement in completing this work."})
+    delete(ps[58])
+    _runs(ps[57], {0: "We express deep and profound gratitude to our project coordinator ", 1: "Dr. Soumya", 6: ""})
+    _runs(ps[59], {2: "Learning", 3: ". "})
     insert_after(ps[59], "We thank the University of New Brunswick and Manipur University for the CICIDS2017 and "
                          "MU-IoT datasets, and the owner of the network used for the live test for permission to "
                          "use it.")
+    for p in ps[47:60]:                  # template spaces with 4 pt extra letter spacing ("Professor,  Department")
+        for r in p.runs:
+            sp = r._r.rPr.find(qn("w:spacing")) if r._r.rPr is not None else None
+            if not r.text.strip() and sp is not None and int(sp.get(qn("w:val"))) > 0:
+                sp.set(qn("w:val"), "0")
 
     # name tables of the declaration and the acknowledgement: three students, so the fourth row goes
     for table in d.tables:
@@ -385,6 +399,10 @@ def unlink_header_footer(sections):
             part.is_linked_to_previous = False           # creates a fresh, empty part
             for p in part.paragraphs:
                 p.style = "Normal"                       # the Header style draws a rule line
+                pf = p.paragraph_format                  # 1 pt tall: an empty Normal line would reach
+                pf.space_before = pf.space_after = Pt(0) # below the narrow top margin and push the
+                pf.line_spacing = Pt(1)                  # page down under the page-anchored VTU logo
+                p.add_run().font.size = Pt(1)
 
 
 def format_abstract(d):

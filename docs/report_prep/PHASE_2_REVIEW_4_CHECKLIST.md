@@ -15,7 +15,7 @@ template; outside the repository).
 | "Project Presentation on" | Yes | Yes | Done |
 | Project title | Yes | Paper title "A Hybrid CNN-LSTM Intrusion Detection and Prevention System with Live Packet Capture" | **Verify against the final title (Q1)** |
 | Batch number | Yes | Blank ("Batch Number:") | **Missing — fill in (Q5)** |
-| Student names and USNs | Yes | Maanya B S 1JT23AI030; Ruthwik Sai Ganesh 1JT23AI042; Varshini D N 1JT23AI060 | Verify (Q2) |
+| Student names and USNs | Yes | Maanya B S 1JT23AI030; Ruthwik Sai Ganesh 1JT23AI042; Varshini D N 1JT23AI059 | Verify (Q2) |
 | Guide name | Yes | Dr. Madhu B R | Verify (Q3) |
 | Guide designation | Yes | Professor & Head, Department of AIML | Verify (Q3) |
 | Department and batch line (footer) | Yes | "Dept of AIML, Batch 2023-27" | **Verify (Q5)**; template showed 2020-24 / 2024-26 |

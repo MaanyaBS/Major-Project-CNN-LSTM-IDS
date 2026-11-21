@@ -42,7 +42,7 @@ page header if used, presentation slide 1.
 
 **Q2. Confirm the team members and USNs (spelling and order).**
 Found (Review 2 deck): Maanya B S 1JT23AI030; Ruthwik Sai Ganesh 1JT23AI042;
-Varshini D N 1JT23AI060 (three students; the template allows four).
+Varshini D N 1JT23AI059 (three students; the template allows four).
 *Depends:* title sheet, certificate, declaration, acknowledgement signatures,
 slide 1.
 

@@ -1,6 +1,6 @@
 # 5 | Hardware and Software Requirement
 
-This chapter lists the hardware and software that were used to develop, train and run the system, and the minimum requirements for running it. The project was developed on ordinary student equipment: one laptop serves as both development machine and protected host, and model training was done on free cloud GPUs.
+This chapter lists the hardware and software that were used to develop, train and run the system and the minimum requirements for running it, states the functional and non-functional requirements the system meets, and describes the development environment. The project was developed on ordinary student equipment: one laptop serves as both development machine and protected host, and model training was done on free cloud GPUs.
 
 ## 5.1 Hardware Requirement
 
@@ -56,11 +56,47 @@ Table 5.3 lists the software and libraries with the versions used. The backend's
 
 The backend must run with administrator rights, to capture packets and to change firewall rules, and no VPN may be active during live capture.
 
-## 5.3 Development and Deployment Environment
+## 5.3 Functional Requirements
 
-**Repository.** The project is kept in one Git repository (Table 5.4).
+The functional requirements state what the system must do. Table 5.4 lists them with the part of the design that realises each one.
 
-::table 5.4 | Organisation of the project repository
+::table 5.4 | Functional requirements
+| ID | Functional requirement | Realised in |
+|:---|:---|:---|
+| FR1 | Capture live packets from a selected network interface and read Wireshark captures (.pcap, .pcapng) | Sections 3.2.8, 4.6.1 |
+| FR2 | Convert packets into bidirectional flows with the 20 CICFlowMeter-V3 features | Section 4.5.1 |
+| FR3 | Accept flow CSV files that already contain the 20 features | Section 4.1 |
+| FR4 | Classify windows of ten flows into benign traffic or one of 14 attacks, with a confidence | Section 4.5.3 |
+| FR5 | Decide for each prediction: no action, review, recommendation or automatic action | Section 4.5.6 |
+| FR6 | Block the attacking device with Windows Firewall rules, only within the allowed scope | Section 4.5.7 |
+| FR7 | Revoke any block on request, also with the kill switch off | Section 4.4 |
+| FR8 | Explain any prediction with a SHAP value per feature | Section 4.5.5 |
+| FR9 | Show predictions, statistics, explanations and blocked devices in a web dashboard | Section 6.1 |
+| FR10 | Log every prevention attempt, including refusals and expiries | Section 4.6.4 |
+
+## 5.4 Non-Functional Requirements
+
+The non-functional requirements state how well the system must do its work. Table 5.5 lists each with the measure by which it is met.
+
+::table 5.5 | Non-functional requirements and how they are met
+| ID | Requirement | Measure |
+|:---|:---|:---|
+| NFR1 | Performance: classification fast enough for live use | 1.48 ms per window on a laptop CPU |
+| NFR2 | Responsiveness: an attack is reported and blocked within seconds | Scan blocked about 2 s after its first probes |
+| NFR3 | Capacity: bursts of packets never wait for the model | Separate capture thread, 100,000-packet queue |
+| NFR4 | Safety: no device outside the allowed scope is ever blocked | Kill switch, allow-list, deny-list; 35 tests |
+| NFR5 | Reversibility: every action can be undone | Revoke without the kill switch; timed expiry |
+| NFR6 | Reliability: rules in force survive a restart | Startup sweep and log-based rule registry |
+| NFR7 | Explainability: explanations add up to the model's output | Additivity error about 10⁻⁹ |
+| NFR8 | Usability: the system is operated from a web browser | Dashboard with live feed and revoke control |
+| NFR9 | Portability: runs on an ordinary laptop without a GPU | Ryzen 3, 7.3 GB RAM, Windows 11 |
+| NFR10 | Maintainability: every change can be checked | 88 automated tests; results written by scripts |
+
+## 5.5 Development and Deployment Environment
+
+**Repository.** The project is kept in one Git repository (Table 5.6).
+
+::table 5.6 | Organisation of the project repository
 | Folder | Contents |
 |:---|:---|
 | src/, output/ | Data cleaning, feature selection and MU-IoT handoff scripts and their metadata |
@@ -71,9 +107,9 @@ The backend must run with administrator rights, to capture packets and to change
 | frontend/ | React and TypeScript dashboard |
 | docs/ | Interface documents, team reports, live demonstration checklist, this report |
 
-**Configuration.** The behaviour of the running system is controlled by environment variables that are set when the backend is started (Table 5.5). No request to the API can change them; in particular, firewall execution can only be switched on by the person who starts the backend.
+**Configuration.** The behaviour of the running system is controlled by environment variables that are set when the backend is started (Table 5.7). No request to the API can change them; in particular, firewall execution can only be switched on by the person who starts the backend.
 
-::table 5.5 | Environment variables of the backend
+::table 5.7 | Environment variables of the backend
 | Variable | Effect | Default |
 |:---|:---|:---|
 | IDS_PREVENTION_EXECUTION_ENABLED | Kill switch: "1" allows real firewall rules | Off |
@@ -89,5 +125,5 @@ The backend must run with administrator rights, to capture packets and to change
 1. Install Python 3.13 and the backend's dependencies (`pip install -r backend/requirements.txt`).
 2. Install Wireshark together with the Npcap driver it offers.
 3. Install Node.js and the dashboard's dependencies (`npm install` in `frontend/`).
-4. Start the backend from an administrator PowerShell window, with the environment variables of Table 5.5.
+4. Start the backend from an administrator PowerShell window, with the environment variables of Table 5.7.
 5. Start the dashboard (`npm run dev` in `frontend/`) and open it in a browser.

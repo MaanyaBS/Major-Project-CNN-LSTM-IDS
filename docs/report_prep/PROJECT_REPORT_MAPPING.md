@@ -62,7 +62,7 @@ execution now exists); project title appears in four variants (Q1).
 | Field | Title sheet / Certificate / Declaration / Acknowledgement |
 |---|---|
 | Purpose | Identify the work, certify authorship, declare originality, thank contributors |
-| Project-specific content | Title (Q1); students: Maanya B S 1JT23AI030, Ruthwik Sai Ganesh 1JT23AI042, Varshini D N 1JT23AI060 (from the team's Review 2 deck, 17 Sep 2026 — verify spelling, Q2); guide: "Dr. Madhu B R, Professor & Head, Department of AIML" (Review 2 deck) — confirm whether the guide and HOD are the same person (Q3); principal and coordinator names (Q4); academic year (Q5); degree name (Q6) |
+| Project-specific content | Title (Q1); students: Maanya B S 1JT23AI030, Ruthwik Sai Ganesh 1JT23AI042, Varshini D N 1JT23AI059 (from the team's Review 2 deck, 17 Sep 2026 — verify spelling, Q2); guide: "Dr. Madhu B R, Professor & Head, Department of AIML" (Review 2 deck) — confirm whether the guide and HOD are the same person (Q3); principal and coordinator names (Q4); academic year (Q5); degree name (Q6) |
 | Evidence | Team's Review 2 deck (outside repo: `Downloads/Review_2_-_Presentation_on_Project_Phase-2 (1).pptx`); Review 4 deck (`PROJECTS/Report format AIML 8th sem/Phase 2 Review 4 - CNN-LSTM IDS Presentation.pptx`) |
 | Repository path | none (institutional data is not in the repo) |
 | Figures and tables | College logo (from the template) |
