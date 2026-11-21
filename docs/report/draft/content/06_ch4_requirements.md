@@ -1,12 +1,12 @@
-# 5 | Hardware and Software Requirement
+# 4 | Hardware and Software Requirement
 
 This chapter lists the hardware and software that were used to develop, train and run the system and the minimum requirements for running it, states the functional and non-functional requirements the system meets, and describes the development environment. The project was developed on ordinary student equipment: one laptop serves as both development machine and protected host, and model training was done on free cloud GPUs.
 
-## 5.1 Hardware Requirement
+## 4.1 Hardware Requirement
 
-Table 5.1 lists the hardware actually used. All speed measurements in this report were taken on the laptop listed, without a GPU.
+Table 4.1 lists the hardware actually used. All speed measurements in this report were taken on the laptop listed, without a GPU.
 
-::table 5.1 | Hardware used in the project
+::table 4.1 | Hardware used in the project
 | Item | Specification | Use |
 |:---|:---|:---|
 | Laptop (protected host) | AMD Ryzen 3 5300U, 4 cores / 8 threads, 7.3 GB RAM, Windows 11 Home, Wi-Fi | Development, backend, dashboard, live capture, firewall |
@@ -16,9 +16,9 @@ Table 5.1 lists the hardware actually used. All speed measurements in this repor
 
 Training was done in the cloud because the full datasets do not fit comfortably in the laptop's memory: the MU-IoT feature matrix alone has almost four million rows, and training draws up to 300,000 windows per class per epoch. Inference, by contrast, is light: one window takes 1.48 ms on the laptop's CPU, so a GPU is not needed to run the system.
 
-Table 5.2 gives the minimum requirements for running the trained system on one protected host.
+Table 4.2 gives the minimum requirements for running the trained system on one protected host.
 
-::table 5.2 | Minimum hardware requirements for running the system
+::table 4.2 | Minimum hardware requirements for running the system
 | Component | Minimum | Reason |
 |:---|:---|:---|
 | Processor | 64-bit dual-core x86 CPU | TensorFlow inference and the three capture threads |
@@ -27,11 +27,11 @@ Table 5.2 gives the minimum requirements for running the trained system on one p
 | Network interface | Wired or Wi-Fi adapter supported by Npcap | Live packet capture |
 | Operating system | Windows 10 or 11, run as administrator | Npcap and Windows Firewall rules (netsh) |
 
-## 5.2 Software Requirement
+## 4.2 Software Requirement
 
-Table 5.3 lists the software and libraries with the versions used. The backend's Python dependencies are pinned in `backend/requirements.txt`; SHAP is pinned exactly, because the explainer uses an internal SHAP class whose interface may change between versions.
+Table 4.3 lists the software and libraries with the versions used. The backend's Python dependencies are pinned in `backend/requirements.txt`; SHAP is pinned exactly, because the explainer uses an internal SHAP class whose interface may change between versions.
 
-::table 5.3 | Software used in the project
+::table 4.3 | Software used in the project
 | Software | Version | Purpose |
 |:---|:---|:---|
 | Windows 11 Home | 10.0.26300 | Operating system of the protected host |
@@ -56,29 +56,29 @@ Table 5.3 lists the software and libraries with the versions used. The backend's
 
 The backend must run with administrator rights, to capture packets and to change firewall rules, and no VPN may be active during live capture.
 
-## 5.3 Functional Requirements
+## 4.3 Functional Requirements
 
-The functional requirements state what the system must do. Table 5.4 lists them with the part of the design that realises each one.
+The functional requirements state what the system must do. Table 4.4 lists them with the part of the design that realises each one.
 
-::table 5.4 | Functional requirements
+::table 4.4 | Functional requirements
 | ID | Functional requirement | Realised in |
 |:---|:---|:---|
-| FR1 | Capture live packets from a selected network interface and read Wireshark captures (.pcap, .pcapng) | Sections 3.2.8, 4.6.1 |
-| FR2 | Convert packets into bidirectional flows with the 20 CICFlowMeter-V3 features | Section 4.5.1 |
-| FR3 | Accept flow CSV files that already contain the 20 features | Section 4.1 |
-| FR4 | Classify windows of ten flows into benign traffic or one of 14 attacks, with a confidence | Section 4.5.3 |
-| FR5 | Decide for each prediction: no action, review, recommendation or automatic action | Section 4.5.6 |
-| FR6 | Block the attacking device with Windows Firewall rules, only within the allowed scope | Section 4.5.7 |
-| FR7 | Revoke any block on request, also with the kill switch off | Section 4.4 |
-| FR8 | Explain any prediction with a SHAP value per feature | Section 4.5.5 |
-| FR9 | Show predictions, statistics, explanations and blocked devices in a web dashboard | Section 6.1 |
-| FR10 | Log every prevention attempt, including refusals and expiries | Section 4.6.4 |
+| FR1 | Capture live packets from a selected network interface and read Wireshark captures (.pcap, .pcapng) | Section 3.6.1 |
+| FR2 | Convert packets into bidirectional flows with the 20 CICFlowMeter-V3 features | Section 3.5.1 |
+| FR3 | Accept flow CSV files that already contain the 20 features | Section 3.1 |
+| FR4 | Classify windows of ten flows into benign traffic or one of 14 attacks, with a confidence | Section 3.5.3 |
+| FR5 | Decide for each prediction: no action, review, recommendation or automatic action | Section 3.5.6 |
+| FR6 | Block the attacking device with Windows Firewall rules, only within the allowed scope | Section 3.5.7 |
+| FR7 | Revoke any block on request, also with the kill switch off | Section 3.4 |
+| FR8 | Explain any prediction with a SHAP value per feature | Section 3.5.5 |
+| FR9 | Show predictions, statistics, explanations and blocked devices in a web dashboard | Section 5.1 |
+| FR10 | Log every prevention attempt, including refusals and expiries | Section 3.6.4 |
 
-## 5.4 Non-Functional Requirements
+## 4.4 Non-Functional Requirements
 
-The non-functional requirements state how well the system must do its work. Table 5.5 lists each with the measure by which it is met.
+The non-functional requirements state how well the system must do its work. Table 4.5 lists each with the measure by which it is met.
 
-::table 5.5 | Non-functional requirements and how they are met
+::table 4.5 | Non-functional requirements and how they are met
 | ID | Requirement | Measure |
 |:---|:---|:---|
 | NFR1 | Performance: classification fast enough for live use | 1.48 ms per window on a laptop CPU |
@@ -92,11 +92,11 @@ The non-functional requirements state how well the system must do its work. Tabl
 | NFR9 | Portability: runs on an ordinary laptop without a GPU | Ryzen 3, 7.3 GB RAM, Windows 11 |
 | NFR10 | Maintainability: every change can be checked | 88 automated tests; results written by scripts |
 
-## 5.5 Development and Deployment Environment
+## 4.5 Development and Deployment Environment
 
-**Repository.** The project is kept in one Git repository (Table 5.6).
+**Repository.** The project is kept in one Git repository (Table 4.6).
 
-::table 5.6 | Organisation of the project repository
+::table 4.6 | Organisation of the project repository
 | Folder | Contents |
 |:---|:---|
 | src/, output/ | Data cleaning, feature selection and MU-IoT handoff scripts and their metadata |
@@ -107,9 +107,9 @@ The non-functional requirements state how well the system must do its work. Tabl
 | frontend/ | React and TypeScript dashboard |
 | docs/ | Interface documents, team reports, live demonstration checklist, this report |
 
-**Configuration.** The behaviour of the running system is controlled by environment variables that are set when the backend is started (Table 5.7). No request to the API can change them; in particular, firewall execution can only be switched on by the person who starts the backend.
+**Configuration.** The behaviour of the running system is controlled by environment variables that are set when the backend is started (Table 4.7). No request to the API can change them; in particular, firewall execution can only be switched on by the person who starts the backend.
 
-::table 5.7 | Environment variables of the backend
+::table 4.7 | Environment variables of the backend
 | Variable | Effect | Default |
 |:---|:---|:---|
 | IDS_PREVENTION_EXECUTION_ENABLED | Kill switch: "1" allows real firewall rules | Off |
@@ -125,5 +125,5 @@ The non-functional requirements state how well the system must do its work. Tabl
 1. Install Python 3.13 and the backend's dependencies (`pip install -r backend/requirements.txt`).
 2. Install Wireshark together with the Npcap driver it offers.
 3. Install Node.js and the dashboard's dependencies (`npm install` in `frontend/`).
-4. Start the backend from an administrator PowerShell window, with the environment variables of Table 5.7.
+4. Start the backend from an administrator PowerShell window, with the environment variables of Table 4.7.
 5. Start the dashboard (`npm run dev` in `frontend/`) and open it in a browser.

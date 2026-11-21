@@ -83,7 +83,7 @@ Meeting these requirements turned out to be the most instructive part of the pro
 
 ## 1.4 Objectives
 
-The objectives of the project, detailed in Section 3.1, are to:
+The objectives of the project are to:
 
 1. Detect fourteen attack classes from windows of consecutive network flows with a hybrid CNN-LSTM model.
 2. Evaluate the model with leakage-controlled splits against a random-forest baseline on identical examples, on CICIDS2017 and on the Indian MU-IoT dataset.
@@ -136,4 +136,4 @@ Building an intrusion detection and prevention system that can be trusted on a r
 
 ## 1.9 Organisation of the Report
 
-Chapter 2 surveys the literature on intrusion detection datasets, deep-learning detectors, hybrid CNN-LSTM models, explainable AI and practical evaluation, and identifies the gap this project addresses. Chapter 3 states the objectives and describes the methodology: the datasets, preprocessing, evaluation design, model, explainability, prevention policy, live capture, dashboard and development process. Chapter 4 presents the system design: the architecture, use case, data flow and sequence diagrams, the algorithms with their equations, and the detailed design of the live engine, the classes, the deployment and the logs. Chapter 5 lists the hardware and software requirements, the functional and non-functional requirements and the development environment. Chapter 6 describes the implementation and testing and reports all results, including the live run. The report closes with conclusions and future enhancements, the references and five appendices: the backend API, the MU-IoT features and dashboard categories, definitions of the 20 flow features, the live demonstration procedure and selected source code.
+Chapter 2 surveys the literature on intrusion detection datasets, deep-learning detectors, hybrid CNN-LSTM models, explainable AI and practical evaluation, and identifies the gap this project addresses. Chapter 3 presents the system design: the architecture, use case, data flow and sequence diagrams, the algorithms with their equations, and the detailed design of the live engine, the classes, the deployment and the logs. Chapter 4 lists the hardware and software requirements, the functional and non-functional requirements and the development environment. Chapter 5 describes the implementation and testing and reports all results, including the live run. The report closes with conclusions and future enhancements, the references and five appendices: the backend API, the MU-IoT features and dashboard categories, definitions of the 20 flow features, the live demonstration procedure and selected source code.

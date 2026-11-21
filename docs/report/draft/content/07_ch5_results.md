@@ -1,49 +1,49 @@
-# 6 | Implementation, Testing and Results
+# 5 | Implementation, Testing and Results
 
-This chapter describes how the system was implemented (Section 6.1) and tested (Section 6.2), reports all results (Section 6.3), discusses them (Section 6.4) and states the limitations of the work (Section 6.5). Every number in this chapter comes from a results file in the project repository; the files are named where the results are reported.
+This chapter describes how the system was implemented (Section 5.1) and tested (Section 5.2), reports all results (Section 5.3), discusses them (Section 5.4) and states the limitations of the work (Section 5.5). Every number in this chapter comes from a results file in the project repository; the files are named where the results are reported.
 
-## 6.1 Implementation
+## 5.1 Implementation
 
-### 6.1.1 Code Organisation
+### 5.1.1 Code Organisation
 
 The project is kept in one Git repository shared by the three team members, with one branch per member and pull requests to merge finished work into the main branch. Data scripts are in `src/`, the model, evaluation, prevention and extractor code in `model/` (trained artifacts in `model/artifacts/`, every reported result in `model/results/`), the backend in `backend/` and the dashboard in `frontend/`. Two interface documents fix the contract between the members' work: the model interface states the order of the 20 features, the scaling, the window length and the label mapping, and the prevention interface states which actions exist and which checks the engine performs, so the model and the engine could change internally without breaking the dashboard.
 
-### 6.1.2 Dashboard
+### 5.1.2 Dashboard
 
-The dashboard has a home page, an analysis console and an about page. The analysis console offers batch analysis and a live feed. In batch analysis (Fig. 6.1) the analyst uploads a flow CSV or a Wireshark capture and receives a batch verdict (attack rate, top threat, number of classes seen), network statistics (windows, normal and attack windows, actions recommended, actions actually executed and windows held for review), the class distribution, and a list of windows, each of which can be explained with SHAP. The header shows the loaded model with its test accuracy and weighted F1, whether the SHAP explainer is ready, and whether firewall execution is armed.
+The dashboard has a home page, an analysis console and an about page. The analysis console offers batch analysis and a live feed. In batch analysis (Fig. 5.1) the analyst uploads a flow CSV or a Wireshark capture and receives a batch verdict (attack rate, top threat, number of classes seen), network statistics (windows, normal and attack windows, actions recommended, actions actually executed and windows held for review), the class distribution, and a list of windows, each of which can be explained with SHAP. The header shows the loaded model with its test accuracy and weighted F1, whether the SHAP explainer is ready, and whether firewall execution is armed.
 
-::figure docs/report_assets/screenshots/shot_6_2_batch_analysis.png | 6.1 | Batch analysis of an uploaded flow file in the dashboard | 4.6
+::figure docs/report_assets/screenshots/shot_6_2_batch_analysis.png | 5.1 | Batch analysis of an uploaded flow file in the dashboard | 4.6
 
-The live feed either replays a file window by window or captures live traffic from a selected interface (Fig. 6.2). It shows the number of packets, flows and windows processed, the latest detection with its confidence and prevention status, a stream of the confidence of recent threat predictions, a detection log, and the Blocked devices panel. When real firewall execution is armed, a banner states which addresses may be acted on.
+The live feed either replays a file window by window or captures live traffic from a selected interface (Fig. 5.2). It shows the number of packets, flows and windows processed, the latest detection with its confidence and prevention status, a stream of the confidence of recent threat predictions, a detection log, and the Blocked devices panel. When real firewall execution is armed, a banner states which addresses may be acted on.
 
-::figure docs/report_assets/screenshots/shot_6_1_live_capture.png | 6.2 | Live interface capture in the dashboard during the final demonstration | 5.2
+::figure docs/report_assets/screenshots/shot_6_1_live_capture.png | 5.2 | Live interface capture in the dashboard during the final demonstration | 5.2
 
-### 6.1.3 Prevention in Operation
+### 5.1.3 Prevention in Operation
 
-Figs. 6.3 to 6.5 show the prevention layer at work on live traffic. In Fig. 6.3, from the live run described in Section 6.3.7, window 6 was classified PortScan with a confidence of 0.997 and the scanning tablet was blocked; the following PortScan windows from the same device are reported as "already blocked, dropped" instead of creating new rules, and once the scan ended, the tablet's traffic returned to BENIGN.
+Figs. 5.3 to 5.5 show the prevention layer at work on live traffic. In Fig. 5.3, from the live run described in Section 5.3.7, window 6 was classified PortScan with a confidence of 0.997 and the scanning tablet was blocked; the following PortScan windows from the same device are reported as "already blocked, dropped" instead of creating new rules, and once the scan ended, the tablet's traffic returned to BENIGN.
 
-::figure docs/report_assets/live_run_dashboard.png | 6.3 | Live run: a port scan detected and blocked, then reported as already blocked | 4.3
+::figure docs/report_assets/live_run_dashboard.png | 5.3 | Live run: a port scan detected and blocked, then reported as already blocked | 4.3
 
-Fig. 6.4 shows how the policy treats a class it does not trust. While the tablet repeatedly reloaded a page served by the laptop, the model classified several windows as Bot; Bot is locked to human review, so these windows were held for review (eye icon) and never executed, while the PortScan windows in the same log were acted on.
+Fig. 5.4 shows how the policy treats a class it does not trust. While the tablet repeatedly reloaded a page served by the laptop, the model classified several windows as Bot; Bot is locked to human review, so these windows were held for review (eye icon) and never executed, while the PortScan windows in the same log were acted on.
 
-::figure docs/report_assets/screenshots/shot_6_3_detection_log_held_for_review.png | 6.4 | Detection log: Bot predictions held for review, PortScan acted on | 5.6
+::figure docs/report_assets/screenshots/shot_6_3_detection_log_held_for_review.png | 5.4 | Detection log: Bot predictions held for review, PortScan acted on | 5.6
 
-Fig. 6.5 shows the Blocked devices panel with the rule in force, its action (block IP, persistent until revoked), its firewall rule name and the revoke control; revoking the rule empties the panel and restores access.
+Fig. 5.5 shows the Blocked devices panel with the rule in force, its action (block IP, persistent until revoked), its firewall rule name and the revoke control; revoking the rule empties the panel and restores access.
 
-::figure docs/report_assets/screenshots/shot_6_4_blocked_devices_rule.png | 6.5 | Blocked devices panel with one rule in force and the revoke control | 5.6
+::figure docs/report_assets/screenshots/shot_6_4_blocked_devices_rule.png | 5.5 | Blocked devices panel with one rule in force and the revoke control | 5.6
 
-Fig. 6.6 shows the same panel after the analyst revoked the rule: no rule is in force, while the detection log keeps the history of the earlier detections.
+Fig. 5.6 shows the same panel after the analyst revoked the rule: no rule is in force, while the detection log keeps the history of the earlier detections.
 
-::figure docs/report_assets/screenshots/shot_6_5_after_revoke_no_rules.png | 6.6 | After revocation: no firewall rules in force | 5.0
+::figure docs/report_assets/screenshots/shot_6_5_after_revoke_no_rules.png | 5.6 | After revocation: no firewall rules in force | 5.0
 
 
-## 6.2 Testing
+## 5.2 Testing
 
-### 6.2.1 Automated Tests
+### 5.2.1 Automated Tests
 
-Every component that can act on the network was tested automatically, without touching the real firewall, and then checked end to end on the real firewall. Table 6.1 lists the test suites.
+Every component that can act on the network was tested automatically, without touching the real firewall, and then checked end to end on the real firewall. Table 5.1 lists the test suites.
 
-::table 6.1 | Automated tests
+::table 5.1 | Automated tests
 | Suite | Tests | What it covers |
 |:---|---:|:---|
 | model/test_prevention.py | 35 | Both policies, review locks, one rule per device, allow-list of listed devices, revoke, restart recovery, every refusal path |
@@ -59,11 +59,11 @@ The prevention tests include adversarial targets, such as an address list writte
 
 **Mutation check.** To make sure that the tests would notice a broken safety check, the prevention engine and policy were broken deliberately in 19 different ways (for example: kill switch removed, allow-list removed, a locked class unlocked, duplicate rules allowed, a stale timer allowed to remove a newer rule, the dataset argument ignored, benign traffic made actionable). For each breakage the test suite was run, and it failed every time: 19 of 19 breakages were caught.
 
-### 6.2.2 Test Cases
+### 5.2.2 Test Cases
 
-Tables 6.2 to 6.4 list every automated test case. Each test sets up its own situation, runs the code under test and checks the outcome; all of them pass.
+Tables 5.2 to 5.4 list every automated test case. Each test sets up its own situation, runs the code under test and checks the outcome; all of them pass.
 
-::table 6.2 | Test cases of the prevention policy and execution engine
+::table 5.2 | Test cases of the prevention policy and execution engine
 | ID | Test case (expected behaviour) | Result |
 |:---|:---|:---|
 | TP-01 | Every class of both models has a policy entry | Pass |
@@ -102,7 +102,7 @@ Tables 6.2 to 6.4 list every automated test case. Each test sets up its own situ
 | TP-34 | After a restart, active rules and pending expiries are restored | Pass |
 | TP-35 | Refusals and skipped attempts do not hide a stale rule from the sweep | Pass |
 
-::table 6.3 | Test cases of the packet-to-flow extractor and the live engine
+::table 5.3 | Test cases of the packet-to-flow extractor and the live engine
 | ID | Test case (expected behaviour) | Result |
 |:---|:---|:---|
 | TF-01 | Reproduces a CICIDS2017 row with two padded ACK packets | Pass |
@@ -140,7 +140,7 @@ Tables 6.2 to 6.4 list every automated test case. Each test sets up its own situ
 | TL-13 | Interfaces are listed where Npcap is installed | Pass |
 | TL-14 | Starting is refused before the model is loaded | Pass |
 
-::table 6.4 | Test cases of target selection, MU-IoT windows and the extractor validator
+::table 5.4 | Test cases of target selection, MU-IoT windows and the extractor validator
 | ID | Test case (expected behaviour) | Result |
 |:---|:---|:---|
 | TS-01 | The most frequent valid source is chosen | Pass |
@@ -163,11 +163,11 @@ Tables 6.2 to 6.4 list every automated test case. Each test sets up its own situ
 | TV-02 | Agreement at the printed precision of the official CSV | Pass |
 | TV-03 | Timestamps without AM or PM are read correctly | Pass |
 
-### 6.2.3 End-to-End Check on the Real Firewall
+### 5.2.3 End-to-End Check on the Real Firewall
 
-The end-to-end check runs the engine against the real Windows Firewall with documentation addresses only, with the timers of temporary actions shortened to 8 and 12 seconds (Table 6.5, `model/results/prevention_live_check.txt`).
+The end-to-end check runs the engine against the real Windows Firewall with documentation addresses only, with the timers of temporary actions shortened to 8 and 12 seconds (Table 5.5, `model/results/prevention_live_check.txt`).
 
-::table 6.5 | End-to-end check on the Windows Firewall (22 of 22 checks passed)
+::table 5.5 | End-to-end check on the Windows Firewall (22 of 22 checks passed)
 | Step | What is checked | Result |
 |:---|:---|:---|
 | 1 | block_ip adds one inbound and one outbound rule | Pass (2 rules) |
@@ -178,30 +178,30 @@ The end-to-end check runs the engine against the real Windows Firewall with docu
 | 6 | After a simulated restart, the persistent block is remembered and the pending timer still removes its rule | Pass |
 | 7 | Clean-up: no test rules are left in the firewall | Pass |
 
-### 6.2.4 Defects Found by Testing
+### 5.2.4 Defects Found by Testing
 
 Testing found defects that would otherwise have reached the live demonstration, all of which were fixed:
 
 - revocations were logged without the name of the rule, and timer expiries were not logged at all;
 - non-text targets were not explicitly refused;
 - integrated with the backend, the engine added the same rule once for every flagged window, and refused to revoke whenever the kill switch was off;
-- in the live run, a device that only broadcast discovery messages was chosen as a target, which led to the rule that a target must have sent traffic to the protected host (Section 6.3.7).
+- in the live run, a device that only broadcast discovery messages was chosen as a target, which led to the rule that a target must have sent traffic to the protected host (Section 5.3.7).
 
-## 6.3 Results
+## 5.3 Results
 
-### 6.3.1 Detection on CICIDS2017
+### 5.3.1 Detection on CICIDS2017
 
-Table 6.6 compares the CNN-LSTM with the random-forest baseline on the 530,951 identical test examples (`model/results/cnn_lstm_v2_full_test_results.txt`, `model/results/chronological_random_forest_results.txt`).
+Table 5.6 compares the CNN-LSTM with the random-forest baseline on the 530,951 identical test examples (`model/results/cnn_lstm_v2_full_test_results.txt`, `model/results/chronological_random_forest_results.txt`).
 
-::table 6.6 | CICIDS2017: CNN-LSTM and random forest on identical test examples
+::table 5.6 | CICIDS2017: CNN-LSTM and random forest on identical test examples
 | Model | Accuracy | Weighted F1 | Macro F1 |
 |:---|---:|---:|---:|
 | CNN-LSTM (10-flow windows) | 0.9842 | 0.9864 | 0.5857 |
 | Random forest (single flows) | 0.9911 | 0.9908 | 0.7803 |
 
-Both models reach high accuracy and weighted F1, because benign traffic and the large attack classes dominate the test set. The macro F1, which weights every class equally, shows the difference: on CICIDS2017 the single-flow random forest is the better model. Table 6.7 gives the per-class scores.
+Both models reach high accuracy and weighted F1, because benign traffic and the large attack classes dominate the test set. The macro F1, which weights every class equally, shows the difference: on CICIDS2017 the single-flow random forest is the better model. Table 5.7 gives the per-class scores.
 
-::table 6.7 | CICIDS2017: F1 score per class
+::table 5.7 | CICIDS2017: F1 score per class
 | Class | Test windows | CNN-LSTM F1 | Random forest F1 |
 |:---|---:|---:|---:|
 | BENIGN | 439,987 | 0.991 | 0.997 |
@@ -225,17 +225,17 @@ Both models reach high accuracy and weighted F1, because benign traffic and the 
 - **The web attacks are a limit of the CNN-LSTM:** with the same features, the forest reaches an F1 of 0.69 on web brute force, so the signal exists in single flows and the windowed model loses it. Why has not been tested.
 - Heartbleed (3 windows) and SQL injection (5) are too small to measure, and Infiltration has no test windows at all, because all its test rows fall within the first nine rows of a day and no complete window ends on them. These are the classes locked to human review for lack of evidence.
 
-The confusion matrix (Fig. 6.7) shows where the errors go. Almost all errors of the weak classes are confusions with benign traffic: 91% of Bot windows, 75% of web brute-force windows and 95% of XSS windows are classified benign, and a quarter of slowloris and a fifth of SSH-Patator windows likewise. Confusions between attack classes are rare.
+The confusion matrix (Fig. 5.7) shows where the errors go. Almost all errors of the weak classes are confusions with benign traffic: 91% of Bot windows, 75% of web brute-force windows and 95% of XSS windows are classified benign, and a quarter of slowloris and a fifth of SSH-Patator windows likewise. Confusions between attack classes are rare.
 
-::figure model/results/cnn_lstm_v2_confusion_matrix.png | 6.7 | Row-normalised confusion matrix of the CNN-LSTM on the CICIDS2017 test set | 5.2
+::figure model/results/cnn_lstm_v2_confusion_matrix.png | 5.7 | Row-normalised confusion matrix of the CNN-LSTM on the CICIDS2017 test set | 5.2
 
-Fig. 6.8 shows the training curves of the deployed model. The validation loss was lowest after the first epoch and did not improve afterwards, so early stopping ended training after the sixth epoch and restored the first-epoch weights. Because the validation windows were a random 10% of the training windows, and neighbouring windows share nine of their ten flows, the validation set overlaps the training set and gives a weak stopping signal; the test score, which comes from the separate chronological test set, is not affected.
+Fig. 5.8 shows the training curves of the deployed model. The validation loss was lowest after the first epoch and did not improve afterwards, so early stopping ended training after the sixth epoch and restored the first-epoch weights. Because the validation windows were a random 10% of the training windows, and neighbouring windows share nine of their ten flows, the validation set overlaps the training set and gives a weak stopping signal; the test score, which comes from the separate chronological test set, is not affected.
 
-::figure model/results/cnn_lstm_v2_training_curves.png | 6.8 | Training and validation curves of the deployed CICIDS2017 model | 5.6
+::figure model/results/cnn_lstm_v2_training_curves.png | 5.8 | Training and validation curves of the deployed CICIDS2017 model | 5.6
 
-Table 6.8 lists the values behind the curves, transcribed from the training log.
+Table 5.8 lists the values behind the curves, transcribed from the training log.
 
-::table 6.8 | Training history of the deployed CICIDS2017 model
+::table 5.8 | Training history of the deployed CICIDS2017 model
 | Epoch | Training loss | Training accuracy | Validation loss | Validation accuracy |
 |---:|---:|---:|---:|---:|
 | 1 (kept) | 0.1798 | 0.9435 | 0.1525 | 0.9539 |
@@ -245,11 +245,11 @@ Table 6.8 lists the values behind the curves, transcribed from the training log.
 | 5 | 0.0642 | 0.9764 | 0.2792 | 0.9123 |
 | 6 | 0.0612 | 0.9767 | 0.1588 | 0.9559 |
 
-### 6.3.2 Detection on MU-IoT
+### 5.3.2 Detection on MU-IoT
 
-Table 6.9 compares the two models on the MU-IoT test windows whose exact sequence never appears in training (`model/results/mu_iot/`).
+Table 5.9 compares the two models on the MU-IoT test windows whose exact sequence never appears in training (`model/results/mu_iot/`).
 
-::table 6.9 | MU-IoT: CNN-LSTM and random forest on unseen test windows
+::table 5.9 | MU-IoT: CNN-LSTM and random forest on unseen test windows
 | Measure | CNN-LSTM | Random forest |
 |:---|---:|---:|
 | Within recordings: accuracy / macro F1 (528,967 windows) | **0.964 / 0.936** | 0.904 / 0.816 |
@@ -257,9 +257,9 @@ Table 6.9 compares the two models on the MU-IoT test windows whose exact sequenc
 | Normal traffic flagged as attack (within) | **9.3%** | 17.2% |
 | Held-out attacks classified as normal | **0.09%** | 2.5% |
 
-On MU-IoT the CNN-LSTM is clearly better than the forest, most of all on the recordings it never saw. Within recordings its per-class F1 scores are higher for every class: DDoS 0.980 against 0.928, Injection 0.978 against 0.958, MiTM 0.963 against 0.862, Password_Hacking 0.990 against 0.955, Scan 0.994 against 0.949, Spyware 0.747 against 0.259 and normal 0.909 against 0.789. Table 6.10 shows the accuracy on each held-out recording.
+On MU-IoT the CNN-LSTM is clearly better than the forest, most of all on the recordings it never saw. Within recordings its per-class F1 scores are higher for every class: DDoS 0.980 against 0.928, Injection 0.978 against 0.958, MiTM 0.963 against 0.862, Password_Hacking 0.990 against 0.955, Scan 0.994 against 0.949, Spyware 0.747 against 0.259 and normal 0.909 against 0.789. Table 5.10 shows the accuracy on each held-out recording.
 
-::table 6.10 | MU-IoT: accuracy on each held-out recording
+::table 5.10 | MU-IoT: accuracy on each held-out recording
 | Held-out recording | Class | CNN-LSTM | Random forest |
 |:---|:---|---:|---:|
 | MQTT dictionary attack | Password_Hacking | **0.998** | 0.361 |
@@ -269,9 +269,9 @@ On MU-IoT the CNN-LSTM is clearly better than the forest, most of all on the rec
 
 The CNN-LSTM almost never misses an attack on unseen recordings (0.09% called normal); its errors concern the name of the attack. Unfamiliar tools are mapped to the nearest familiar class: the hping3 flood, for example, is called Scan in 68% of its windows. Because every automatic MU-IoT action blocks the source address, a misnamed attack is still blocked. The main weakness is false alarms on normal traffic (9.3%), most of them predicted as Spyware.
 
-Tables 6.11 and 6.12 give the full per-class scores on all test windows of the two tracks (including repeated windows, so the figures differ slightly from the unseen-only scores of Table 6.9), and Table 6.13 shows where the held-out windows went.
+Tables 5.11 and 5.12 give the full per-class scores on all test windows of the two tracks (including repeated windows, so the figures differ slightly from the unseen-only scores of Table 5.9), and Table 5.13 shows where the held-out windows went.
 
-::table 6.11 | MU-IoT within recordings: per-class results on all 586,631 test windows
+::table 5.11 | MU-IoT within recordings: per-class results on all 586,631 test windows
 | Class | Precision | Recall | F1 | Windows |
 |:---|---:|---:|---:|---:|
 | DDoS | 0.99 | 0.97 | 0.98 | 149,566 |
@@ -283,7 +283,7 @@ Tables 6.11 and 6.12 give the full per-class scores on all test windows of the t
 | normal | 0.91 | 0.91 | 0.91 | 84,729 |
 | Accuracy / macro F1 | | | 0.9672 / 0.9372 | 586,631 |
 
-::table 6.12 | MU-IoT held-out recordings: per-class results on all 731,358 test windows
+::table 5.12 | MU-IoT held-out recordings: per-class results on all 731,358 test windows
 | Class | Precision | Recall | F1 | Windows |
 |:---|---:|---:|---:|---:|
 | DDoS (hping3 flood) | 0.73 | 0.32 | 0.45 | 199,620 |
@@ -292,7 +292,7 @@ Tables 6.11 and 6.12 give the full per-class scores on all test windows of the t
 | Scan (vulnerability scan) | 0.40 | 0.45 | 0.42 | 199,620 |
 | Accuracy / macro F1 | | | 0.6416 / 0.6469 | 731,358 |
 
-::table 6.13 | Confusion matrix of the held-out recordings (rows: true class; columns: predicted class)
+::table 5.13 | Confusion matrix of the held-out recordings (rows: true class; columns: predicted class)
 | True \ predicted | DDoS | Injection | MiTM | Password Hacking | Scan | Spyware | normal |
 |:---|---:|---:|---:|---:|---:|---:|---:|
 | DDoS | 64,056 | 5 | 0 | 149 | 135,327 | 9 | 74 |
@@ -300,9 +300,9 @@ Tables 6.11 and 6.12 give the full per-class scores on all test windows of the t
 | Password_Hacking | 11 | 1 | 0 | 199,255 | 353 | 0 | 0 |
 | Scan | 23,327 | 5,282 | 66 | 81,731 | 89,049 | 33 | 132 |
 
-The matrix makes the pattern of the errors visible: almost no held-out attack window is called normal (607 of 731,358), but the hping3 flood is mostly called Scan and the vulnerability scan is spread over Password_Hacking, DDoS and Scan. The model recognises that these recordings are attacks; it does not know the new tools well enough to name them. Table 6.14 shows how the MU-IoT model was trained: the validation loss was lowest after epoch 7, and early stopping ended training five epochs later.
+The matrix makes the pattern of the errors visible: almost no held-out attack window is called normal (607 of 731,358), but the hping3 flood is mostly called Scan and the vulnerability scan is spread over Password_Hacking, DDoS and Scan. The model recognises that these recordings are attacks; it does not know the new tools well enough to name them. Table 5.14 shows how the MU-IoT model was trained: the validation loss was lowest after epoch 7, and early stopping ended training five epochs later.
 
-::table 6.14 | Training history of the MU-IoT model
+::table 5.14 | Training history of the MU-IoT model
 | Epoch | Training loss | Validation loss | Validation accuracy | Validation macro F1 |
 |---:|---:|---:|---:|---:|
 | 1 | 0.1350 | 0.1353 | 0.9409 | 0.9441 |
@@ -320,11 +320,11 @@ The matrix makes the pattern of the errors visible: almost no held-out attack wi
 
 **Why sequences help on MU-IoT.** With timestamps removed, identical MU-IoT flow records often appear with different labels: 71.8% of single Scan test records also appear in the training data with another label, against 0.0% of twenty-row Scan windows. A model that sees one record at a time cannot separate such records, whatever its quality; a model that sees the sequence can. On CICIDS2017, by contrast, single flows are distinctive enough for a random forest to do better. The evidence therefore supports the CNN-LSTM where traffic is ambiguous at the level of single flows, as in the IoT data, not as a universal improvement.
 
-### 6.3.3 Explainability
+### 5.3.3 Explainability
 
-**Choice of explainer for the dashboard.** Table 6.15 summarises the measurements on which the dashboard's explainer was chosen.
+**Choice of explainer for the dashboard.** Table 5.15 summarises the measurements on which the dashboard's explainer was chosen.
 
-::table 6.15 | Measured comparison of SHAP explainers on the deployed model
+::table 5.15 | Measured comparison of SHAP explainers on the deployed model
 | Property | Gradient explainer | Kernel SHAP (deployed) |
 |:---|:---|:---|
 | Additivity error (base value plus attributions against model output) | about 0.13 | about 10⁻⁹ (largest measured 7.2 x 10⁻⁹) |
@@ -334,31 +334,31 @@ The matrix makes the pattern of the errors visible: almost no held-out attack wi
 
 Two configuration details mattered. Grouping each feature's ten time steps into one value reduced the problem from 200 to 20 attributions, which the sampling budget can estimate reliably; and the explainer's default regularisation, which silently keeps only ten of the inputs, was switched off. The explanation is computed on demand for the selected window only, so its cost of about 1.5 seconds does not slow down the analysis.
 
-**Causes of the MU-IoT errors.** Table 6.16 summarises the SHAP error analysis (`model/results/mu_iot/mu_iot_shap_report.txt`). In every group the mean SHAP sum matched the mean output to within 0.04.
+**Causes of the MU-IoT errors.** Table 5.16 summarises the SHAP error analysis (`model/results/mu_iot/mu_iot_shap_report.txt`). In every group the mean SHAP sum matched the mean output to within 0.04.
 
-::table 6.16 | Causes of the main MU-IoT errors found with SHAP
+::table 5.16 | Causes of the main MU-IoT errors found with SHAP
 | Error | Similarity to the predicted class's detections | Similarity to the true class's detections | Cause |
 |:---|---:|---:|:---|
 | normal classified as Spyware | 0.87 | 0.29 | Systematic resemblance |
 | hping3 flood classified as Scan | 0.59 | -0.64 | Real resemblance to scans |
 | Vulnerability scan classified as Password_Hacking | 0.20 | -0.05 | Extrapolation beyond the training range |
 
-- **normal classified as Spyware.** The same features (DNS_RCUL, TCPWS_Mode, FAMax, DNSQTL and FD) push both the false alarms and the real Spyware detections towards Spyware (Fig. 6.9), and the false alarms are confident, with a mean probability of 0.76. No confidence threshold can separate them from real detections, which is why Spyware is locked to human review.
+- **normal classified as Spyware.** The same features (DNS_RCUL, TCPWS_Mode, FAMax, DNSQTL and FD) push both the false alarms and the real Spyware detections towards Spyware (Fig. 5.9), and the false alarms are confident, with a mean probability of 0.76. No confidence threshold can separate them from real detections, which is why Spyware is locked to human review.
 - **hping3 flood classified as Scan.** The flood's packet sizes (about 64) and its near-zero FAMean feature match those of scans (packet size about 60), not those of the floods in the training data (packet size about 74, FAMean 0.017). The model is right that the traffic resembles a scan; the training data simply contain no flood of this kind.
 - **Vulnerability scan classified as Password_Hacking.** One feature dominates: the mean TCP window size, with a median of about 25,000 in this recording against about 3,900 and 3,500 in the two classes. The model is extrapolating far beyond the values it was trained on.
 
-::figure model/results/mu_iot/mu_iot_shap_spyware.png | 6.9 | Mean SHAP values of normal traffic flagged as Spyware, real Spyware detections and correctly classified normal traffic | 4.6
+::figure model/results/mu_iot/mu_iot_shap_spyware.png | 5.9 | Mean SHAP values of normal traffic flagged as Spyware, real Spyware detections and correctly classified normal traffic | 4.6
 
-Figs. 6.10 and 6.11 show the profiles of the other two errors. For the hping3 flood, the features that push it towards Scan are the same ones that real scan detections rely on, while they push against the floods the model was trained on. For the vulnerability scan, one feature, the mean TCP window size, dominates all others by a wide margin, which is the signature of a model extrapolating far outside its training range.
+Figs. 5.10 and 5.11 show the profiles of the other two errors. For the hping3 flood, the features that push it towards Scan are the same ones that real scan detections rely on, while they push against the floods the model was trained on. For the vulnerability scan, one feature, the mean TCP window size, dominates all others by a wide margin, which is the signature of a model extrapolating far outside its training range.
 
-::figure model/results/mu_iot/mu_iot_shap_hping3.png | 6.10 | Mean SHAP values of the hping3 flood windows classified as Scan, compared with real scan and flood detections | 4.8
+::figure model/results/mu_iot/mu_iot_shap_hping3.png | 5.10 | Mean SHAP values of the hping3 flood windows classified as Scan, compared with real scan and flood detections | 4.8
 
-::figure model/results/mu_iot/mu_iot_shap_vulnscan.png | 6.11 | Mean SHAP values of the vulnerability scan windows classified as Password_Hacking, compared with real Password_Hacking and Scan detections | 4.8
-### 6.3.4 Prevention Policy
+::figure model/results/mu_iot/mu_iot_shap_vulnscan.png | 5.11 | Mean SHAP values of the vulnerability scan windows classified as Password_Hacking, compared with real Password_Hacking and Scan detections | 4.8
+### 5.3.4 Prevention Policy
 
-Every test window was passed through the policy and the decision compared with its true label (`model/results/prevention_policy_cicids2017.txt` and its MU-IoT counterpart). Table 6.17 gives the result.
+Every test window was passed through the policy and the decision compared with its true label (`model/results/prevention_policy_cicids2017.txt` and its MU-IoT counterpart). Table 5.17 gives the result.
 
-::table 6.17 | Effect of the prevention policy on all test windows
+::table 5.17 | Effect of the prevention policy on all test windows
 | Dataset | Benign windows actioned automatically | Attack windows handled automatically | Attack windows missed |
 |:---|---:|---:|---:|
 | CICIDS2017 | 0.33% | 96.6% | 2.4% |
@@ -370,9 +370,9 @@ Every test window was passed through the policy and the decision compared with i
 - On MU-IoT the false-action rate on normal traffic is five times higher (1.6%, mostly Injection), and it is the main remaining risk of the MU-IoT policy.
 - The thresholds were derived from test-set F1 scores, and no separate calibration set exists, so these figures describe the policy rather than validate it independently.
 
-Table 6.18 breaks the CICIDS2017 result down by true class. Every reliable flood and scan class is handled automatically in more than 94% of its windows; slowloris and SSH-Patator are missed in about a quarter of their windows because the model calls them benign; and the classes locked to review are, as intended, never acted on automatically.
+Table 5.18 breaks the CICIDS2017 result down by true class. Every reliable flood and scan class is handled automatically in more than 94% of its windows; slowloris and SSH-Patator are missed in about a quarter of their windows because the model calls them benign; and the classes locked to review are, as intended, never acted on automatically.
 
-::table 6.18 | Policy decisions per true class on the CICIDS2017 test set
+::table 5.18 | Policy decisions per true class on the CICIDS2017 test set
 | True class | Windows | Automatic | Review | No action |
 |:---|---:|---:|---:|---:|
 | BENIGN | 439,987 | 0.33% | 0.93% | 98.75% |
@@ -390,9 +390,9 @@ Table 6.18 breaks the CICIDS2017 result down by true class. Every reliable flood
 | Web Attack - Sql Injection | 5 | 0.00% | 0.00% | 100.00% |
 | Web Attack - XSS | 131 | 0.00% | 4.58% | 95.42% |
 
-(The few Bot windows acted on automatically were predicted as another attack class, not as Bot.) Table 6.19 looks at the same decisions from the side of the action: of 89,293 automatic actions, 97.98% acted on the predicted attack, 0.41% on a different attack (the attacker was still acted on, possibly with another action type), and 1.61% on benign traffic. PortScan and DoS GoldenEye produce most of the actions on benign traffic.
+(The few Bot windows acted on automatically were predicted as another attack class, not as Bot.) Table 5.19 looks at the same decisions from the side of the action: of 89,293 automatic actions, 97.98% acted on the predicted attack, 0.41% on a different attack (the attacker was still acted on, possibly with another action type), and 1.61% on benign traffic. PortScan and DoS GoldenEye produce most of the actions on benign traffic.
 
-::table 6.19 | Automatic actions on the CICIDS2017 test set by predicted class
+::table 5.19 | Automatic actions on the CICIDS2017 test set by predicted class
 | Predicted class | Action | Threshold | Automatic | Correct | Other attack | Benign |
 |:---|:---|---:|---:|---:|---:|---:|
 | DDoS | block_ip | 0.55 | 25,083 | 25,015 | 24 | 44 |
@@ -404,9 +404,9 @@ Table 6.18 breaks the CICIDS2017 result down by true class. Every reliable flood
 | PortScan | block_ip | 0.60 | 23,092 | 22,553 | 5 | 534 |
 | SSH-Patator | block_ip | 0.78 | 613 | 542 | 0 | 71 |
 
-Table 6.20 gives the same breakdown for the MU-IoT recordings seen in training. MiTM and Spyware, locked to review, are sent to an analyst instead of being acted on, and 7.61% of normal windows reach review as false alerts that an analyst would dismiss.
+Table 5.20 gives the same breakdown for the MU-IoT recordings seen in training. MiTM and Spyware, locked to review, are sent to an analyst instead of being acted on, and 7.61% of normal windows reach review as false alerts that an analyst would dismiss.
 
-::table 6.20 | Policy decisions per true class on the MU-IoT within-recording test set
+::table 5.20 | Policy decisions per true class on the MU-IoT within-recording test set
 | True class | Windows | Automatic | Review | No action |
 |:---|---:|---:|---:|---:|
 | DDoS | 149,566 | 97.16% | 1.15% | 1.69% |
@@ -417,11 +417,11 @@ Table 6.20 gives the same breakdown for the MU-IoT recordings seen in training. 
 | Spyware | 20,316 | 0.01% | 76.37% | 23.62% |
 | normal | 84,729 | 1.60% | 7.61% | 90.79% |
 
-### 6.3.5 Validation of the Flow Extractor
+### 5.3.5 Validation of the Flow Extractor
 
-The original Friday capture of CICIDS2017, published by the University of New Brunswick, was passed through the project's extractor, and every resulting flow was compared with CICFlowMeter-V3's official row for the same flow (`model/results/extractor_validation.md`). The comparison covered ten minutes inside the PortScan period. Flows were matched one to one by their five-tuple and start time; the official timestamps turned out to be in local time (UTC-3) and written without AM or PM, which the matching had to account for. Table 6.21 summarises the result.
+The original Friday capture of CICIDS2017, published by the University of New Brunswick, was passed through the project's extractor, and every resulting flow was compared with CICFlowMeter-V3's official row for the same flow (`model/results/extractor_validation.md`). The comparison covered ten minutes inside the PortScan period. Flows were matched one to one by their five-tuple and start time; the official timestamps turned out to be in local time (UTC-3) and written without AM or PM, which the matching had to account for. Table 5.21 summarises the result.
 
-::table 6.21 | Extractor against CICFlowMeter-V3 on the original CICIDS2017 capture
+::table 5.21 | Extractor against CICFlowMeter-V3 on the original CICIDS2017 capture
 | Measure | Value |
 |:---|:---|
 | Flows matched one to one with official rows | 5,957 of 7,332 (81%); the rest share a five-tuple within a minute, mostly reused nmap ports |
@@ -432,7 +432,7 @@ The original Friday capture of CICIDS2017, published by the University of New Br
 
 The official CSV prints large values with three significant digits (for example 1.02E+07), so strict agreement is lower than agreement at the printed precision; the per-feature agreement at the printed precision is between 99.83% and 100% for every one of the 20 features. The comparison found two real differences, both of which were corrected: times must be whole microseconds (floating-point epoch seconds had turned a 100 μs gap into 99.9 μs), and a FIN that starts a flow must not end it, so the reply joins that flow. The second correction is the TCP appendix artefact described by Engelen et al. [@K26]; correcting it raised strict agreement from 77.5% to 86.3%.
 
-::table 6.22 | Agreement of each feature with CICFlowMeter-V3 (5,957 matched flows)
+::table 5.22 | Agreement of each feature with CICFlowMeter-V3 (5,957 matched flows)
 | Feature | Agreement at printed precision | Strict agreement |
 |:---|---:|---:|
 | Destination Port | 100.00% | 100.00% |
@@ -458,11 +458,11 @@ The official CSV prints large values with three significant digits (for example 
 
 Almost all strict disagreements are in the two time features, Flow IAT Max and Fwd IAT Std, whose values are large numbers of microseconds that the official CSV prints with three significant digits; at the printed precision they agree on more than 99.8% of flows. The size features agree strictly wherever they agree at all, and every one of the 49 matched PortScan flows agrees on all 20 features.
 
-### 6.3.6 Real Traffic and Public Captures
+### 5.3.6 Real Traffic and Public Captures
 
-**Public captures.** The data team ran the pipeline on public packet captures that the model was never trained on (Table 6.23, `docs/report/live_data_sources.md`). These captures have no window-level labels, so the predicted attack ratio shows the model's behaviour, not its accuracy. Three runs were cut at the dashboard's limit of 2,000 windows.
+**Public captures.** The data team ran the pipeline on public packet captures that the model was never trained on (Table 5.23, `docs/report/live_data_sources.md`). These captures have no window-level labels, so the predicted attack ratio shows the model's behaviour, not its accuracy. Three runs were cut at the dashboard's limit of 2,000 windows.
 
-::table 6.23 | Predicted attack ratio on public captures
+::table 5.23 | Predicted attack ratio on public captures
 | Capture | Windows (processed) | Predicted attack ratio |
 |:---|---:|---:|
 | CTU-13 Neris botnet, capture 42 | 2,369 (2,000) | 23.2% |
@@ -473,9 +473,9 @@ Almost all strict disagreements are in the two time features, Flow IAT Max and F
 
 The DDoS capture is flagged almost entirely and the normal LAN capture almost not at all, which is the expected direction; the botnet captures, recorded in 2011 on a different network, are flagged far less consistently, which matches the model's weakness on the Bot class.
 
-**Own captures.** Three captures of about three minutes each were recorded with a laptop as the protected host and an Android tablet as a second device on a phone hotspot (`model/results/hotspot_live_results.md`). The captures contain personal traffic and are not stored in the repository. Table 6.24 gives the results, together with the data team's ten-minute browsing capture.
+**Own captures.** Three captures of about three minutes each were recorded with a laptop as the protected host and an Android tablet as a second device on a phone hotspot (`model/results/hotspot_live_results.md`). The captures contain personal traffic and are not stored in the repository. Table 5.24 gives the results, together with the data team's ten-minute browsing capture.
 
-::table 6.24 | Results on own packet captures
+::table 5.24 | Results on own packet captures
 | Capture | Result |
 |:---|:---|
 | Port scan from the tablet (nmap -sT, 1,051 probes in 7 s) | 98% of the windows pointing at the tablet classified PortScan; replayed through the live engine, the first detection came 1.6 s after the first SYN, and every automatic action targeted the tablet |
@@ -488,13 +488,13 @@ Four findings follow from these captures.
 - **A scan is recognised only if the victim answers it.** In CICIDS2017 the victim servers replied to every probe. Windows' stealth mode replies to none, and the scan then looks benign to the model. For the demonstration, stealth mode was turned off on the laptop, so that it answers like the 2017 servers did.
 - **Repeated polling of one web server reads as Bot,** because CICIDS2017's Ares botnet polls its command server in the same way. All 127 such windows were held for review by the Bot lock: the policy, not the model, kept the tablet from being blocked.
 - **Present-day browsing raises recommendation-only false alarms.** IPv6 and QUIC traffic, which did not exist in the 2017 training data in this form, is often classified as an attack (mostly DoS GoldenEye or FTP-Patator). The sources of these windows are the laptop itself and internet servers, never a local device, so nothing was executed. Analysing IPv4 only reduces the rates to 3.6% and 0%, but ignores 98% of the browsing packets. The rate also depends strongly on the traffic, from 11.1% to 29.9% between the two browsing captures.
-- **The laptop sees its own traffic plus other devices' broadcasts.** Only a device that talks to the laptop can be a target (Section 4.5.7).
+- **The laptop sees its own traffic plus other devices' broadcasts.** Only a device that talks to the laptop can be a target (Section 3.5.7).
 
-### 6.3.7 Live Run on a Real Network
+### 5.3.7 Live Run on a Real Network
 
-On 18 October 2026 the whole system ran live on a home Wi-Fi router used daily by 20 to 30 people, with the owner's permission, and with the tablet as the only device listed as a permitted target. Table 6.25 summarises the run.
+On 18 October 2026 the whole system ran live on a home Wi-Fi router used daily by 20 to 30 people, with the owner's permission, and with the tablet as the only device listed as a permitted target. Table 5.25 summarises the run.
 
-::table 6.25 | Live run on a shared Wi-Fi network
+::table 5.25 | Live run on a shared Wi-Fi network
 | Aspect | Result |
 |:---|:---|
 | Detection | PortScan at a confidence of 0.99, about 2 s after nmap's first probes; 13 consecutive PortScan windows |
@@ -506,13 +506,13 @@ On 18 October 2026 the whole system ran live on a home Wi-Fi router used daily b
 
 Most of nmap's 1,000 ports were probed within the second before the block took effect, so nmap still listed them as closed: a block stops an attacker from that moment on, not retroactively. The bystander is the most instructive result of the run. The model was wrong with high confidence, about a device that had nothing to do with the test, on a network used by other people; the allow-list refused every attempt to act. The incident led to the rule that a device becomes a target only if it has sent traffic to the protected host, since discovery broadcasts never do.
 
-The system was demonstrated again at the final project review on a different network, with the same sequence: live capture, port scan, automatic block, already-blocked reports, and revocation (Figs. 6.2, 6.4 and 6.5).
+The system was demonstrated again at the final project review on a different network, with the same sequence: live capture, port scan, automatic block, already-blocked reports, and revocation (Figs. 5.2, 5.4 and 5.5).
 
-### 6.3.8 Inference Speed
+### 5.3.8 Inference Speed
 
-Table 6.26 gives the inference speed measured on the laptop's CPU, plugged in, without a GPU (`model/results/inference_benchmark.txt`).
+Table 5.26 gives the inference speed measured on the laptop's CPU, plugged in, without a GPU (`model/results/inference_benchmark.txt`).
 
-::table 6.26 | Inference speed on the laptop CPU (AMD Ryzen 3 5300U)
+::table 5.26 | Inference speed on the laptop CPU (AMD Ryzen 3 5300U)
 | Measure | CICIDS2017 model | MU-IoT model |
 |:---|---:|---:|
 | One window, direct call (predict_on_batch) | 1.48 ms | 1.60 ms |
@@ -522,9 +522,9 @@ Table 6.26 gives the inference speed measured on the laptop's CPU, plugged in, w
 
 The Keras `predict` method adds about 65 ms of fixed overhead per call. The extractor processes about 68,000 packets per second, and the live engine makes one prediction per second, so neither the model nor the extractor limits the live system; detection latency is set by the flow-ending rules and the one-second prediction interval.
 
-Tables 6.27 and 6.28 give the full measurements. The latency of a single window is dominated by how the model is called, not by the model itself; in batches, the CICIDS2017 model classifies about 70,700 windows per second and the larger MU-IoT model, which works in mixed precision on a CPU without hardware support for it, about 21,900.
+Tables 5.27 and 5.28 give the full measurements. The latency of a single window is dominated by how the model is called, not by the model itself; in batches, the CICIDS2017 model classifies about 70,700 windows per second and the larger MU-IoT model, which works in mixed precision on a CPU without hardware support for it, about 21,900.
 
-::table 6.27 | Latency of one window on the laptop CPU, in milliseconds (CICIDS2017 model, 300 calls)
+::table 5.27 | Latency of one window on the laptop CPU, in milliseconds (CICIDS2017 model, 300 calls)
 | Call path | Median | 95th percentile | 99th percentile |
 |:---|---:|---:|---:|
 | Backend path (scaling and model.predict) | 66.71 | 83.47 | 96.23 |
@@ -533,7 +533,7 @@ Tables 6.27 and 6.28 give the full measurements. The latency of a single window 
 | model.predict_on_batch | 1.48 | 1.94 | 2.13 |
 | Direct call model(x) | 20.52 | 28.95 | 34.54 |
 
-::table 6.28 | Throughput by batch size, windows per second (median of 5 runs of 16,384 windows)
+::table 5.28 | Throughput by batch size, windows per second (median of 5 runs of 16,384 windows)
 | Batch size | CICIDS2017 model | MU-IoT model |
 |---:|---:|---:|
 | 1 (backend path, one call per window) | 15 | 15 |
@@ -541,7 +541,7 @@ Tables 6.27 and 6.28 give the full measurements. The latency of a single window 
 | 256 | 56,860 | 15,512 |
 | 2,048 | 70,729 | 21,907 |
 
-## 6.4 Discussion
+## 5.4 Discussion
 
 - **Sequences are not a universal improvement.** The comparison on identical examples is the central result: a report that evaluated the CNN-LSTM alone, or on CICIDS2017 alone, would have reached the wrong conclusion in one direction or the other. Sequences help where single flow records are ambiguous, as in MU-IoT.
 - **Reliability, not accuracy, decides what may be automated.** An accuracy of 98.4% says nothing about whether a Bot prediction may be acted on; a Bot F1 of 0.056 does. The same review lock protected the tablet during the live run.
@@ -549,7 +549,7 @@ Tables 6.27 and 6.28 give the full measurements. The latency of a single window 
 - **Benchmark features must be reproduced exactly.** Validating the extractor against the original capture found two differences that no test based on the documentation would have found.
 - **A 2017 model meets 2026 traffic.** None of the false alarms on present-day traffic was executed, but they show that the next step is retraining on current traffic, not a larger model.
 
-## 6.5 Limitations
+## 5.5 Limitations
 
 - **Model.** On CICIDS2017 a single-flow random forest outperforms the CNN-LSTM, which loses web-attack signal that single flows carry. Generalisation to unseen attack tools is weak (held-out macro F1 0.68). Normal traffic and Spyware in MU-IoT each come from one recording, so their scores are optimistic.
 - **Evaluation.** Feature selection used a sample that includes some later test rows; the CICIDS2017 validation set overlaps the training windows; the CICIDS2017 test set contains later traffic of the same capture sessions, not unseen attacks; the policy thresholds come from test-set F1 without a separate calibration set; and each model was trained once, so the scores carry no error margin.

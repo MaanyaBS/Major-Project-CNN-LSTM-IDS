@@ -24,7 +24,7 @@ The Flask backend (`backend/app.py`) exposes the endpoints in Table A.1. All req
 
 ## B.1 MU-IoT Features
 
-Table B.1 lists the 38 MU-IoT features used by the MU-IoT model, in the order of the feature matrix. The names are those of the published dataset [@K30]; FPT and LPT, the times of a flow's first and last packet, were deliberately excluded (Section 3.2.3).
+Table B.1 lists the 38 MU-IoT features used by the MU-IoT model, in the order of the feature matrix. The names are those of the published dataset [@K30]; FPT and LPT, the times of a flow's first and last packet, were deliberately excluded.
 
 ::table B.1 | The 38 MU-IoT features
 | No. | Feature | No. | Feature | No. | Feature |
